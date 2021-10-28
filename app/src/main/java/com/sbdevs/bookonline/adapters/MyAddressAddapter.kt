@@ -1,0 +1,98 @@
+package com.sbdevs.bookonline.adapters
+
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.AddAddressActivity
+import java.io.Serializable
+
+class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo:Long,val listner:MyonItemClickListener) :
+    RecyclerView.Adapter<MyAddressAddapter.ViewHolder>() {
+
+
+    interface MyonItemClickListener{
+        fun onItemClick(position: Int)
+    }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): MyAddressAddapter.ViewHolder {
+        val view: View = LayoutInflater.from(parent.context)
+            .inflate(R.layout.le_mini_address_view_lay, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: MyAddressAddapter.ViewHolder, position: Int) {
+        holder.bind(list[position],selectNo)
+    }
+
+
+
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
+        val nameTxt:TextView = itemView.findViewById(R.id.buyer_name)
+        val addressTxt:TextView = itemView.findViewById(R.id.buyer_address)
+        val townAndPincodeTxt:TextView = itemView.findViewById(R.id.buyer_TownAndPin)
+        val stateTxt:TextView = itemView.findViewById(R.id.buyer_state)
+        val addressTypeTxt:TextView = itemView.findViewById(R.id.buyer_address_type)
+        val phoneTxt:TextView = itemView.findViewById(R.id.buyer_phone)
+
+        val checked:ImageView = itemView.findViewById(R.id.radioBtn)
+
+        val editBtn:Button = itemView.findViewById(R.id.edit_address_btn)
+        fun bind(group:MutableMap<String,Any>,selectNo1:Long){
+
+
+            checked.setOnClickListener {
+                listner.onItemClick(adapterPosition)
+            }
+
+            editBtn.setOnClickListener {
+                val intent = Intent(itemView.context,AddAddressActivity::class.java)
+                intent.putExtra("from",2)
+
+                intent.putExtra("editMap",group as Serializable)
+
+                itemView.context.startActivity(intent)
+            }
+
+            val position = adapterPosition.toLong()
+            if (position == selectNo1){
+                Glide.with(itemView.context).load(R.drawable.ic_check_box_24).into(checked)
+            }else{
+                Glide.with(itemView.context).load(R.drawable.ic_baseline_check_box_outline_blank_24).into(checked)
+            }
+            val buyerName:String = group["name"].toString()
+            val buyerAddress1:String = group["address1"].toString()
+            val buyerAddress2:String = group["address2"].toString()
+            val buyerAddressType:String = group["address_type"].toString()
+
+
+            val buyerTown:String = group["city_vill"].toString()
+            val buyerPinCode:String = group["pincode"].toString()
+
+            val buyerState:String = group["state"].toString()
+            val buyerPhone:String = group["phone"].toString()
+
+            addressTypeTxt.text = buyerAddressType
+            nameTxt.text = buyerName
+            addressTxt.text = "${buyerAddress1}, $buyerAddress2"
+            townAndPincodeTxt.text = """$buyerTown, $buyerPinCode"""
+            stateTxt.text = buyerState
+            phoneTxt.text = buyerPhone
+
+        }
+
+    }
+}

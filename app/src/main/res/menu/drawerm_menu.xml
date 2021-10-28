@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <group>
+
+        <item
+            android:id="@+id/all_category"
+            android:icon="@drawable/i_category"
+            android:iconTint="@color/gray_700"
+            android:title="All Categories" />
+        <item
+            android:id="@+id/offerzone"
+            android:icon="@drawable/i_discount"
+            android:iconTint="@color/gray_700"
+            android:title="Offer Zone" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/homeFragment"
+            android:icon="@drawable/ic_home_24"
+            android:title="My Home" />
+
+        <item
+            android:id="@+id/myWishlistFragment"
+            android:icon="@drawable/ic_favorite_24"
+            android:title="My Wishlist" />
+        <item
+            android:id="@+id/myCartFragment"
+            android:icon="@drawable/ic_twotone_shopping_cart_24"
+            android:title="My Cart" />
+        <item
+            android:id="@+id/myAccountFragment"
+            android:icon="@drawable/ic_account_circle_24"
+            android:title="My Account" />
+
+        <item
+            android:id="@+id/myOrderFragment"
+            android:icon="@drawable/i_deliverd"
+            android:title="My Orders" />
+
+        <item
+            android:id="@+id/notification"
+            android:icon="@drawable/ic_notifications_none_32"
+            android:title="Notification" />
+
+
+    </group>
+    <group>
+
+        <item
+            android:id="@+id/nav_logOut"
+            android:icon="@drawable/i_logout"
+            android:iconTint="@color/gray_700"
+            android:title="Log Out" />
+    </group>
+
+</menu>

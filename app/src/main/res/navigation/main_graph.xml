@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.sbdevs.bookonline.fragments.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_myCartFragment"
+            app:destination="@id/myCartFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myCartFragment"
+        android:name="com.sbdevs.bookonline.fragments.MyCartFragment"
+        android:label="Cart"
+        tools:layout="@layout/fragment_my_cart" >
+
+    </fragment>
+    <fragment
+        android:id="@+id/myOrderFragment"
+        android:name="com.sbdevs.bookonline.fragments.MyOrderFragment"
+        android:label="My Order"
+        tools:layout="@layout/fragment_my_order" />
+    <fragment
+        android:id="@+id/myWishlistFragment"
+        android:name="com.sbdevs.bookonline.fragments.MyWishlistFragment"
+        android:label="My Wishlist"
+        tools:layout="@layout/fragment_my_wishlist" />
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.sbdevs.bookonline.fragments.NotificationFragment"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification" />
+    <fragment
+        android:id="@+id/myAccountFragment"
+        android:name="com.sbdevs.bookonline.fragments.MyAccountFragment"
+        android:label="My Account"
+        tools:layout="@layout/fragment_my_account" >
+        <action
+            android:id="@+id/action_myAccountFragment_to_editAccountFragment"
+            app:destination="@id/editAccountFragment" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_myWishlistFragment"
+            app:destination="@id/myWishlistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editAccountFragment"
+        android:name="com.sbdevs.bookonline.fragments.EditAccountFragment"
+        android:label="fragment_edit_account"
+        tools:layout="@layout/fragment_edit_account" />
+</navigation>
