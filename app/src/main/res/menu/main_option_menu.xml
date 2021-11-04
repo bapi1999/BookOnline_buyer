@@ -8,10 +8,20 @@
         app:showAsAction="always"
         android:title="search"/>
 
+
+
     <item
         android:id="@+id/main_cart"
         android:orderInCategory="100"
         android:icon="@drawable/ic_shopping_cart_24"
+        android:title="cart"
+        app:showAsAction="ifRoom"
+        app:actionLayout="@layout/le_notification_badge"
+        />
+    <item
+        android:id="@+id/main_notification"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_round_notifications_24"
         android:title="cart"
         app:showAsAction="ifRoom"
         app:actionLayout="@layout/le_notification_badge"
