@@ -10,22 +10,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/gray_50"
+        android:backgroundTint="@color/gray_100"
         android:paddingStart="9dp"
         android:paddingTop="2dp"
         android:paddingEnd="9dp"
         android:paddingBottom="3dp"
         android:text="Home"
-        app:layout_constraintBottom_toBottomOf="@+id/radioBtn"
         app:layout_constraintStart_toEndOf="@+id/radioBtn"
-        app:layout_constraintTop_toTopOf="@+id/radioBtn" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/buyer_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:ellipsize="end"
         android:maxLines="1"
@@ -76,10 +77,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/phone"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/buyer_state"
         app:layout_constraintTop_toBottomOf="@+id/buyer_state" />
 
@@ -100,6 +103,7 @@
         android:id="@+id/edit_address_btn"
         android:layout_width="60dp"
         android:layout_height="40dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/white"
         android:text="Edtit"
@@ -108,6 +112,6 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/radioBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/radioBtn" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

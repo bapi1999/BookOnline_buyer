@@ -20,10 +20,10 @@ class ProceedOrderActivity : AppCompatActivity() {
         binding = ActivityProceedOrderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment3) as NavHostFragment
-
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment3) as NavHostFragment
         navController = navHostFragment.navController
+
+
         navController.setGraph(R.navigation.proceed_order_host, intent.extras)
 
     }

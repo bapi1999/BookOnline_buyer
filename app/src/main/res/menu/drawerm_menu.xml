@@ -2,19 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <group>
+<!--    <group>-->
 
-        <item
-            android:id="@+id/all_category"
-            android:icon="@drawable/i_category"
-            android:iconTint="@color/gray_700"
-            android:title="All Categories" />
-        <item
-            android:id="@+id/offerzone"
-            android:icon="@drawable/i_discount"
-            android:iconTint="@color/gray_700"
-            android:title="Offer Zone" />
-    </group>
+<!--        <item-->
+<!--            android:id="@+id/categoryFragment"-->
+<!--            android:icon="@drawable/i_category"-->
+<!--            android:iconTint="@color/gray_700"-->
+<!--            android:title="All Categories" />-->
+<!--        <item-->
+<!--            android:id="@+id/offerzone"-->
+<!--            android:icon="@drawable/i_discount"-->
+<!--            android:iconTint="@color/gray_700"-->
+<!--            android:title="Offer Zone" />-->
+<!--    </group>-->
+
 
     <group android:checkableBehavior="single">
         <item
@@ -50,9 +51,29 @@
     <group>
 
         <item
+            android:id="@+id/termCondition"
+            android:icon="@drawable/ic_description_24"
+            android:title="@string/terms_condition" />
+        <item
+            android:id="@+id/privacy_policy"
+            android:icon="@drawable/ic_baseline_privacy_tip_24"
+            android:title="Privacy Policy" />
+        <item
+            android:id="@+id/return_policy"
+            android:icon="@drawable/i_return"
+            android:title="Return Policy" />
+        <item
+            android:id="@+id/help"
+            android:icon="@drawable/ic_help_24"
+            android:title="Help" />
+        <item
+            android:id="@+id/sell_on_book"
+            android:icon="@drawable/i_sell"
+            android:title="Sell on BookOnline" />
+
+        <item
             android:id="@+id/nav_logOut"
             android:icon="@drawable/i_logout"
-            android:iconTint="@color/gray_700"
             android:title="Log Out" />
     </group>
 

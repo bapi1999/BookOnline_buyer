@@ -56,4 +56,9 @@
         android:name="com.sbdevs.bookonline.fragments.EditAccountFragment"
         android:label="fragment_edit_account"
         tools:layout="@layout/fragment_edit_account" />
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.sbdevs.bookonline.fragments.CategoryFragment"
+        android:label="fragment_category"
+        tools:layout="@layout/fragment_category" />
 </navigation>

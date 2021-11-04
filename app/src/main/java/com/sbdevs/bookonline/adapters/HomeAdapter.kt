@@ -124,7 +124,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
             dotsIndicator.setViewPager2(sliderView)
 
 
-            val toast = Toast.makeText(itemView.context,sliderModelList.size.toString(),Toast.LENGTH_SHORT).show()
+            val toast = Toast.makeText(itemView.context,sliderModelList.size.toString(),Toast.LENGTH_SHORT)
 
             GlobalScope.launch(Dispatchers.Main) {
 
@@ -271,7 +271,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
             val pos:String = adapterPosition.toString()
             viewAllBtn.setOnClickListener {
-                Toast.makeText(itemView.context,"this is $uiId",Toast.LENGTH_SHORT).show()
+//                Toast.makeText(itemView.context,"this is $uiId",Toast.LENGTH_SHORT).show()
 
             }
 

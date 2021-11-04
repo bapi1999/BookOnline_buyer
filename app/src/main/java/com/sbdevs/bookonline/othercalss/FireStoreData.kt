@@ -1,6 +1,8 @@
 package com.sbdevs.bookonline.othercalss
 
 import android.content.Context
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -45,4 +47,22 @@ class FireStoreData {
             recyclerView.adapter = searchAdapter
         }
     }
+
+    fun getUsername(textView: TextView){
+        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid).get()
+            .addOnSuccessListener {
+                if (it.exists()){
+                    val email = it.getString("email").toString()
+                    val name = it.getString("name").toString()
+                    if (name == ""){
+                        textView.text = email
+                    }else{
+                        textView.text = name
+                    }
+
+                }
+            }
+    }
+
+
 }

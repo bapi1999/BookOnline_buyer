@@ -6,49 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MyCartFragment">
 
+
     <LinearLayout
         android:id="@+id/empty_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:background="#54323333"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Wow such an emptiness"
-            android:textSize="20sp"
-            android:textColor="@color/black"/>
-
-
+        android:visibility="gone"
+        android:orientation="vertical">
+        <include layout="@layout/le_empty_layout"/>
     </LinearLayout>
-    <ScrollView
-        android:id="@+id/scrollview_cart"
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
+
+        <ScrollView
+            android:id="@+id/scrollview_cart"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/cart_recycler"
+            android:layout_height="match_parent">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:background="@color/white"
-                />
-            <include android:id="@+id/lay2"
-                layout="@layout/le_cart_item_lay_2"/>
-        </LinearLayout>
+                android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/cart_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/white"
+                    />
+                <include android:id="@+id/lay2"
+                    layout="@layout/le_cart_item_lay_2"/>
+            </LinearLayout>
 
 
-    </ScrollView>
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 
 
 

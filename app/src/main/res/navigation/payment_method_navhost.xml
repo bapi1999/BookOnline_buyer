@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/payment_method_navhost"
+    app:startDestination="@id/paymentFragment">
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.sbdevs.bookonline.fragments.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" >
+        <action
+            android:id="@+id/action_paymentFragment_to_congratulationFragment"
+            app:destination="@id/congratulationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/congratulationFragment"
+        android:name="com.sbdevs.bookonline.fragments.CongratulationFragment"
+        android:label="fragment_congratulation"
+        tools:layout="@layout/fragment_congratulation" >
+        <argument
+            android:name="warning"
+            app:argType="integer"
+            />
+        <argument
+            android:name="orderItem"
+            app:argType="integer"
+           />
+    </fragment>
+</navigation>

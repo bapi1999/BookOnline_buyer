@@ -32,11 +32,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/verients"
+        android:id="@+id/variant"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="1"
@@ -53,10 +53,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:text="Stock"
-        android:textSize="12sp"
+        android:text="Stock:"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/verients" />
+        app:layout_constraintTop_toBottomOf="@+id/variant" />
 
     <TextView
         android:id="@+id/stock"
@@ -68,17 +68,18 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="in stock"
-        android:textSize="12sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/product_image"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView26"
-        app:layout_constraintTop_toBottomOf="@+id/verients" />
+        app:layout_constraintTop_toBottomOf="@+id/variant" />
 
     <LinearLayout
+        android:id="@+id/linearLayout23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView26">
@@ -207,4 +208,19 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/outofstockText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="7dp"
+        android:text="Out Of stock"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@color/red"
+        android:textAllCaps="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout23" />
 </androidx.constraintlayout.widget.ConstraintLayout>

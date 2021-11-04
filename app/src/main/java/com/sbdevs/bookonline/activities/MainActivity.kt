@@ -37,13 +37,13 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        getCartList()
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
 //        val list1 =  fireStoreData.getFirebaseCartList(this)
@@ -60,12 +60,20 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
+//        (this as AppCompatActivity?)!!.supportActionBar!!.show()
         binding.navView.setupWithNavController(navController)
         val header = binding.navView.getHeaderView(0)
         val userName:TextView = header.findViewById(R.id.nav_header_txt)
-        userName.text = "edfwefwefwe"
+        FireStoreData().getUsername(userName)
+//        userName.text = "edfwefwefwe"
 
 
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -74,14 +82,17 @@ class MainActivity : AppCompatActivity() {
         val cartMenu = menu?.findItem(R.id.main_cart)
 //        cartMenu!!.setActionView(R.layout.le_notification_badge)
         var actionView = cartMenu!!.actionView
-        val badgeCounter:TextView = actionView!!.findViewById(R.id.badge_counter)
+        badgeTxt = actionView!!.findViewById(R.id.badge_counter)
 
-        if (counter == 0) {
-            badgeCounter.visibility = View.GONE
-        } else {
-            badgeCounter.text = counter.toString()
+//        if (counter == 0) {
+//            badgeCounter.visibility = View.GONE
+//        } else {
+//            badgeCounter.text = counter.toString()
+//
+//        }
+//        invalidateOptionsMenu()
+        getCartListForOptionMenu(badgeTxt)
 
-        }
         actionView.setOnClickListener {
             onOptionsItemSelected(cartMenu)
         }
@@ -89,18 +100,21 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 //        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
 
         if (item.itemId == R.id.main_cart){
-            Toast.makeText(this,"Goto cart",Toast.LENGTH_SHORT).show()
+            navController.navigateUp() // to clear previous navigation history
+            navController.navigate(R.id.myCartFragment)
             return true
         }
         if (item.itemId == R.id.main_search){
-            val intent = Intent(this,RegisterActivity::class.java)
-            startActivity(intent)
-//            val intent = Intent(this,SearchActivity::class.java)
+//            val intent = Intent(this,RegisterActivity::class.java)
 //            startActivity(intent)
+            val intent = Intent(this,SearchActivity::class.java)
+            startActivity(intent)
 
 
             return true
@@ -108,36 +122,38 @@ class MainActivity : AppCompatActivity() {
 
 
         return super.onOptionsItemSelected(item)
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-
-    private fun getCartList() {
+    fun getCartListForOptionMenu(textView: TextView) {
 
         firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid).collection("USER_DATA")
-            .document("MY_CART").get().addOnCompleteListener {
-                if (it.isSuccessful){
-                    val x = it.result?.get("cart_list")
-
+            .document("MY_CART").addSnapshotListener { value, error ->
+                error?.let {
+                    Toast.makeText(this,"Can't load cart. Contact Help-Center for further support ",Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
+                value?.let { val x = value.get("cart_list")
                     if (x != null){
                         val fbCartList = x as ArrayList<MutableMap<String,Any>>
-                        counter = fbCartList.size
-                        invalidateOptionsMenu()
-
+                        if (fbCartList.size ==0){
+                            textView.visibility = View.GONE
+                        }else{
+                            textView.visibility = View.VISIBLE
+                            textView.text = fbCartList.size.toString()
+                        }
                     }else{
-                       counter =0
+                        textView.visibility = View.GONE
                     }
-                }else{
-                    Toast.makeText(this,"Failed cart",Toast.LENGTH_SHORT).show()
                 }
+
             }
 
     }
+
 
 
     override fun onBackPressed() {

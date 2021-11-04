@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
@@ -18,7 +21,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.HomeAdapter
-import com.sbdevs.bookonline.adapters.MiniCategoryAdapter
+import com.sbdevs.bookonline.adapters.CategoryAdapter
 import com.sbdevs.bookonline.databinding.FragmentHomeBinding
 import com.sbdevs.bookonline.models.HomeModel
 import kotlinx.coroutines.*
@@ -33,9 +36,8 @@ class HomeFragment : Fragment() {
     private var uiViewLIst:List<HomeModel> = ArrayList()
     private lateinit var homeAdapter: HomeAdapter
 
-    private lateinit var miniCategoryAdapter: MiniCategoryAdapter
-
     lateinit var loadingDialog :Dialog
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
 
     override fun onCreateView(
@@ -53,13 +55,15 @@ class HomeFragment : Fragment() {
         loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         loadingDialog.show()
 
+        swipeRefreshLayout = binding.refreshLayout
+
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
             withContext(Dispatchers.IO){
                 loadUi()
 
             }
             withContext(Dispatchers.Main){
-                delay(2000)
+               delay(100)
                 loadingDialog.dismiss()
             }
         }
@@ -84,6 +88,11 @@ class HomeFragment : Fragment() {
         homeAdapter = HomeAdapter(uiViewLIst);
         recyclerView.adapter = homeAdapter
 
+        swipeRefreshLayout.setOnRefreshListener {
+//            swipeRefreshLayout.isRefreshing = true
+//            loadUi()
+            refreshFragment()
+        }
 
         return binding.root
     }
@@ -96,26 +105,21 @@ class HomeFragment : Fragment() {
                     uiViewLIst = it.result!!.toObjects(HomeModel::class.java)
                     homeAdapter.homeModelList =uiViewLIst
                     homeAdapter.notifyDataSetChanged()
+                    swipeRefreshLayout.isRefreshing = false
                 }else{
                     Toast.makeText(context,it.exception?.message, Toast.LENGTH_LONG).show()
                 }
             }.await()
+        delay(1500)
     }
 
-    private fun cateGoryList():ArrayList<String>{
-        var categoryId:ArrayList<String> = ArrayList<String>()
-        categoryId.add("All Category")
-        firebaseFirestore.collection("CATEGORIES").orderBy("index")
-            .get().addOnSuccessListener {
-                for (snapshot :QueryDocumentSnapshot in it){
-                    val category:String = snapshot.id
-                    categoryId.add(category)
-                }
-                miniCategoryAdapter.notifyDataSetChanged()
-            }
-        return categoryId
+    fun refreshFragment(){
+        val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
+        navController.run {
+            popBackStack()
+            navigate(R.id.homeFragment)
+        }
     }
-
 
 
 }

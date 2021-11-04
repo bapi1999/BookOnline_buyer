@@ -7,13 +7,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -31,25 +36,24 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
     private val firebaseFirestore = Firebase.firestore
     private val user = FirebaseAuth.getInstance().currentUser
 
-
-    var list:ArrayList<MutableMap<String,Any>> = ArrayList()
+    var cartList:ArrayList<MutableMap<String,Any>> = ArrayList()
 
     var sendingList:ArrayList<CartModel> = ArrayList()
 
-    var priceString: Int = 0
+    var priceToPay: Int = 0
     var discount = 0
-    var result= 0
+    var totalPrice = 0
+    lateinit var swipeRefresh: SwipeRefreshLayout
     lateinit var recyclerView:RecyclerView
+    lateinit var adapter:CartAdapter //= CartAdapter(cartList,sendingList,this)
 
-
-
-    var adapter:CartAdapter = CartAdapter(list,this)
+    var allItemStocked = true
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.show() todo: to show ActionBar
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         _binding = FragmentMyCartBinding.inflate(inflater, container, false)
 
         val loadingDialog :Dialog = Dialog(activity!!)
@@ -65,7 +69,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.isNestedScrollingEnabled = false
 
-        lifecycleScope.launch(Dispatchers.IO){
+        this.lifecycleScope.launch(Dispatchers.IO){
             withContext(Dispatchers.IO){
 
 //                getFirebaseData()
@@ -73,19 +77,18 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
                 delay(1000)
             }
 
-
             withContext(Dispatchers.Main){
-//                delay(500)
-                binding.lay2.totalPrice.text = result.toString()
-                binding.lay2.totalDiscount.text = discount.toString()
-
-                binding.lay2.amountToPay.text = priceString.toString()
-                binding.totalAmount.text = priceString.toString()
-
-                val lList = sendingList
+                delay(500)
+                calculateThePrice(sendingList)
 
 
             }
+//            withContext(Dispatchers.Main){
+////                delay(500)
+//               setValueToTextView()
+//
+//
+//            }
             withContext(Dispatchers.Main){
                 loadingDialog.dismiss()
             }
@@ -93,54 +96,54 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
         }
 
 
+        swipeRefresh = binding.swipeRefresh
 
-        binding.proceedBtn.setOnClickListener {
-//            val action = MyCartFragmentDirections.actionMyCartFragmentToOrderSummaryFragment()
-//            findNavController().navigate(action)
-            val intent  = Intent(context,ProceedOrderActivity::class.java)
-            intent.putExtra("From_To",1)
-            //todo: 1=> MyCart / 2=> BuyNow
-            intent.putParcelableArrayListExtra("productList",sendingList);
-            intent.putExtra("total_price",result)
-            intent.putExtra("total_discount",discount)
-            intent.putExtra("total_amount",priceString)
-            startActivity(intent)
-
-        }
-
-
-        adapter = CartAdapter(list,this)
+        adapter = CartAdapter(cartList,this)
         recyclerView.adapter = adapter
+
+
+        swipeRefresh.setOnRefreshListener {
+            swipeRefresh.isRefreshing =true
+            refreshFragment()
+//            refreshList()
+            setValueToTextView()
+        }
 
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
 
-//    private fun getFirebaseData2() = CoroutineScope(Dispatchers.IO).launch {
-//         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-//            .document("MY_CART").collection("CART")
-//            .orderBy("priority", Query.Direction.ASCENDING).limit(12)
-//            .get().addOnSuccessListener {
-//                for (query:DocumentSnapshot in it){
-//                    if (query.exists()){
-//                        val view_type = query.getLong("view_type")!!
-//                        val view_ID:String = query.getString("view_ID")!!
-//                        val quantity:Long= query.getLong("quantity")!!
-////                        val priority:Long = query.getLong("priority")!!
-//                        getcal(view_ID,quantity)
-//
-//                        list.add(CartModel(view_ID,quantity,priority, view_type))
-//                    }
-//                }
-//                 adapter.cartModelList =list
-//                 adapter.notifyDataSetChanged()
-//
-//            }.await()
-//
-//
-//
-//    }
 
+        binding.proceedBtn.setOnClickListener {
+            if (allItemStocked){
+                //            val action = MyCartFragmentDirections.actionMyCartFragmentToOrderSummaryFragment()
+//            findNavController().navigate(action)
+                val intent  = Intent(context,ProceedOrderActivity::class.java)
+                intent.putExtra("From_To",1)
+                //todo: 1=> MyCart / 2=> BuyNow
+
+                intent.putParcelableArrayListExtra("productList",sendingList);
+                intent.putExtra("total_price",totalPrice)
+                intent.putExtra("total_discount",discount)
+                intent.putExtra("total_amount",priceToPay)
+
+                if(totalPrice ==0 && priceToPay==0){
+                    Toast.makeText(context,"Problem in fetching data",Toast.LENGTH_LONG).show()
+                }else{
+                    startActivity(intent)
+                }
+            }else{
+                val snack = Snackbar.make(it, R.string.snackBarText_outOfStockItem, Snackbar.LENGTH_SHORT)
+                snack.show()
+            }
+
+
+
+        }
+
+    }
 
     fun getFirebaseData3(){
          firebaseFirestore.collection("USERS").document(user!!.uid)
@@ -157,10 +160,21 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
                     }else{
                         binding.proceedBtn.isEnabled = true
                         binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.purple_500)
-                        list = x as ArrayList<MutableMap<String, Any>>
-                        adapter.list = list
-                        adapter.notifyDataSetChanged()
-                        getProduct(list)
+
+                        cartList = x as ArrayList<MutableMap<String, Any>>
+                        if (cartList.size == 0){
+                            binding.emptyContainer.visibility = View.VISIBLE
+                            binding.linearLayout10.visibility =View.GONE
+                            binding.scrollviewCart.visibility = View.GONE
+                            binding.proceedBtn.isEnabled = false
+                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_800)
+                        }else{
+                            adapter.list = cartList
+                            adapter.notifyDataSetChanged()
+                            binding.lay2.totalItem.text = "( ${cartList.size} item)"
+                            getProduct(cartList)
+                        }
+
                     }
                 }
              }
@@ -176,24 +190,23 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
                 .get().addOnCompleteListener {
                     if (it.isSuccessful){
                         val url = it.result!!.get("product_thumbnail").toString().trim()
+                        val sellerId = it.result!!.getString("PRODUCT_SELLER_ID").toString()
                         val title = it.result!!.getString("book_title")!!
                         val inStock = it.result!!.getBoolean("in_stock")!!
                         val stockQuantity = it.result!!.getLong("in_stock_quantity")!!
                         val price = it.result!!.getString("price_Rs")!!.trim()
                         val offerPrice = it.result!!.getString("price_offer")!!
-                        sendingList.add(CartModel(productId,url,title,price,inStock,stockQuantity,offerPrice,qty))
+                        sendingList.add(CartModel(productId,sellerId,url,title,price,inStock,stockQuantity,offerPrice,qty))
+//                        adapter.notifyDataSetChanged()
 
-                        if (offerPrice == ""){
-
-                            priceString += price.toInt()*qty.toInt()
-
-                        }else{
-                            discount += (price.toInt() - offerPrice.toInt())*qty.toInt()
-                            priceString += offerPrice.toInt()*qty.toInt()
+                        if (stockQuantity == 0L){
+//                            binding.proceedBtn.isEnabled = false
+                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_400)
+                            allItemStocked = false
 
                         }
 
-                        result = priceString+discount
+                        swipeRefresh.isRefreshing = false
 
                     }
                 }
@@ -202,15 +215,17 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
     }
 
-    override fun onItemClick(position: Int) {
-        list.removeAt(position)
+    override fun onItemClick(position: Int, view: View) {
+        cartList.removeAt(position)
         adapter.notifyItemRemoved(position)
         val cartmap:MutableMap<String,Any> = HashMap()
-        cartmap["cart_list"] = list
+        cartmap["cart_list"] = cartList
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
             .document("MY_CART").update(cartmap).addOnCompleteListener {
                 if (it.isSuccessful){
-                    Toast.makeText(context,"successful",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,R.string.snackBarText_itemRemoved,Toast.LENGTH_SHORT).show()
+
+                    refreshFragment()
                 }else{
                     Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
                 }
@@ -219,6 +234,129 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
 
     }
+
+    override fun onQuantityChange(position: Int, textView: TextView) {
+        val qtyDialog :Dialog = Dialog(context!!)
+        qtyDialog.setContentView(R.layout.ar_qualtity_dialog)
+        qtyDialog.setCancelable(false)
+        val cartModelAtIndex = sendingList[position]
+        qtyDialog.window!!.setBackgroundDrawable(
+            AppCompatResources.getDrawable(activity!!.applicationContext, R.drawable.s_shape_bg_2)
+        )
+
+        qtyDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        qtyDialog.show()
+
+        val enterQuantity:TextInputLayout = qtyDialog.findViewById(R.id.enter_quantity_input)
+
+        val cancelBtn:TextView = qtyDialog.findViewById(R.id.cancel_button)
+        cancelBtn.setOnClickListener {
+            qtyDialog.dismiss()
+        }
+
+//        Toast.makeText(context,"$position --- ${cartModelAtIndex.productId}",Toast.LENGTH_LONG).show()
+        val continueBtn:TextView = qtyDialog.findViewById(R.id.continue_to_cart)
+
+        continueBtn.setOnClickListener {
+
+            val qty = enterQuantity.editText!!.text.toString().trim()
+
+            if (qty.isNotEmpty() && qty.toInt() != 0 ){
+                if(qty.toInt()>cartModelAtIndex.stockQty){
+                    Toast.makeText(context,"Your entered Quantity exceeds Stock Quantity",Toast.LENGTH_LONG).show()
+
+                }else{
+                    textView.text = qty
+
+//                    sendingList[position] = CartModel(cartModelAtIndex.productId,cartModelAtIndex.sellerId,cartModelAtIndex.url,
+//                        cartModelAtIndex.title,cartModelAtIndex.price,cartModelAtIndex.inStock,cartModelAtIndex.stockQty,
+//                        cartModelAtIndex.offerPrice,qty.toLong())
+//
+//
+//                    adapter.notifyItemChanged(position)
+////                    adapter.notifyDataSetChanged()
+//                    calculateThePrice(sendingList)
+
+                    updateProductQuantityInsideDB(cartModelAtIndex.productId,qty.toLong(),position)
+                    qtyDialog.dismiss()
+                    refreshFragment()
+
+
+                }
+
+                //Todo- only change the orderQty and all other field remain same
+            }
+        }
+
+    }
+
+    fun setValueToTextView(){
+        binding.lay2.totalPrice.text = totalPrice.toString()
+        binding.lay2.totalDiscount.text = discount.toString()
+
+        binding.lay2.amountToPay.text = priceToPay.toString()
+        binding.totalAmount.text = priceToPay.toString()
+    }
+
+    fun refreshList(){
+        getFirebaseData3()
+    }
+    fun refreshFragment(){
+        val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
+        navController.run {
+            popBackStack()
+            navigate(R.id.myCartFragment)
+        }
+    }
+
+    fun calculateThePrice(list: ArrayList<CartModel> ){
+
+        priceToPay = 0
+        discount = 0
+        totalPrice = 0
+
+        for ( group  in list){
+
+            val price:String = group.price.trim()
+            val offerPrice:String = group.offerPrice.trim()
+            val quantity:Long = group.orderQuantity
+
+            if (offerPrice == ""){
+
+                priceToPay += price.toInt()*quantity.toInt()
+
+            }else{
+                discount += (price.toInt() - offerPrice.toInt())*quantity.toInt()
+                priceToPay += offerPrice.toInt()*quantity.toInt()
+
+            }
+            totalPrice = priceToPay+discount
+            setValueToTextView()
+
+        }
+    }
+
+    fun updateProductQuantityInsideDB(productId:String,qty:Long,position: Int){
+        val listMap:MutableMap<String,Any> = HashMap()
+        listMap["product"] = productId
+        listMap["quantity"] = qty
+        cartList[position] = listMap
+
+        val cartmap:MutableMap<String,Any> = HashMap()
+        cartmap["cart_list"] = cartList
+
+        firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
+            .document("MY_CART").update(cartmap)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+//                    Toast.makeText(context,"Successful",Toast.LENGTH_SHORT).show()
+                }else{
+//                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+
 
 
 }

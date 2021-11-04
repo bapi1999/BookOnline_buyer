@@ -20,14 +20,16 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/no_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/orange"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView31"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="10dp"
@@ -39,10 +41,20 @@
 
                     />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/address_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-            <include
-                android:id="@+id/mini_address"
-                layout="@layout/le_mini_address_view_lay" />
+                <include
+                    android:id="@+id/mini_address"
+                    layout="@layout/ar_address_detail_lay" />
+            </LinearLayout>
+
+
 
             <Button
                 android:id="@+id/changeoradd_address_Btn"

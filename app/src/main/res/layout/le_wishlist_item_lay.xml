@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:maxLines="1"
-            android:text="@string/book_stal"
+            android:text="@string/book_stall"
             android:textColor="@color/gray_700"
             android:textSize="13sp" />
     </LinearLayout>

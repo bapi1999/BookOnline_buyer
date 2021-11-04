@@ -5,10 +5,20 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MyWishlistFragment">
 
+    <LinearLayout
+        android:id="@+id/empty_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical">
+        <include layout="@layout/le_empty_layout"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/wishlist_recycler"
         android:layout_width="match_parent"
          android:background="@color/white"
+        android:visibility="visible"
         android:layout_height="match_parent" />
+
 </FrameLayout>

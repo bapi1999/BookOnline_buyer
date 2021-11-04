@@ -4,8 +4,10 @@ import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
@@ -29,6 +31,8 @@ import androidx.viewpager.widget.ViewPager
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.sbdevs.bookonline.models.CartModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
@@ -42,8 +46,13 @@ class ProductDetailsActivity : AppCompatActivity() {
     private val firebaseFirestore = Firebase.firestore
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val user = firebaseAuth.currentUser
-    lateinit var addToCartBtn: AppCompatButton
-    lateinit var buyNowBtn: AppCompatButton
+//
+//    lateinit var addToCartBtn: AppCompatButton
+//    lateinit var buyNowBtn: AppCompatButton
+
+    lateinit var addToCartBtn: Button
+    lateinit var buyNowBtn: Button
+
     lateinit var fabBtn: FloatingActionButton
     private val gone = View.GONE
     private val visible = View.VISIBLE
@@ -65,17 +74,24 @@ class ProductDetailsActivity : AppCompatActivity() {
     var totalAmount= 0
 
     var productImgList: ArrayList<String> = ArrayList()
-    public var ALREADY_ADDED_TO_WISHLIST :Boolean = false
+    var ALREADY_ADDED_TO_WISHLIST :Boolean = false
+    var ALREADY_ADDED_TO_CART :Boolean = false
     lateinit var productId: String
     var wishListIndex = 0
+    lateinit var enterQuantityInput:TextInputLayout
+
+    var dbStockQty = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProductDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        addToCartBtn = binding.addToCartBtn
-        buyNowBtn = binding.buyNowBtn
+//        addToCartBtn = binding.addToCartBtn
+//        buyNowBtn = binding.buyNowBtn
+        addToCartBtn = binding.lay21.addToCartBtn
+
+        buyNowBtn = binding.lay21.buyNowBtn
         productImgViewPager = binding.lay1.productImgViewPager
         productImgIndicator = binding.lay1.productImgIndicator
         productImgIndicator.setupWithViewPager(productImgViewPager, true)
@@ -120,7 +136,8 @@ class ProductDetailsActivity : AppCompatActivity() {
                 loadingDialog.dismiss()
             }
         }
-//        getFirebaseData(productId)
+
+        enterQuantityInput = binding.lay21.enterQuantityInput
 
 
         val layoutManager = LinearLayoutManager(this)
@@ -180,31 +197,56 @@ class ProductDetailsActivity : AppCompatActivity() {
 
 
         addToCartBtn.setOnClickListener {
-            val listMap:MutableMap<String,Any> = HashMap()
-            listMap["product"] = productId
-            listMap["quantity"] = 1
-            cartList.add(listMap)
-            val cartmap:MutableMap<String,Any> = HashMap()
-            cartmap["cart_list"] = cartList
-            firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-                .document("MY_CART").update(cartmap).addOnCompleteListener {
-                    if (it.isSuccessful){
-                        Toast.makeText(this,"successful",Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(this,"Failed",Toast.LENGTH_SHORT).show()
+
+            if (ALREADY_ADDED_TO_CART){
+                Snackbar.make(it, "Already added to cart", Snackbar.LENGTH_SHORT).show()
+
+            }else{
+                val listMap:MutableMap<String,Any> = HashMap()
+                listMap["product"] = productId
+                listMap["quantity"] = 1
+                cartList.add(listMap)
+                val cartmap:MutableMap<String,Any> = HashMap()
+                cartmap["cart_list"] = cartList
+                val snack = Snackbar.make(it, "Successfully added to cart", Snackbar.LENGTH_SHORT)
+                firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
+                    .document("MY_CART").update(cartmap).addOnCompleteListener {itdb->
+                        if (itdb.isSuccessful){
+
+                            snack.show()
+                        }else{
+                            Toast.makeText(this,"Failed",Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
+            }
+
+
 
         }
         buyNowBtn.setOnClickListener {
-            val intent  = Intent(this,ProceedOrderActivity::class.java)
-            intent.putExtra("From_To",2)
-            //todo: 1=> MyCart / 2=> BuyNow
-            intent.putParcelableArrayListExtra("productList",sendingList);
-            intent.putExtra("total_price",totalPrice)
-            intent.putExtra("total_discount",discount)
-            intent.putExtra("total_amount",totalAmount)
-            startActivity(intent)
+
+            if(!checkIsQuantityEntered(dbStockQty)){
+                return@setOnClickListener
+            }else{
+                val qty = enterQuantityInput.editText?.text.toString().toLong()
+                val newSendingList:ArrayList<CartModel> = ArrayList()
+                newSendingList.add(CartModel(productId,sendingList[0].sellerId, sendingList[0].url,sendingList[0].title
+                    ,sendingList[0].price, sendingList[0].inStock,sendingList[0].stockQty,sendingList[0].offerPrice,qty))
+
+
+                val intentProceedOrderActivity = Intent(this,ProceedOrderActivity::class.java);
+                intentProceedOrderActivity.putExtra("From_To",2);
+                //todo: 1=> MyCart / 2=> BuyNow
+
+
+                intentProceedOrderActivity.putParcelableArrayListExtra("productList",newSendingList);
+                intentProceedOrderActivity.putExtra("total_price",totalPrice)
+                intentProceedOrderActivity.putExtra("total_discount",discount)
+                intentProceedOrderActivity.putExtra("total_amount",totalAmount)
+                startActivity(intentProceedOrderActivity)
+
+            }
+
         }
 
     }
@@ -212,6 +254,7 @@ class ProductDetailsActivity : AppCompatActivity() {
 
     private fun getFirebaseData(productId: String) = CoroutineScope(Dispatchers.IO).launch {
         val lay1 = binding.lay1
+        val lay11 = binding.lay11
         val lay2 = binding.lay2
         val lay3 = binding.lay3
         val lay4 = binding.lay4
@@ -229,6 +272,7 @@ class ProductDetailsActivity : AppCompatActivity() {
                     val priceReal = it.getString("price_Rs")!!.trim()
                     val priceOffer = it.getString("price_offer")!!.trim()
                     val avgRating = it.getString("rating_avg")!!
+                    val sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     val totalRating: Int = it.getLong("rating_total")!!.toInt()
                     val inStock = it.getBoolean("in_stock")!!
                     val stock = it.getLong("in_stock_quantity")!!
@@ -237,10 +281,12 @@ class ProductDetailsActivity : AppCompatActivity() {
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
                     val url = it.get("product_thumbnail").toString().trim()
 
+                    dbStockQty = stock.toInt()
+
                     totalAmount = priceOffer.toInt()
                     totalPrice = priceReal.toInt()
                     discount = totalPrice - totalAmount
-                    sendingList.add(CartModel(productId,url,productName,priceReal,inStock,stock,priceOffer,1))
+                    sendingList.add(CartModel(productId,sellerId,url,productName,priceReal,inStock,stock,priceOffer,1))
 
 
                     for (catrgorys in categoryList) {
@@ -257,35 +303,39 @@ class ProductDetailsActivity : AppCompatActivity() {
                     val adapter = ProductImgAdapter(productImgList)
                     productImgViewPager.adapter = adapter
 
-                    lay1.productName.text = productName
+                    lay11.productName.text = productName
 
                     if (priceOffer == "") {
-                        lay1.productPrice.text = priceReal
-                        lay1.strikeThroughPrice.visibility = gone
-                        lay1.percentOff.visibility = gone
+                        lay11.productPrice.text = priceReal
+                        lay11.strikeThroughPrice.visibility = gone
+                        lay11.percentOff.visibility = gone
                     } else {
                         val percent =
                             100 * (priceReal.toInt() - priceOffer.toInt()) / (priceReal.toInt())
 
-                        lay1.productPrice.text = priceOffer
-                        lay1.strikeThroughPrice.text = priceReal
-                        lay1.percentOff.text = "${percent}% off"
+                        lay11.productPrice.text = priceOffer
+                        lay11.strikeThroughPrice.text = priceReal
+                        lay11.percentOff.text = "${percent}% off"
 
                     }
-                    lay1.productState.text = it.getString("book_state")!!
-                    lay1.miniProductRating.text = avgRating
-                    lay1.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
+                    lay11.productState.text = it.getString("book_state")!!
+                    lay11.miniProductRating.text = avgRating
+                    lay11.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
 
-                    if (stock > 3) {
-                        lay1.stockState.visibility = gone
-                        lay1.stockQuantity.visibility = gone
-                    } else if (stock in 1..2) {
-                        lay1.stockState.text = "low"
-                        lay1.stockQuantity.text = "only $stock available in stock"
+                    if (stock > 5) {
+                        lay11.stockState.visibility = gone
+                        lay11.stockQuantity.visibility = gone
+                    } else if (stock in 1..5) {
+                        lay11.stockState.text = "low"
+                        lay11.stockQuantity.text = "only $stock available in stock"
                     }
                     else {
-                        lay1.stockState.text = "out of stock"
-                        lay1.stockQuantity.visibility = gone
+                        lay11.stockState.text = "out of stock"
+                        lay11.stockQuantity.visibility = gone
+                        binding.addToCartBtn.isEnabled = false
+                        binding.addToCartBtn.backgroundTintList = ContextCompat.getColorStateList(this@ProductDetailsActivity, R.color.gray_400)
+                        binding.buyNowBtn.isEnabled = false
+                        binding.buyNowBtn.backgroundTintList = ContextCompat.getColorStateList(this@ProductDetailsActivity, R.color.gray_400)
                     }
 
 // todo layout 2
@@ -357,8 +407,15 @@ class ProductDetailsActivity : AppCompatActivity() {
                         fbCartList = x as ArrayList<MutableMap<String,Any>>
                         cartList.addAll(fbCartList)
 
+                        for (item in fbCartList){
+                            val productIdDB:String = item["product"] as String
+                            if (productIdDB.contentEquals(productId)){
+                                ALREADY_ADDED_TO_CART = true
+                            }
+                        }
+
                     }else{
-                        Toast.makeText(this,"baal cart",Toast.LENGTH_SHORT).show()
+                        Log.d("CartList","NoCart list found")
                     }
                 }else{
                     Toast.makeText(this,"Failed cart",Toast.LENGTH_SHORT).show()
@@ -366,6 +423,8 @@ class ProductDetailsActivity : AppCompatActivity() {
             }
 
     }
+
+
 
     private fun getWishList() = lifecycleScope.launch(Dispatchers.IO) {
 
@@ -397,13 +456,41 @@ class ProductDetailsActivity : AppCompatActivity() {
                         }
 
                     }else{
-                        Toast.makeText(this@ProductDetailsActivity,"baal",Toast.LENGTH_SHORT).show()
+                        Log.d("WishList","No wish list found")
                     }
                 }else{
                     Toast.makeText(this@ProductDetailsActivity,"Failed",Toast.LENGTH_SHORT).show()
                 }
             }.await()
 
+    }
+
+
+    fun checkIsQuantityEntered(stockQty:Int):Boolean{
+        val quantityString = enterQuantityInput.editText!!.text.toString().trim()
+        return if (quantityString.isNotEmpty() && quantityString.toInt() != 0) {
+            if(quantityString.toInt() > stockQty ){
+
+                enterQuantityInput.isErrorEnabled = true
+                enterQuantityInput.error = "Your entered Quantity exceeds Stock Quantity"
+                false
+            }else{
+
+                enterQuantityInput.isErrorEnabled = false
+                enterQuantityInput.error = null
+
+                true
+
+            }
+        } else {
+            enterQuantityInput.isErrorEnabled = true
+            enterQuantityInput.error = "Field can't be empty"
+
+            false
+
+
+
+        }
     }
 
 

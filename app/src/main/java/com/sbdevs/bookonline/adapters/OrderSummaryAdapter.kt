@@ -20,7 +20,7 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderSummaryAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_cart_item_lay_1, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_order_summery_item_lay, parent, false)
         return ViewHolder(view)
     }
 
@@ -45,56 +45,56 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
         private val productRealPrice: TextView = itemView.findViewById(R.id.product_real_price)
         private val percentOff: TextView = itemView.findViewById(R.id.percent_off)
         private val quantitiesTxt: TextView = itemView.findViewById(R.id.quantity)
-        private val btnContainer: LinearLayout= itemView.findViewById(R.id.btn_container)
+
+        private val stockNumberTxt:TextView = itemView.findViewById(R.id.stock)
+        private val outofstockTxt:TextView = itemView.findViewById(R.id.outofstockText)
+        private val variantTxt:TextView = itemView.findViewById(R.id.variant)
         init {
-            btnContainer.visibility = View.GONE
+            variantTxt.visibility = View.GONE
         }
 
         fun bind(group:CartModel){
 
             val productId:String = group.productId
-            val quantity:Long = group.quantity
+            val quantity:Long = group.orderQuantity
             val url:String = group.url
             val title:String = group.title
-            val price:String = group.price
-            val offerPrice:String = group.offerPrice
-            val in_stock:Boolean = group.inStock
-            val stockQuantity = group.stock
-
-
-//            val productId:String = group["product"] as String
-//            val quantity:Long = group["quantity"] as Long
+            val realPriceDB:String = group.price
+            val offerPriceDB:String = group.offerPrice
+            val stockQuantity = group.stockQty
 
             quantitiesTxt.text = quantity.toString()
             productName.text = title
 
+            if (stockQuantity != 0L){
+                stockNumberTxt.text = stockQuantity.toString()
+                outofstockTxt.visibility = View.GONE
+            }else{
+                stockNumberTxt.text = stockQuantity.toString()
+                outofstockTxt.visibility = View.VISIBLE
+            }
+
             Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
-            if (offerPrice == ""){
-                productPrice.text = price
+
+            if (offerPriceDB == ""){
+                val price = realPriceDB.toInt()*quantity.toInt()
+                productPrice.text = price.toString()
                 productRealPrice.visibility = View.GONE
                 percentOff.text = "Buy Now"
 
             }else{
-                val percent:Int = (100* (price.toInt() - offerPrice.toInt())) / ( price.toInt() )
 
-                productPrice.text = offerPrice
-                productRealPrice.text = price
+                val price = offerPriceDB.toInt()*quantity.toInt()
+                val realPrice = realPriceDB.toInt()*quantity.toInt()
+
+                val percent:Int = (100* (realPrice - price)) / ( realPrice )
+
+                productPrice.text = price.toString()
+                productRealPrice.text = realPrice.toString()
                 percentOff.text = "${percent}% off"
 
             }
-
-//            val productId:String = group["product"] as String
-//            val quantity:Long = group["quantity"] as Long
-//            firebaseFirestore.collection("PRODUCTS").document(productId)
-//                .get().addOnCompleteListener {
-//
-//                    val url = it.result!!.get("product_thumbnail").toString().trim()
-//                    val title:String = it.result!!.getString("book_title")!!
-//                    val price = it.result!!.getString("price_Rs")!!.trim()
-//                    val offerPrice = it.result!!.getString("price_offer")!!
-//
-//                }
 
 
 

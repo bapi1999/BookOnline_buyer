@@ -77,7 +77,6 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
 
         swipeRefresh.setOnRefreshListener {
             swipeRefresh.isRefreshing =true
-            refreshList()
         }
 
 
@@ -91,41 +90,31 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-    }
 
-    override fun onPause() {
-        super.onPause()
-        seter = 1
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (seter == 1){
-//            val snackbar = Snackbar.make(view, R.string.refresh_hint, Snackbar.LENGTH_SHORT).setAction("REfresh"){}
-//            snackbar.show()
-            refreshList()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-    fun getAddressList()  = CoroutineScope(Dispatchers.IO).launch{
+    fun getAddressList() {
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_ADDRESSES").get().addOnCompleteListener {
-                if (it.isSuccessful){
-                    val position: Long = it.result?.getLong("select_No")!!
-                    selectNo =  it.result?.getLong("select_No")!!
-                    list = it.result?.get("address_list") as ArrayList<MutableMap<String, Any>>
+            .document("MY_ADDRESSES").addSnapshotListener { value ,error ->
+                error?.let {
+                    Toast.makeText(context,"Problem in fetching address",Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+                value?.let {
+                    val position: Long = value.getLong("select_No")!!
+                    selectNo =  value.getLong("select_No")!!
+                    list = value.get("address_list") as ArrayList<MutableMap<String, Any>>
+
+
 
                     addressAddapter.list = list
                     addressAddapter.selectNo =selectNo
                     addressAddapter.notifyDataSetChanged()
                 }
-            }.await()
+
+
+
+
+            }
     }
 
     override fun onItemClick(position: Int) {
@@ -145,21 +134,6 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
                     Toast.makeText(context,"Failed to update", Toast.LENGTH_SHORT).show()
                 }
             }
-
-
-    }
-    fun refreshList(){
-
-        if (seter ==0 ){
-            Toast.makeText(context,"$seter", Toast.LENGTH_SHORT).show()
-            swipeRefresh.isRefreshing = false
-        }else{
-            getAddressList()
-            seter = 0
-//            Toast.makeText(context,"updated $seter", Toast.LENGTH_SHORT).show()
-            swipeRefresh.isRefreshing = false
-
-        }
 
 
     }

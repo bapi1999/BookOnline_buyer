@@ -25,6 +25,14 @@
             <include
                 android:id="@+id/lay_1"
                 layout="@layout/ar_product_detail_lay_1" />
+            <include
+                android:id="@+id/lay_1_1"
+                layout="@layout/ar_product_detail_lay_1_1" />
+
+            <include
+                android:id="@+id/lay_2_1"
+                layout="@layout/ar_product_detail_lay_2_1" />
+
 
             <include
                 android:id="@+id/lay_2"
@@ -51,6 +59,7 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:elevation="5dp"
+        android:visibility="gone"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

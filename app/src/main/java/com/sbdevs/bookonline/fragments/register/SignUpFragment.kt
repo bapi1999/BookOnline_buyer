@@ -176,6 +176,9 @@ class SignUpFragment : Fragment() {
         val listSizeMap: MutableMap<String, Any> = HashMap()
         listSizeMap["listSize"] = 0L
 
+        val addressMap: MutableMap<String, Any> = HashMap()
+        addressMap["select_No"] = 0L
+
         val userMap: MutableMap<String, Any> = HashMap()
 
         userMap["name"] = ""
@@ -195,7 +198,7 @@ class SignUpFragment : Fragment() {
                 val docRef = firebaseFirestore.collection("USERS")
                     .document(currentUser).collection("USER_DATA")
 
-                docRef.document("MY_ADDRESSES").set(listSizeMap).await()
+                docRef.document("MY_ADDRESSES").set(addressMap).await()
                 docRef.document("MY_CART").set(listSizeMap).await()
                 docRef.document("MY_NOTIFICATION").set(listSizeMap).await()
                 docRef.document("MY_ORDERS").set(listSizeMap).await()
