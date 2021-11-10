@@ -13,8 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -32,7 +31,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val firebaseFirestore = Firebase.firestore
-    val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuth = Firebase.auth
     private var uiViewLIst:List<HomeModel> = ArrayList()
     private lateinit var homeAdapter: HomeAdapter
 

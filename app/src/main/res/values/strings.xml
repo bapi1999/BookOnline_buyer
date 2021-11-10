@@ -29,6 +29,18 @@
     <string name="snackBarText_outOfStockItem">Please remove Out of Stock item before continue</string>
     <string name="nothing_to_show_here">Nothing to show here</string>
     <string name="continue_btn">Continue</string>
+    <string name="no_image_found">No image found</string>
+    <string name="enter_mobile_number">Enter mobile number</string>
+    <string name="off">off</string>
+    <string name="product_name">Product Name</string>
+    <string name="order_id">ORDERID123456789</string>
+    <string name="trackingid">TRACKINGID</string>
+    <string name="tracking_id_won_t_generate">Tracking id won\'t generate until the seller shipped your order</string>
+    <string name="update">Update</string>
+    <string name="new_password_match_oldpass">New password matches the old password</string>
+    <string name="out_of_stock">OUT OF STOCK</string>
+    <string name="rs_0_rs_500">Rs.0 - Rs.500</string>
+    <string name="rs_500_rs_1000">Rs.500 - Rs.1000</string>
 
     <string-array name="address_type">
         <item>Home(7am to 9pm)</item>

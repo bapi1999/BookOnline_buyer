@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductDetailsActivity
 import com.sbdevs.bookonline.models.uidataclass.SearchModel
+import com.squareup.picasso.Picasso
 
 class SearchFilterAdapter(var list:ArrayList<SearchModel>):
     RecyclerView.Adapter<SearchFilterAdapter.ViewHolder>()  {
@@ -33,7 +34,12 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
         private val productName: TextView = itemView.findViewById(R.id.product_name)
         private val productPrice: TextView = itemView.findViewById(R.id.product_price)
         private val productRealPrice: TextView = itemView.findViewById(R.id.product_real_price)
-        private val priceOff: TextView = itemView.findViewById(R.id.percent_off)
+        private val percentOff: TextView = itemView.findViewById(R.id.percent_off)
+
+        private val avgRatingText: TextView = itemView.findViewById(R.id.mini_product_rating)
+        private val totalRatingsText: TextView = itemView.findViewById(R.id.mini_totalNumberOf_ratings)
+        private val outOfStockText: TextView = itemView.findViewById(R.id.outofstockText)
+
         fun bind(model:SearchModel){
             itemView.setOnClickListener {
                 val productIntent = Intent(itemView.context, ProductDetailsActivity::class.java)
@@ -41,6 +47,43 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
                 itemView.context.startActivity(productIntent)
             }
             productName.text = model.productName
+            val url = model.url
+            val stockQty:Long = model.stockQty
+
+            val priceOriginal:String = model.priceOriginal
+            val priceSelling:String =model.priceSelling
+
+            Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.as_square_placeholder)
+                //.resize(300, 300)
+                //.centerCrop()
+                .into(productImage)
+
+            if (priceOriginal == ""){
+                productPrice.text = priceSelling
+                productRealPrice.visibility = View.GONE
+                percentOff.text = "Buy Now"
+
+            }else{
+
+                val price = priceSelling.toInt()
+                val realPriceInt = priceOriginal.toInt()
+
+                val percent:Int = (100* (realPriceInt - price)) / ( realPriceInt )
+
+                productPrice.text = priceSelling
+                productRealPrice.text = priceOriginal
+                percentOff.text = "${percent}% off"
+
+            }
+
+            if (stockQty != 0L){
+                outOfStockText.visibility = View.GONE
+            }else{
+                outOfStockText.visibility = View.VISIBLE
+            }
+
 
 
 

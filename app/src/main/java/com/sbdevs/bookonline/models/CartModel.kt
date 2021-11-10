@@ -9,9 +9,10 @@ class CartModel (
     val sellerId:String = "",
     val url:String ="",
     val title:String = "",
-    val price:String = "",
-    val inStock:Boolean = false,
+
+    val priceOriginal:String = "",
+    val priceSelling:String ="",
+
     val stockQty:Long = 0L,
-    val offerPrice:String ="",
     val orderQuantity:Long = 0L
         )  : Parcelable

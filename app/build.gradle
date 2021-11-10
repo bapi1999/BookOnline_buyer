@@ -52,17 +52,18 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
 
-    implementation 'com.google.firebase:firebase-auth:21.0.1'
+//    implementation 'com.google.firebase:firebase-auth:21.0.1'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:28.4.1')
     // When using the BoM, you don't specify versions in Firebase library dependencies
     // Declare the dependency for the Firebase SDK for Google Analytics
 
-//    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Declare the dependencies for any other desired Firebase products
     // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
 
+    implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
@@ -73,12 +74,15 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
 
 
-    def nav_version = "2.4.0-alpha10"
+    def nav_version = "2.4.0-beta02"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     // Feature module Support
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
-    implementation "androidx.fragment:fragment-ktx:1.4.0-alpha10"
+
+    implementation "androidx.activity:activity-ktx:1.4.0"
+
+    implementation "androidx.fragment:fragment-ktx:1.4.0-rc01"
 
     def coroutienver = "1.5.2"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2-native-mt'

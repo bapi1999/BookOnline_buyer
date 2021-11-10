@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
@@ -25,7 +26,7 @@ import kotlinx.coroutines.withContext
 class MyWishlistFragment : Fragment(),WishlistAdapter.MyonItemClickListener {
 
     private val firebaseFirestore = Firebase.firestore
-    private val user = FirebaseAuth.getInstance().currentUser
+    private val user = Firebase.auth.currentUser
     private var _binding: FragmentMyWishlistBinding?=null
     private val binding get() = _binding!!
     lateinit var loadingDialog :Dialog

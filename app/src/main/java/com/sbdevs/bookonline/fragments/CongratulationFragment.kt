@@ -18,7 +18,7 @@ class CongratulationFragment : Fragment() {
     private var _binding:FragmentCongratulationBinding?= null
     private val binding get() = _binding!!
 
-    val args: CongratulationFragmentArgs by navArgs()
+    private val args: CongratulationFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

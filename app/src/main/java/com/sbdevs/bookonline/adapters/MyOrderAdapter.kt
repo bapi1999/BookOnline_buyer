@@ -47,38 +47,30 @@ class MyOrderAdapter(var list:ArrayList<MutableMap<String,Any>>):
         }
 
         fun bind(group:MutableMap<String,Any>){
-            val docname =  group["orderID"].toString()
+            val docName =  group["orderID"].toString()
             val sellerId = group["sellerId"].toString()
 
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context,OrderDetailsActivity::class.java)
-                intent.putExtra("orderID",docname)
+                intent.putExtra("orderID",docName)
+                intent.putExtra("sellerID",sellerId)
                 itemView.context.startActivity(intent)
             }
 
             firebaseFirestore.collection("USERS").document(sellerId)
                 .collection("SELLER_DATA")
                 .document("5_ALL_ORDERS").collection("ORDER")
-                .document(docname).get().addOnSuccessListener {
+                .document(docName).get().addOnSuccessListener {
                     var totalAmount = 0
-                    val discount = 0
                     val productThumbnail= it.get("productThumbnail").toString()
                     val title=it.get("productTitle").toString()
 
-
-                    val realPrice = it.get("real_Price").toString()
-                    val offerPrice = it.get("offer_Price").toString()
+                    val price = it.get("price").toString()
                     val orderedQty = it.getLong("ordered_Qty")!!
                     val status = it.get("status").toString()
 
-                    if (offerPrice == ""){
-                        totalAmount = realPrice.toInt()*orderedQty.toInt()
+                    totalAmount = price.toInt()*orderedQty.toInt()
 
-                    }else{
-//                        discount += (price.toInt() - offerPrice.toInt())*quantity.toInt()
-                        totalAmount += offerPrice.toInt()*orderedQty.toInt()
-
-                    }
                     Glide.with(itemView.context).load(productThumbnail)
                         .placeholder(R.drawable.as_square_placeholder)
                         .into(productImage)

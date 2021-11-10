@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,7 +29,7 @@ class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding?=null
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuth = Firebase.auth
 
     lateinit var email: TextInputLayout
     lateinit var phone:TextInputLayout
@@ -179,6 +179,20 @@ class SignUpFragment : Fragment() {
         val addressMap: MutableMap<String, Any> = HashMap()
         addressMap["select_No"] = 0L
 
+        val itemsMap: MutableMap<String, Any> = HashMap()
+        addressMap["product_id"] = ""
+        addressMap["rating_id"] = ""
+        addressMap["time"] = FieldValue.serverTimestamp()
+
+
+        val notificationMap: MutableMap<String, Any> = HashMap()
+        addressMap["date"] = FieldValue.serverTimestamp()
+        addressMap["description"] = "Welcome to BooksOnline"
+        addressMap["order_id"] = ""
+        addressMap["seen"] = false
+        addressMap["image"] = ""
+
+
         val userMap: MutableMap<String, Any> = HashMap()
 
         userMap["name"] = ""
@@ -200,9 +214,20 @@ class SignUpFragment : Fragment() {
 
                 docRef.document("MY_ADDRESSES").set(addressMap).await()
                 docRef.document("MY_CART").set(listSizeMap).await()
-                docRef.document("MY_NOTIFICATION").set(listSizeMap).await()
+
+                docRef.document("MY_NOTIFICATION")
+                    .collection("NOTIFICATION")
+                    .document("DUMMY")
+                    .set(notificationMap).await()
+
                 docRef.document("MY_ORDERS").set(listSizeMap).await()
                 docRef.document("MY_WISHLIST").set(listSizeMap).await()
+
+                docRef.document("THINGS_I_BOUGHT")
+                    .collection("ITEMS")
+                    .document("DUMMY")
+                    .set(itemsMap).await()
+
 //                docRef.document("MY_CART").set(listSizeMap).await()
 
             }

@@ -14,7 +14,8 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
@@ -27,7 +28,7 @@ class LoginFragment : Fragment() {
     private var _binding:FragmentLoginBinding?=null
     private val binding get() = _binding!!
 
-    private val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuth = Firebase.auth
     lateinit var email:TextInputLayout
     lateinit var pass:TextInputLayout
     lateinit var errorTxt:TextView

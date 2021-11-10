@@ -48,6 +48,7 @@
                 android:layout_marginEnd="4dp"
                 android:ellipsize="end"
                 android:maxLines="2"
+                android:textColor="@color/gray_900"
                 android:text="@string/lorem_ipsum"
                 android:textSize="14sp" />
 
@@ -75,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:gravity="center"
-                    android:text="392"
+                    android:text="0"
                     android:textColor="@color/black"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -86,11 +87,12 @@
                     android:layout_height="wrap_content"
                     android:foreground="@drawable/s_strick_through"
 
-                    android:text="500"
+                    android:text="0"
                     android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/percent_off_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -114,7 +116,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:text="392"
+                    android:text="0"
                     android:textColor="@color/teal_700"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -124,7 +126,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:text="off"
+                    android:text="@string/off"
+                    android:textColor="@color/teal_700"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/buy_now_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="3dp"
+                android:gravity="start"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="Buy now"
                     android:textColor="@color/teal_700"
                     android:textSize="12sp" />
             </LinearLayout>

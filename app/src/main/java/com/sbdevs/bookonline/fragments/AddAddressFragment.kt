@@ -13,7 +13,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
+
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
@@ -26,7 +27,7 @@ class AddAddressFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuth = Firebase.auth
     lateinit var buyerName: TextInputLayout
     lateinit var buyerPhone: TextInputLayout
     lateinit var buyerPincode: TextInputLayout

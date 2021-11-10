@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
@@ -22,7 +22,7 @@ class ForgotPasswordFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuth = Firebase.auth
     private val currentUser = firebaseAuth.currentUser
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
 

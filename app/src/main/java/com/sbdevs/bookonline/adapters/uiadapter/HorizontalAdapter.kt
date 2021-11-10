@@ -5,22 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.signature.ObjectKey
 
 
 import com.sbdevs.bookonline.R
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
-import com.sbdevs.bookonline.activities.ProductDetailsActivity
+import com.sbdevs.bookonline.activities.ProductActivity
 
 class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<HorizontalAdapter.ViewHolder>() {
 
@@ -39,16 +36,22 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
         return list.size
     }
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
-        val productImage : ImageView = itemView.findViewById(R.id.product_image)
-        val product_name : TextView = itemView.findViewById(R.id.product_name)
-        val product_price : TextView = itemView.findViewById(R.id.product_price)
-        val product_real_price : TextView = itemView.findViewById(R.id.product_real_price)
+        private val productImage : ImageView = itemView.findViewById(R.id.product_image)
+        private val productName : TextView = itemView.findViewById(R.id.product_name)
+        private val productPrice : TextView = itemView.findViewById(R.id.product_price)
+        private val productRealPrice : TextView = itemView.findViewById(R.id.product_real_price)
+        private val offsetPriceText : TextView = itemView.findViewById(R.id.offset_price)
+        private val percentOffContainer : LinearLayout = itemView.findViewById(R.id.percent_off_container)
+        private val buyNowContainer : LinearLayout = itemView.findViewById(R.id.buy_now_container)
+        val gone = View.GONE
+        val visible = View.VISIBLE
+
         private val firebaseFirestore = Firebase.firestore
 //        val storageReference = Firebase.storage//.reference
         val storage = FirebaseStorage.getInstance()
         fun bind(productId:String) {
             itemView.setOnClickListener {
-                val productIntent = Intent(itemView.context,ProductDetailsActivity::class.java)
+                val productIntent = Intent(itemView.context,ProductActivity::class.java)
                 productIntent.putExtra("productId",productId)
                 itemView.context.startActivity(productIntent)
             }
@@ -57,19 +60,26 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
                     if (it.isSuccessful){
                         val url = it.result!!.get("product_thumbnail").toString().trim()
                         val title:String = it.result!!.getString("book_title")!!
-                        val price = it.result!!.getString("price_Rs")
-                        val offsetPrice = it.result!!.getString("price_offer")!!
-                        if (offsetPrice == ""){
-                            product_price.text = price
-                            product_real_price.visibility = View.GONE
+                        val priceOriginal = it.result!!.get("price_original").toString().trim()
+                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+
+
+                        if (priceOriginal == ""){
+                            productPrice.text = priceSelling
+                            productRealPrice.visibility = gone
+                            percentOffContainer.visibility = gone
+                            buyNowContainer.visibility = visible
 
                         }else{
-                            product_real_price.text = price
-                            product_price.text = offsetPrice
+                            val priceOff = priceOriginal.toInt() - priceSelling.toInt()
+                            offsetPriceText.text = priceOff.toString()
+                            productRealPrice.text = priceOriginal
+                            productPrice.text = priceSelling
+                            buyNowContainer.visibility =gone
+                            percentOffContainer.visibility = visible
+                            productRealPrice.visibility = visible
                         }
-                        product_name.text = title
-                        //val imgRef = storageReference.child("image/")
-//                        val gsReference = storage.getReferenceFromUrl("gs://ecommerceapp2-891bc.appspot.com/image/IMG_20211013_174128688.jpg")
+                        productName.text = title
 
                         val requestOptions = RequestOptions()
                             .diskCacheStrategy(DiskCacheStrategy.ALL)

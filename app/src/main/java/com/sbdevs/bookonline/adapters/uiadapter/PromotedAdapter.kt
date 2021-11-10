@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.ProductActivity
 import com.sbdevs.bookonline.activities.ProductDetailsActivity
 import com.squareup.picasso.Picasso
 
@@ -42,7 +43,7 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
         private val firebaseFirestore = Firebase.firestore
         fun bind(productId:String) {
             itemView.setOnClickListener {
-                val productIntent = Intent(itemView.context, ProductDetailsActivity::class.java)
+                val productIntent = Intent(itemView.context, ProductActivity::class.java)
                 productIntent.putExtra("productId",productId)
                 itemView.context.startActivity(productIntent)
             }
@@ -51,17 +52,19 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
                     if (it.isSuccessful){
                         val url:String = it.result!!.get("product_thumbnail").toString().trim()
                         val title:String = it.result!!.getString("book_title")!!
-                        val price = it.result!!.getString("price_Rs")!!.trim()
-                        val offsetPrice = it.result!!.getString("price_offer")!!
 
-                        if (offsetPrice == ""){
-                            productPrice.text = price
+
+                        val priceOriginal = it.result!!.get("price_original").toString().trim()
+                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+
+                        if (priceOriginal == ""){
+                            productPrice.text = priceSelling
                             priceOff.text = "Buy Now"
 
                         }else{
-                            val percent:Int = (100* (price.toInt() - offsetPrice.toInt())) / ( price.toInt() )
+                            val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
 
-                            productPrice.text = offsetPrice
+                            productPrice.text = priceSelling
                             priceOff.text = "get ${percent}% off"
 
                         }
@@ -70,8 +73,8 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
                         Picasso.get()
                             .load(url)
                             .placeholder(R.drawable.as_square_placeholder)
-                            .resize(300, 300)
-                            .centerCrop()
+                            //.resize(300, 300)
+                            .fit()
                             .into(productImage)
 
                         //Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);

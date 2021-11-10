@@ -46,19 +46,52 @@
         tools:layout="@layout/fragment_my_account" >
         <action
             android:id="@+id/action_myAccountFragment_to_editAccountFragment"
-            app:destination="@id/editAccountFragment" />
+            app:destination="@id/editAccountFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_myAccountFragment_to_myWishlistFragment"
             app:destination="@id/myWishlistFragment" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_myOrderFragment"
+            app:destination="@id/myOrderFragment" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_myCartFragment"
+            app:destination="@id/myCartFragment" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_updatePasswordFragment"
+            app:destination="@id/updatePasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/editAccountFragment"
         android:name="com.sbdevs.bookonline.fragments.EditAccountFragment"
         android:label="fragment_edit_account"
-        tools:layout="@layout/fragment_edit_account" />
+        tools:layout="@layout/fragment_edit_account" >
+        <argument
+            android:name="profile_pic"
+            app:argType="string" />
+        <argument
+            android:name="buyer_name"
+            app:argType="string" />
+        <argument
+            android:name="mobile_number"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_editAccountFragment_to_myAccountFragment"
+            app:destination="@id/myAccountFragment"
+            app:popUpTo="@id/myAccountFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/categoryFragment"
         android:name="com.sbdevs.bookonline.fragments.CategoryFragment"
         android:label="fragment_category"
         tools:layout="@layout/fragment_category" />
+    <fragment
+        android:id="@+id/updatePasswordFragment"
+        android:name="com.sbdevs.bookonline.fragments.UpdatePasswordFragment"
+        android:label="Update Password"
+        tools:layout="@layout/fragment_update_password" />
 </navigation>

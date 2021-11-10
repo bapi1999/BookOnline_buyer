@@ -59,8 +59,8 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
             val quantity:Long = group.orderQuantity
             val url:String = group.url
             val title:String = group.title
-            val realPriceDB:String = group.price
-            val offerPriceDB:String = group.offerPrice
+            val priceOriginal:String = group.priceOriginal
+            val priceSelling:String = group.priceSelling
             val stockQuantity = group.stockQty
 
             quantitiesTxt.text = quantity.toString()
@@ -77,16 +77,16 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
             Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
 
-            if (offerPriceDB == ""){
-                val price = realPriceDB.toInt()*quantity.toInt()
+            if (priceOriginal == ""){
+                val price = priceSelling.toInt()*quantity.toInt()
                 productPrice.text = price.toString()
                 productRealPrice.visibility = View.GONE
                 percentOff.text = "Buy Now"
 
             }else{
 
-                val price = offerPriceDB.toInt()*quantity.toInt()
-                val realPrice = realPriceDB.toInt()*quantity.toInt()
+                val price = priceSelling.toInt()*quantity.toInt()
+                val realPrice = priceOriginal.toInt()*quantity.toInt()
 
                 val percent:Int = (100* (realPrice - price)) / ( realPrice )
 

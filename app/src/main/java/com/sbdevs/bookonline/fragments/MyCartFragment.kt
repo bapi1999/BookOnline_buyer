@@ -20,6 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
@@ -34,7 +35,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
     private var _binding: FragmentMyCartBinding?=null
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
-    private val user = FirebaseAuth.getInstance().currentUser
+    private val user = Firebase.auth.currentUser
 
     var cartList:ArrayList<MutableMap<String,Any>> = ArrayList()
 
@@ -192,11 +193,12 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
                         val url = it.result!!.get("product_thumbnail").toString().trim()
                         val sellerId = it.result!!.getString("PRODUCT_SELLER_ID").toString()
                         val title = it.result!!.getString("book_title")!!
-                        val inStock = it.result!!.getBoolean("in_stock")!!
                         val stockQuantity = it.result!!.getLong("in_stock_quantity")!!
-                        val price = it.result!!.getString("price_Rs")!!.trim()
-                        val offerPrice = it.result!!.getString("price_offer")!!
-                        sendingList.add(CartModel(productId,sellerId,url,title,price,inStock,stockQuantity,offerPrice,qty))
+
+                        val priceOriginal = it.result!!.get("price_original").toString().trim()
+                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+
+                        sendingList.add(CartModel(productId,sellerId,url,title,priceOriginal,priceSelling,stockQuantity,qty))
 //                        adapter.notifyDataSetChanged()
 
                         if (stockQuantity == 0L){
@@ -317,17 +319,17 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
         for ( group  in list){
 
-            val price:String = group.price.trim()
-            val offerPrice:String = group.offerPrice.trim()
+            val priceOriginal:String = group.priceOriginal.trim()
+            val priceSelling:String = group.priceSelling.trim()
             val quantity:Long = group.orderQuantity
 
-            if (offerPrice == ""){
+            if (priceOriginal == ""){
 
-                priceToPay += price.toInt()*quantity.toInt()
+                priceToPay += priceSelling.toInt()*quantity.toInt()
 
             }else{
-                discount += (price.toInt() - offerPrice.toInt())*quantity.toInt()
-                priceToPay += offerPrice.toInt()*quantity.toInt()
+                discount += (priceOriginal.toInt() - priceSelling.toInt())*quantity.toInt()
+                priceToPay += priceSelling.toInt()*quantity.toInt()
 
             }
             totalPrice = priceToPay+discount

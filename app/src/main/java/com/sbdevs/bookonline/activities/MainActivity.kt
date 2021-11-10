@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -28,13 +30,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    val fireStoreData = FireStoreData()
-//    lateinit var toggle:ActionBarDrawerToggle
+    private val firebaseAuth = Firebase.auth
 
-    lateinit var badgeTxt:TextView
-    var counter  = 0
 
+    lateinit var cartBadgeText:TextView
+    lateinit var notificationBadgeText:TextView
 
 
 
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
         val header = binding.navView.getHeaderView(0)
         val userName:TextView = header.findViewById(R.id.nav_header_txt)
-        FireStoreData().getUsername(userName)
+        getUsername(userName)
 //        userName.text = "edfwefwefwe"
 
 
@@ -76,26 +76,28 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_option_menu,menu)
 
         val cartMenu = menu?.findItem(R.id.main_cart)
-//        cartMenu!!.setActionView(R.layout.le_notification_badge)
-        var actionView = cartMenu!!.actionView
-        badgeTxt = actionView!!.findViewById(R.id.badge_counter)
+        val notificationMenu = menu?.findItem(R.id.main_notification)
 
-//        if (counter == 0) {
-//            badgeCounter.visibility = View.GONE
-//        } else {
-//            badgeCounter.text = counter.toString()
-//
-//        }
-//        invalidateOptionsMenu()
-        getCartListForOptionMenu(badgeTxt)
-
-        actionView.setOnClickListener {
+        val cartActionView = cartMenu!!.actionView
+        cartBadgeText = cartActionView!!.findViewById(R.id.cart_badge_counter)
+        getCartListForOptionMenu(cartBadgeText)
+        cartActionView.setOnClickListener {
             onOptionsItemSelected(cartMenu)
         }
+
+
+        val notifyActionView = notificationMenu!!.actionView
+        notificationBadgeText = notifyActionView!!.findViewById(R.id.notification_badge_counter)
+        getNotificationForOptionMenu(notificationBadgeText)
+        notifyActionView.setOnClickListener {
+            onOptionsItemSelected(notificationMenu)
+        }
+
+
 
         return true
     }
@@ -105,23 +107,47 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 //        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
 
-        if (item.itemId == R.id.main_cart){
-            navController.navigateUp() // to clear previous navigation history
-            navController.navigate(R.id.myCartFragment)
-            return true
-        }
-        if (item.itemId == R.id.main_search){
-//            val intent = Intent(this,RegisterActivity::class.java)
+        val itemID = item.itemId
+
+//        if (itemID == R.id.main_cart){
+//            navController.navigateUp() // to clear previous navigation history
+//            navController.navigate(R.id.myCartFragment)
+//            return true
+//        }
+//        if (item.itemId == R.id.main_search){
+////            val intent = Intent(this,RegisterActivity::class.java)
+////            startActivity(intent)
+//            val intent = Intent(this,SearchActivity::class.java)
 //            startActivity(intent)
-            val intent = Intent(this,SearchActivity::class.java)
-            startActivity(intent)
+//            return true
+//        }
 
+        return when(itemID){
+            R.id.main_cart -> {
+                navController.navigateUp() // to clear previous navigation history
+                navController.navigate(R.id.myCartFragment)
+                true
+            }
+            R.id.main_search -> {
+                val intent = Intent(this,SearchActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.main_notification -> {
+                updateNotificationForOptionMenu()
+                navController.navigateUp() // to clear previous navigation history
+                navController.navigate(R.id.notificationFragment)
+                true
+            }
+            else-> {
+                Log.d("","")
+                false
+            }
 
-            return true
         }
 
 
-        return super.onOptionsItemSelected(item)
+        //return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -153,6 +179,62 @@ class MainActivity : AppCompatActivity() {
             }
 
     }
+
+    fun getNotificationForOptionMenu(textView: TextView){
+        val ref = firebaseFirestore.collection("USERS")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("USER_DATA")
+            .document("MY_NOTIFICATION")
+
+
+        ref.addSnapshotListener { value, error ->
+            error?.let {
+                Toast.makeText(this,"Fail to load notification",Toast.LENGTH_LONG).show()
+                return@addSnapshotListener
+            }
+            value?.let {
+                val newNotification = it.getLong("new_notification")
+                if (newNotification ==0L){
+                    textView.visibility =View.GONE
+                }else{
+                    textView.text = newNotification.toString()
+                }
+
+            }
+        }
+    }
+
+    fun updateNotificationForOptionMenu(){
+        val ref = firebaseFirestore.collection("USERS")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("USER_DATA")
+            .document("MY_NOTIFICATION")
+
+        val notiMAp:MutableMap<String,Any> = HashMap()
+        notiMAp["new_notification"] = 0L
+        ref.update(notiMAp)
+
+    }
+
+    private fun getUsername(textView: TextView){
+        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
+            .addSnapshotListener { value,error ->
+                error?.let {
+                    Toast.makeText(this,"Failed to load name",Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
+                value?.let {
+                    val email = it.getString("email").toString()
+                    val name = it.getString("name").toString()
+                    if (name == ""){
+                        textView.text = email
+                    }else{
+                        textView.text = name
+                    }
+                }
+            }
+    }
+
 
 
 

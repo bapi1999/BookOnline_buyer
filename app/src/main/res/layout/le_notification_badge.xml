@@ -7,13 +7,13 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center"
-        app:srcCompat="@drawable/ic_shopping_cart_24"
+        app:srcCompat="@drawable/ic_round_notifications_24"
         app:tint="@color/gray_50" />
     <TextView
-        android:id="@+id/badge_counter"
+        android:id="@+id/notification_badge_counter"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:text="10"
+        android:text="0"
         android:textSize="11sp"
         android:background="@drawable/cart_badge_icon"
         android:layout_gravity="center"

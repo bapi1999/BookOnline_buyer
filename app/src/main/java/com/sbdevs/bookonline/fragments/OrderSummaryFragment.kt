@@ -12,10 +12,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
@@ -34,7 +33,7 @@ class OrderSummaryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    private val user = FirebaseAuth.getInstance().currentUser
+    private val user = Firebase.auth.currentUser
 
 
     lateinit var recyclerView:RecyclerView
@@ -89,17 +88,17 @@ class OrderSummaryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
             for ( group  in recivdList){
 
-                val price:String = group.price.trim()
-                val offerPrice:String = group.offerPrice.trim()
+                val priceOriginal:String = group.priceOriginal.trim()
+                val priceSelling:String = group.priceSelling.trim()
                 val quantity:Long = group.orderQuantity
 
-                if (offerPrice == ""){
+                if (priceOriginal == ""){
 
-                    totalAmount2 += price.toInt()*quantity.toInt()
+                    totalAmount2 += priceSelling.toInt()*quantity.toInt()
 
                 }else{
-                    discount2 += (price.toInt() - offerPrice.toInt())*quantity.toInt()
-                    totalAmount2 += offerPrice.toInt()*quantity.toInt()
+                    discount2 += (priceOriginal.toInt() - priceSelling.toInt())*quantity.toInt()
+                    totalAmount2 += priceSelling.toInt()*quantity.toInt()
 
                 }
                 totalPrice2 = totalAmount2+discount2
@@ -112,6 +111,7 @@ class OrderSummaryFragment : Fragment() {
                     priceTxt.text = totalPrice2.toString()
                     discountTxt.text = discount2.toString()
                     amountTxt.text = totalAmount2.toString()
+                    binding.continueToPaymentBtn.isEnabled = true
                 }else{
                     Toast.makeText(context,"Some problem in calculating the price",Toast.LENGTH_SHORT).show()
                     binding.continueToPaymentBtn.isEnabled = false
@@ -135,6 +135,8 @@ class OrderSummaryFragment : Fragment() {
             //1 = from MyAccountFragment 2 = OrderDetailsFRagment
             startActivity(intent)
         }
+
+
 
         binding.continueToPaymentBtn.setOnClickListener {
 //            val action = OrderSummaryFragmentDirections.actionOrderSummaryFragmentToPaymentFragment()
@@ -202,9 +204,11 @@ class OrderSummaryFragment : Fragment() {
 
                         binding.addressLay.visibility = View.VISIBLE
                         binding.noAddress.visibility = View.GONE
+                        binding.continueToPaymentBtn.isEnabled = true
                     }else{
                         binding.addressLay.visibility = View.GONE
                         binding.noAddress.visibility = View.VISIBLE
+                        binding.continueToPaymentBtn.isEnabled = false
                     }
 
 

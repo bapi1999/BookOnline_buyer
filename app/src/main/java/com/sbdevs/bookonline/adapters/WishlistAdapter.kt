@@ -62,24 +62,24 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
                     if (it.isSuccessful){
                         val url:String = it.result!!.getString("product_thumbnail")!!
                         val title:String = it.result!!.getString("book_title")!!
-                        val price = it.result!!.getString("price_Rs")!!.trim()
-                        val offsetPrice = it.result!!.getString("price_offer")!!
-                        val sellerId = it.result!!.getString("PRODUCT_SELLER_ID")!!.trim()
                         val ratingTotal = it.result!!.getLong("rating_total")!!.toString()
+
+                        val priceOriginal = it.result!!.get("price_original").toString().trim()
+                        val priceSelling = it.result!!.get("price_selling").toString().trim()
 
                         miniRatingTxt.text = it.result!!.getString("rating_avg")!!
                         ratingTotalTxt.text = "( $ratingTotal ratings )"
 
-                        if (offsetPrice == ""){
-                            productPrice.text = price
+                        if (priceOriginal == ""){
+                            productPrice.text = priceSelling
                             priceOff.text = "Buy Now"
                             productRealPrice.visibility = View.GONE
 
                         }else{
-                            val percent:Int = (100* (price.toInt() - offsetPrice.toInt())) / ( price.toInt() )
+                            val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
 
-                            productPrice.text = offsetPrice
-                            productRealPrice.text = price
+                            productPrice.text = priceSelling
+                            productRealPrice.text = priceOriginal
                             priceOff.text = "${percent}% off"
 
                         }

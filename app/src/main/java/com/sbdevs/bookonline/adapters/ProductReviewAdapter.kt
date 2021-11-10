@@ -1,8 +1,6 @@
-package com.sbdevs.bookonline.adapters.uiadapter
+package com.sbdevs.bookonline.adapters
 
 import com.sbdevs.bookonline.R
-
-import androidx.annotation.NonNull
 
 import android.widget.TextView
 
@@ -12,8 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 
 import android.view.ViewGroup
-import com.google.firebase.Timestamp
 import com.sbdevs.bookonline.models.ProductReviewModel
+import com.sbdevs.bookonline.othercalss.FireStoreData
 import java.util.*
 
 
@@ -27,12 +25,8 @@ class ProductReviewAdapter(var list: List<ProductReviewModel>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val buyerId: String = list[position].buyer_ID
-        val buyerName: String = list[position].buyer_name
-        val rating: Int = list[position].rating
-        val review: String = list[position].review
-        val reviewDate = list[position].review_Date!!
-        holder.setData(buyerName, reviewDate, review, rating)
+
+        holder.setData(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -46,11 +40,20 @@ class ProductReviewAdapter(var list: List<ProductReviewModel>) :
         var ratingTxt: TextView = itemView.findViewById(R.id.mini_rating)
 
 
-        fun setData(buyerName: String, reviewDate: Date, review: String, rating: Int) {
+        fun setData(reviewModel: ProductReviewModel) {
+
+            val buyerId: String = reviewModel.buyer_ID
+            val buyerName: String = reviewModel.buyer_name
+            val rating: Int = reviewModel.rating
+            val review: String = reviewModel.review
+            val reviewDate = reviewModel.review_Date!!
+            val daysAgo = FireStoreData().msToTimeAgo(itemView.context,reviewDate)
+
             buyerNameTxt.text = buyerName
-            reviewDateTxt.text = reviewDate.toString()
+            reviewDateTxt.text = daysAgo
             reviewTxt.text = review
-            ratingTxt.text = rating.toString() + ""
+
+            ratingTxt.text = rating.toString()
         }
 
     }

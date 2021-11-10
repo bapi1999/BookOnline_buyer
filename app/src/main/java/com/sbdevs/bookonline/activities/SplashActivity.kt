@@ -17,6 +17,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -32,7 +34,7 @@ class SplashActivity : AppCompatActivity() {
 
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        val currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUser = Firebase.auth.currentUser
         if (currentUser == null) {
             val loginintent = Intent(this@SplashActivity, RegisterActivity::class.java)
             startActivity(loginintent)

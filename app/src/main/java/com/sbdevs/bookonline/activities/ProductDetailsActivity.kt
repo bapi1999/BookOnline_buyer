@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -20,7 +19,7 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.ActivityProductDetailsBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.sbdevs.bookonline.adapters.uiadapter.ProductReviewAdapter
+import com.sbdevs.bookonline.adapters.ProductReviewAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sbdevs.bookonline.models.ProductReviewModel
 import androidx.appcompat.content.res.AppCompatResources
@@ -194,8 +193,6 @@ class ProductDetailsActivity : AppCompatActivity() {
 
         }
 
-
-
         addToCartBtn.setOnClickListener {
 
             if (ALREADY_ADDED_TO_CART){
@@ -223,31 +220,32 @@ class ProductDetailsActivity : AppCompatActivity() {
 
 
         }
-        buyNowBtn.setOnClickListener {
 
-            if(!checkIsQuantityEntered(dbStockQty)){
-                return@setOnClickListener
-            }else{
-                val qty = enterQuantityInput.editText?.text.toString().toLong()
-                val newSendingList:ArrayList<CartModel> = ArrayList()
-                newSendingList.add(CartModel(productId,sendingList[0].sellerId, sendingList[0].url,sendingList[0].title
-                    ,sendingList[0].price, sendingList[0].inStock,sendingList[0].stockQty,sendingList[0].offerPrice,qty))
-
-
-                val intentProceedOrderActivity = Intent(this,ProceedOrderActivity::class.java);
-                intentProceedOrderActivity.putExtra("From_To",2);
-                //todo: 1=> MyCart / 2=> BuyNow
-
-
-                intentProceedOrderActivity.putParcelableArrayListExtra("productList",newSendingList);
-                intentProceedOrderActivity.putExtra("total_price",totalPrice)
-                intentProceedOrderActivity.putExtra("total_discount",discount)
-                intentProceedOrderActivity.putExtra("total_amount",totalAmount)
-                startActivity(intentProceedOrderActivity)
-
-            }
-
-        }
+//        buyNowBtn.setOnClickListener {
+//
+//            if(!checkIsQuantityEntered(dbStockQty)){
+//                return@setOnClickListener
+//            }else{
+//                val qty = enterQuantityInput.editText?.text.toString().toLong()
+//                val newSendingList:ArrayList<CartModel> = ArrayList()
+//                newSendingList.add(CartModel(productId,sendingList[0].sellerId, sendingList[0].url,sendingList[0].title
+//                    ,sendingList[0].price,sendingList[0].stockQty,sendingList[0].offerPrice,qty))
+//
+//
+//                val intentProceedOrderActivity = Intent(this,ProceedOrderActivity::class.java);
+//                intentProceedOrderActivity.putExtra("From_To",2);
+//                //todo: 1=> MyCart / 2=> BuyNow
+//
+//
+//                intentProceedOrderActivity.putParcelableArrayListExtra("productList",newSendingList);
+//                intentProceedOrderActivity.putExtra("total_price",totalPrice)
+//                intentProceedOrderActivity.putExtra("total_discount",discount)
+//                intentProceedOrderActivity.putExtra("total_amount",totalAmount)
+//                startActivity(intentProceedOrderActivity)
+//
+//            }
+//
+//        }
 
     }
 
@@ -274,7 +272,6 @@ class ProductDetailsActivity : AppCompatActivity() {
                     val avgRating = it.getString("rating_avg")!!
                     val sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     val totalRating: Int = it.getLong("rating_total")!!.toInt()
-                    val inStock = it.getBoolean("in_stock")!!
                     val stock = it.getLong("in_stock_quantity")!!
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
@@ -286,7 +283,7 @@ class ProductDetailsActivity : AppCompatActivity() {
                     totalAmount = priceOffer.toInt()
                     totalPrice = priceReal.toInt()
                     discount = totalPrice - totalAmount
-                    sendingList.add(CartModel(productId,sellerId,url,productName,priceReal,inStock,stock,priceOffer,1))
+                    sendingList.add(CartModel(productId,sellerId,url,productName,priceReal,priceOffer,stock,1))
 
 
                     for (catrgorys in categoryList) {

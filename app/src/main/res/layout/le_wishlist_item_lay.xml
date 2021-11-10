@@ -129,7 +129,6 @@
             android:id="@+id/product_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:maxLength="9"
             android:text="Rs.XXXXXXX"
             android:textColor="@color/black"
@@ -139,11 +138,9 @@
 
         <TextView
             android:id="@+id/product_real_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="34dp"
+            android:layout_height="13dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
             android:background="@drawable/s_strick_through"
             android:maxLength="8"
             android:text="000000"
@@ -153,8 +150,8 @@
             android:id="@+id/percent_off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:maxLength="13"
+            android:layout_marginStart="8dp"
             android:text="00% off"
             android:textColor="@color/ratingGreen"
             android:textSize="13sp" />

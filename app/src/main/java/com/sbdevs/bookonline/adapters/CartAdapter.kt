@@ -94,25 +94,26 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
                         var categoryString = ""
                         val url = it.result!!.get("product_thumbnail").toString().trim()
                         val title:String = it.result!!.getString("book_title")!!
-                        val realPriceDB = it.result!!.getString("price_Rs")!!.trim()
-                        val offerPriceDB = it.result!!.getString("price_offer")!!
                         val stock = it.result!!.getLong("in_stock_quantity")!!
                         val categoryList: ArrayList<String> = it.result!!.get("categories") as ArrayList<String>
+
+                        val priceOriginal = it.result!!.get("price_original").toString().trim()
+                        val priceSelling = it.result!!.get("price_selling").toString().trim()
 
                         productName.text = title
 
                         Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
-                        if (offerPriceDB == ""){
-                            val price = realPriceDB.toInt()*quantity.toInt()
+                        if (priceOriginal == ""){
+                            val price = priceSelling.toInt()*quantity.toInt()
                             productPrice.text = price.toString()
                             productRealPrice.visibility = View.GONE
                             percentOff.text = "Buy Now"
 
                         }else{
 
-                            val price = offerPriceDB.toInt()*quantity.toInt()
-                            val realPrice = realPriceDB.toInt()*quantity.toInt()
+                            val price = priceSelling.toInt()*quantity.toInt()
+                            val realPrice = priceOriginal.toInt()*quantity.toInt()
 
                             val percent:Int = (100* (realPrice - price)) / ( realPrice )
 
