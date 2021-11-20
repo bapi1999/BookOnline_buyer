@@ -8,6 +8,54 @@
 
 
     <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Relevance"
+            android:textColor="@color/gray_900"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/relevance_chipGroup"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView63"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/relevance_chip1"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price Low - High" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/relevance_chip2"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price High - Low" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/type_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,28 +92,34 @@
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:tag="TAG_new"
                 android:text="New" />
+
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip2"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Old" />
+                android:tag="TAG_used"
+                android:text="Used Book" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip3"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Used Book" />
+                android:tag="TAG_refurbished"
+                android:text="Refurbished" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip4"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Refurbished" />
+                android:tag="TAG_year"
+                android:text="This year edition" />
+
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 
@@ -107,13 +161,15 @@
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Good, New" />
+                android:tag="TAG_good"
+                android:text="Good" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip2"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:tag="TAG_almost_new"
                 android:text="Almost new" />
 
             <com.google.android.material.chip.Chip
@@ -121,13 +177,15 @@
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Not good but not bad" />
+                android:tag="TAG_half_bad"
+                android:text="Half bad" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip4"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:tag="TAG_bad"
                 android:text="Bad" />
         </com.google.android.material.chip.ChipGroup>
 
@@ -146,115 +204,112 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/condition_container">
 
-        <TextView
-            android:id="@+id/textView63"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="By Price"
-            android:textColor="@color/gray_900"
-            android:textSize="17sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/price_chipGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView63"
-            app:singleSelection="false">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/price_chip1"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/rs_0_rs_500" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/price_chip2"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/rs_500_rs_1000" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/price_chip3"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rs.1000 - Rs.2000" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/price_chip4"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Above 2000" />
-        </com.google.android.material.chip.ChipGroup>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Relevance"
+            android:text="By price"
             android:textColor="@color/gray_900"
             android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/relevance_chipGroup"
+        <TextView
+            android:id="@+id/error_message_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView63"
-            app:singleSelection="true">
+            android:layout_marginTop="4dp"
+            android:text="TextView"
+            android:textColor="@color/brikeRed"
+            android:visibility="gone" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/relevance_chip1"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/lower_input"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Price Low - High" />
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="Lower limit"
+                android:inputType="number"
+                android:maxLength="3"
+                android:maxLines="1" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/relevance_chip2"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/upper_input"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Price High - Low" />
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="Upper limit"
+                android:inputType="number"
+                android:maxLength="4"
+                android:maxLines="1" />
+        </LinearLayout>
 
-        </com.google.android.material.chip.ChipGroup>
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/apply_btn"
-        android:layout_width="0dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Apply"
-        android:textAllCaps="false"
-        android:textSize="17sp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout24" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout24">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/cancel_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/gray_800"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:text="@string/action_cancel"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/apply_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/teal_700"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:text="@string/apply"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

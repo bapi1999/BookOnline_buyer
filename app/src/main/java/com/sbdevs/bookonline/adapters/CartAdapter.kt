@@ -1,6 +1,5 @@
 package com.sbdevs.bookonline.adapters
 
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,16 +14,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.ProductDetailsActivity
-import com.sbdevs.bookonline.models.CartModel
-import kotlinx.coroutines.tasks.await
+import com.sbdevs.bookonline.activities.ProductActivity
 
 
 class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonItemClickListener) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
 
     interface MyonItemClickListener{
-        fun onItemClick(position: Int,view: View)
+        fun onItemClick(position: Int)
         fun onQuantityChange(position: Int,textView: TextView)
     }
 
@@ -61,8 +58,8 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
         private val stockNumberTxt:TextView = itemView.findViewById(R.id.stock)
         private val outofstockTxt:TextView = itemView.findViewById(R.id.outofstockText)
         private val variantTxt:TextView = itemView.findViewById(R.id.variant)
-        private val viewBtn:TextView = itemView.findViewById(R.id.textView37)
-        private val removeBtn:TextView = itemView.findViewById(R.id.textView38)
+        private val viewBtn:LinearLayout = itemView.findViewById(R.id.view_details)
+        private val removeBtn:LinearLayout = itemView.findViewById(R.id.remove_btn)
         private val quantityContainer:LinearLayout = itemView.findViewById(R.id.quantity_container)
 
 
@@ -74,7 +71,7 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
 
             quantitiesTxt.text = quantity.toString()
             removeBtn.setOnClickListener {
-                listner.onItemClick(adapterPosition,it)
+                listner.onItemClick(adapterPosition)
 
             }
 
@@ -83,7 +80,7 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
             }
 
             viewBtn.setOnClickListener {
-                val productIntent = Intent(itemView.context, ProductDetailsActivity::class.java)
+                val productIntent = Intent(itemView.context, ProductActivity::class.java)
                 productIntent.putExtra("productId",productId)
                 itemView.context.startActivity(productIntent)
             }
@@ -97,14 +94,14 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
                         val stock = it.result!!.getLong("in_stock_quantity")!!
                         val categoryList: ArrayList<String> = it.result!!.get("categories") as ArrayList<String>
 
-                        val priceOriginal = it.result!!.get("price_original").toString().trim()
-                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
+                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
 
                         productName.text = title
 
                         Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
-                        if (priceOriginal == ""){
+                        if (priceOriginal == 0L){
                             val price = priceSelling.toInt()*quantity.toInt()
                             productPrice.text = price.toString()
                             productRealPrice.visibility = View.GONE

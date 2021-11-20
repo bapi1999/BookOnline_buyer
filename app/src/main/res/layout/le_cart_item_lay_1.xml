@@ -169,6 +169,7 @@
         app:layout_constraintTop_toBottomOf="@+id/quantity_container">
 
         <LinearLayout
+            android:id="@+id/view_details"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -187,6 +188,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/remove_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -198,14 +200,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:drawableStart="@drawable/ic_remove_24"
                 android:drawablePadding="4dp"
-                android:drawableTint="@color/white"
                 android:padding="5dp"
-                android:text="Remove"
+                android:text="@string/remove"
                 android:textColor="@color/white"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:drawableTint="@color/white"
+                app:drawableStartCompat="@drawable/ic_remove_24" />
         </LinearLayout>
     </LinearLayout>
 
@@ -215,7 +217,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="7dp"
-        android:text="Out Of stock"
+        android:text="@string/out_of_stock"
         android:visibility="gone"
         android:textStyle="bold"
         android:textSize="18sp"

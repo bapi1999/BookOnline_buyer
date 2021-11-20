@@ -88,11 +88,11 @@ class OrderSummaryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
             for ( group  in recivdList){
 
-                val priceOriginal:String = group.priceOriginal.trim()
-                val priceSelling:String = group.priceSelling.trim()
+                val priceOriginal:Long = group.priceOriginal
+                val priceSelling:Long = group.priceSelling
                 val quantity:Long = group.orderQuantity
 
-                if (priceOriginal == ""){
+                if (priceOriginal == 0L){
 
                     totalAmount2 += priceSelling.toInt()*quantity.toInt()
 

@@ -60,12 +60,12 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
                     if (it.isSuccessful){
                         val url = it.result!!.get("product_thumbnail").toString().trim()
                         val title:String = it.result!!.getString("book_title")!!
-                        val priceOriginal = it.result!!.get("price_original").toString().trim()
-                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
+                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
 
 
-                        if (priceOriginal == ""){
-                            productPrice.text = priceSelling
+                        if (priceOriginal == 0L){
+                            productPrice.text = priceSelling.toString()
                             productRealPrice.visibility = gone
                             percentOffContainer.visibility = gone
                             buyNowContainer.visibility = visible
@@ -73,8 +73,8 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
                         }else{
                             val priceOff = priceOriginal.toInt() - priceSelling.toInt()
                             offsetPriceText.text = priceOff.toString()
-                            productRealPrice.text = priceOriginal
-                            productPrice.text = priceSelling
+                            productRealPrice.text = priceOriginal.toString()
+                            productPrice.text = priceSelling.toString()
                             buyNowContainer.visibility =gone
                             percentOffContainer.visibility = visible
                             productRealPrice.visibility = visible

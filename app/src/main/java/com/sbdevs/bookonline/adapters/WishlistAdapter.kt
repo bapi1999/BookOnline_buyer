@@ -5,13 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.ProductDetailsActivity
+import com.sbdevs.bookonline.activities.ProductActivity
 
 class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickListener):RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
 
@@ -40,7 +41,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
         private val productPrice:TextView = itemView.findViewById(R.id.product_price)
         private val productRealPrice:TextView = itemView.findViewById(R.id.product_real_price)
         private val priceOff:TextView = itemView.findViewById(R.id.percent_off)
-        var removeBtn: TextView = itemView.findViewById(R.id.textView38)
+        var removeBtn: LinearLayout = itemView.findViewById(R.id.remove_btn)
         var ratingTotalTxt: TextView = itemView.findViewById(R.id.mini_totalNumberOf_ratings)
         var miniRatingTxt: TextView = itemView.findViewById(R.id.mini_product_rating)
         var bookSateTxt: TextView = itemView.findViewById(R.id.product_state)
@@ -49,7 +50,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
 
         fun bind(productId:String){
             itemView.setOnClickListener {
-                val productIntent = Intent(itemView.context, ProductDetailsActivity::class.java)
+                val productIntent = Intent(itemView.context, ProductActivity::class.java)
                 productIntent.putExtra("productId",productId)
                 itemView.context.startActivity(productIntent)
             }
@@ -64,22 +65,21 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
                         val title:String = it.result!!.getString("book_title")!!
                         val ratingTotal = it.result!!.getLong("rating_total")!!.toString()
 
-                        val priceOriginal = it.result!!.get("price_original").toString().trim()
-                        val priceSelling = it.result!!.get("price_selling").toString().trim()
-
+                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
+                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
                         miniRatingTxt.text = it.result!!.getString("rating_avg")!!
                         ratingTotalTxt.text = "( $ratingTotal ratings )"
 
-                        if (priceOriginal == ""){
-                            productPrice.text = priceSelling
+                        if (priceOriginal == 0L){
+                            productPrice.text = priceSelling.toString()
                             priceOff.text = "Buy Now"
                             productRealPrice.visibility = View.GONE
 
                         }else{
                             val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
 
-                            productPrice.text = priceSelling
-                            productRealPrice.text = priceOriginal
+                            productPrice.text = priceSelling.toString()
+                            productRealPrice.text = priceOriginal.toString()
                             priceOff.text = "${percent}% off"
 
                         }

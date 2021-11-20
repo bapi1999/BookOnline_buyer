@@ -10,8 +10,8 @@ class CartModel (
     val url:String ="",
     val title:String = "",
 
-    val priceOriginal:String = "",
-    val priceSelling:String ="",
+    val priceOriginal:Long = 0L,
+    val priceSelling:Long =0L,
 
     val stockQty:Long = 0L,
     val orderQuantity:Long = 0L

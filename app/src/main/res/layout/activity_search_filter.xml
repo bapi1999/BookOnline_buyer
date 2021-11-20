@@ -39,12 +39,12 @@
                android:text="@string/search_hint"
                android:textSize="18sp"
                app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintEnd_toStartOf="@+id/imageButton"
+               app:layout_constraintEnd_toStartOf="@+id/cancel_query_btn"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
 
            <ImageView
-               android:id="@+id/imageButton"
+               android:id="@+id/cancel_query_btn"
                android:layout_width="wrap_content"
                android:layout_height="32dp"
                android:layout_weight="1"

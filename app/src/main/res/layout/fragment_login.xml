@@ -5,10 +5,16 @@
     android:layout_height="match_parent"
     tools:context=".fragments.register.LoginFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include android:id="@+id/login_lay"
-            layout="@layout/ar_register_layout_1"/>
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <include android:id="@+id/login_lay"
+                layout="@layout/ar_register_layout_1"/>
+        </LinearLayout>
+    </ScrollView>
+
+
 </FrameLayout>

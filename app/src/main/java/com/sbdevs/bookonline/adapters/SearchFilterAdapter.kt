@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.ProductDetailsActivity
+import com.sbdevs.bookonline.activities.ProductActivity
 import com.sbdevs.bookonline.models.uidataclass.SearchModel
 import com.squareup.picasso.Picasso
 
@@ -42,7 +42,7 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
 
         fun bind(model:SearchModel){
             itemView.setOnClickListener {
-                val productIntent = Intent(itemView.context, ProductDetailsActivity::class.java)
+                val productIntent = Intent(itemView.context, ProductActivity::class.java)
                 productIntent.putExtra("productId",model.productId)
                 itemView.context.startActivity(productIntent)
             }
@@ -50,8 +50,8 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
             val url = model.url
             val stockQty:Long = model.stockQty
 
-            val priceOriginal:String = model.priceOriginal
-            val priceSelling:String =model.priceSelling
+            val priceOriginal:Long = model.priceOriginal
+            val priceSelling:Long =model.priceSelling
 
             Picasso.get()
                 .load(url)
@@ -60,8 +60,8 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
                 //.centerCrop()
                 .into(productImage)
 
-            if (priceOriginal == ""){
-                productPrice.text = priceSelling
+            if (priceOriginal == 0L){
+                productPrice.text = priceSelling.toString()
                 productRealPrice.visibility = View.GONE
                 percentOff.text = "Buy Now"
 
@@ -72,8 +72,8 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
 
                 val percent:Int = (100* (realPriceInt - price)) / ( realPriceInt )
 
-                productPrice.text = priceSelling
-                productRealPrice.text = priceOriginal
+                productPrice.text = priceSelling.toString()
+                productRealPrice.text = priceOriginal.toString()
                 percentOff.text = "${percent}% off"
 
             }

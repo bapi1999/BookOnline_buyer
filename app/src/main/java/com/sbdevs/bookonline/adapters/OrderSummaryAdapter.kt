@@ -1,11 +1,9 @@
 package com.sbdevs.bookonline.adapters
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.ProductDetailsActivity
 import com.sbdevs.bookonline.models.CartModel
 
 class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<OrderSummaryAdapter.ViewHolder>() {
@@ -59,8 +56,8 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
             val quantity:Long = group.orderQuantity
             val url:String = group.url
             val title:String = group.title
-            val priceOriginal:String = group.priceOriginal
-            val priceSelling:String = group.priceSelling
+            val priceOriginal:Long = group.priceOriginal
+            val priceSelling:Long = group.priceSelling
             val stockQuantity = group.stockQty
 
             quantitiesTxt.text = quantity.toString()
@@ -77,7 +74,7 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
             Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
 
-            if (priceOriginal == ""){
+            if (priceOriginal == 0L){
                 val price = priceSelling.toInt()*quantity.toInt()
                 productPrice.text = price.toString()
                 productRealPrice.visibility = View.GONE

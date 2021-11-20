@@ -227,7 +227,7 @@ class PaymentFragment : Fragment() {
     }
 
     fun createOrderToSeller(thumbnail:String,title:String,productId:String,sellerId:String,orderQuantity:Long,docName:String
-                            ,address:MutableMap<String,Any>,priceSelling:String)= CoroutineScope(Dispatchers.IO).launch{
+                            ,address:MutableMap<String,Any>,priceSelling:Long)= CoroutineScope(Dispatchers.IO).launch{
         val productMap:MutableMap<String,Any> = HashMap()
         productMap["productThumbnail"] = thumbnail
         productMap["productTitle"] = title

@@ -158,8 +158,6 @@ class SignUpFragment : Fragment() {
                         Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
                         val intent = Intent(context, MainActivity::class.java)
                         startActivity(intent)
-
-                        activity?.finish()
                     }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
@@ -180,17 +178,11 @@ class SignUpFragment : Fragment() {
         addressMap["select_No"] = 0L
 
         val itemsMap: MutableMap<String, Any> = HashMap()
-        addressMap["product_id"] = ""
-        addressMap["rating_id"] = ""
-        addressMap["time"] = FieldValue.serverTimestamp()
+        addressMap["info"] = "rating Id is userId of the buyer, as 1 user can review once"
 
 
         val notificationMap: MutableMap<String, Any> = HashMap()
-        addressMap["date"] = FieldValue.serverTimestamp()
-        addressMap["description"] = "Welcome to BooksOnline"
-        addressMap["order_id"] = ""
-        addressMap["seen"] = false
-        addressMap["image"] = ""
+        addressMap["new_notification"] = 0
 
 
         val userMap: MutableMap<String, Any> = HashMap()
@@ -204,29 +196,31 @@ class SignUpFragment : Fragment() {
         userMap["profile"] = ""
         userMap["Both_Seller_User"] = false
 
-        lifecycleScope.launch(Dispatchers.IO){
+        lifecycleScope.launch{
             if (firebaseAuth.currentUser!=null){
                 val currentUser = firebaseAuth.currentUser!!.uid
-                val zero:Long = 0
+
                 firebaseFirestore.collection("USERS").document(currentUser).set(userMap).await()
+
+
                 val docRef = firebaseFirestore.collection("USERS")
                     .document(currentUser).collection("USER_DATA")
 
                 docRef.document("MY_ADDRESSES").set(addressMap).await()
                 docRef.document("MY_CART").set(listSizeMap).await()
 
-                docRef.document("MY_NOTIFICATION")
-                    .collection("NOTIFICATION")
-                    .document("DUMMY")
-                    .set(notificationMap).await()
+                docRef.document("MY_NOTIFICATION").set(notificationMap).await()
 
                 docRef.document("MY_ORDERS").set(listSizeMap).await()
                 docRef.document("MY_WISHLIST").set(listSizeMap).await()
 
-                docRef.document("THINGS_I_BOUGHT")
-                    .collection("ITEMS")
-                    .document("DUMMY")
-                    .set(itemsMap).await()
+                docRef.document("THINGS_I_BOUGHT").set(itemsMap).await()
+
+                withContext(Dispatchers.Main){
+                    activity?.finish()
+                    Toast.makeText(context,"activity finish",Toast.LENGTH_LONG).show()
+                }
+
 
 //                docRef.document("MY_CART").set(listSizeMap).await()
 

@@ -33,9 +33,8 @@ class MainActivity : AppCompatActivity() {
     private val firebaseAuth = Firebase.auth
 
 
-    lateinit var cartBadgeText:TextView
-    lateinit var notificationBadgeText:TextView
-
+    lateinit var cartBadgeText: TextView
+    lateinit var notificationBadgeText: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,12 +49,17 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.homeFragment,R.id.myCartFragment,R.id.myOrderFragment,R.id.myWishlistFragment,
-                R.id.notificationFragment,R.id.myAccountFragment
+                R.id.homeFragment,
+                R.id.myCartFragment,
+                R.id.myOrderFragment,
+                R.id.myWishlistFragment,
+                R.id.notificationFragment,
+                R.id.myAccountFragment
             ), binding.drawerLayout
         )
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
 
         setSupportActionBar(binding.toolbar)
@@ -63,11 +67,9 @@ class MainActivity : AppCompatActivity() {
 //        (this as AppCompatActivity?)!!.supportActionBar!!.show()
         binding.navView.setupWithNavController(navController)
         val header = binding.navView.getHeaderView(0)
-        val userName:TextView = header.findViewById(R.id.nav_header_txt)
+        val userName: TextView = header.findViewById(R.id.nav_header_txt)
         getUsername(userName)
 //        userName.text = "edfwefwefwe"
-
-
 
 
     }
@@ -77,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_option_menu,menu)
+        menuInflater.inflate(R.menu.main_option_menu, menu)
 
         val cartMenu = menu?.findItem(R.id.main_cart)
         val notificationMenu = menu?.findItem(R.id.main_notification)
@@ -103,7 +105,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 //        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
 
@@ -115,22 +116,25 @@ class MainActivity : AppCompatActivity() {
 //            return true
 //        }
 //        if (item.itemId == R.id.main_search){
-////            val intent = Intent(this,RegisterActivity::class.java)
-////            startActivity(intent)
+//            val intent = Intent(this,RegisterActivity::class.java)
+//            startActivity(intent)
 //            val intent = Intent(this,SearchActivity::class.java)
 //            startActivity(intent)
 //            return true
 //        }
 
-        return when(itemID){
+        return when (itemID) {
             R.id.main_cart -> {
-                navController.navigateUp() // to clear previous navigation history
-                navController.navigate(R.id.myCartFragment)
+//                navController.navigateUp() // to clear previous navigation history
+//                navController.navigate(R.id.myCartFragment)
+                val intent = Intent(this, RegisterActivity::class.java)
+                startActivity(intent)
                 true
             }
             R.id.main_search -> {
-                val intent = Intent(this,SearchActivity::class.java)
+                val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
+
                 true
             }
             R.id.main_notification -> {
@@ -139,8 +143,8 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(R.id.notificationFragment)
                 true
             }
-            else-> {
-                Log.d("","")
+            else -> {
+                Log.d("", "")
                 false
             }
 
@@ -156,22 +160,28 @@ class MainActivity : AppCompatActivity() {
 
     fun getCartListForOptionMenu(textView: TextView) {
 
-        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid).collection("USER_DATA")
+        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
+            .collection("USER_DATA")
             .document("MY_CART").addSnapshotListener { value, error ->
                 error?.let {
-                    Toast.makeText(this,"Can't load cart. Contact Help-Center for further support ",Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "Can't load cart. Contact Help-Center for further support ",
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@addSnapshotListener
                 }
-                value?.let { val x = value.get("cart_list")
-                    if (x != null){
-                        val fbCartList = x as ArrayList<MutableMap<String,Any>>
-                        if (fbCartList.size ==0){
+                value?.let {
+                    val x = value.get("cart_list")
+                    if (x != null) {
+                        val fbCartList = x as ArrayList<MutableMap<String, Any>>
+                        if (fbCartList.size == 0) {
                             textView.visibility = View.GONE
-                        }else{
+                        } else {
                             textView.visibility = View.VISIBLE
                             textView.text = fbCartList.size.toString()
                         }
-                    }else{
+                    } else {
                         textView.visibility = View.GONE
                     }
                 }
@@ -180,7 +190,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun getNotificationForOptionMenu(textView: TextView){
+    fun getNotificationForOptionMenu(textView: TextView) {
         val ref = firebaseFirestore.collection("USERS")
             .document(firebaseAuth.currentUser!!.uid)
             .collection("USER_DATA")
@@ -189,14 +199,14 @@ class MainActivity : AppCompatActivity() {
 
         ref.addSnapshotListener { value, error ->
             error?.let {
-                Toast.makeText(this,"Fail to load notification",Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Fail to load notification", Toast.LENGTH_LONG).show()
                 return@addSnapshotListener
             }
             value?.let {
                 val newNotification = it.getLong("new_notification")
-                if (newNotification ==0L){
-                    textView.visibility =View.GONE
-                }else{
+                if (newNotification == 0L) {
+                    textView.visibility = View.GONE
+                } else {
                     textView.text = newNotification.toString()
                 }
 
@@ -204,38 +214,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateNotificationForOptionMenu(){
+    fun updateNotificationForOptionMenu() {
         val ref = firebaseFirestore.collection("USERS")
             .document(firebaseAuth.currentUser!!.uid)
             .collection("USER_DATA")
             .document("MY_NOTIFICATION")
 
-        val notiMAp:MutableMap<String,Any> = HashMap()
+        val notiMAp: MutableMap<String, Any> = HashMap()
         notiMAp["new_notification"] = 0L
         ref.update(notiMAp)
 
     }
 
-    private fun getUsername(textView: TextView){
+    private fun getUsername(textView: TextView) {
         firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
-            .addSnapshotListener { value,error ->
+            .addSnapshotListener { value, error ->
                 error?.let {
-                    Toast.makeText(this,"Failed to load name",Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Failed to load name", Toast.LENGTH_LONG).show()
                     return@addSnapshotListener
                 }
                 value?.let {
                     val email = it.getString("email").toString()
                     val name = it.getString("name").toString()
-                    if (name == ""){
+                    if (name == "") {
                         textView.text = email
-                    }else{
+                    } else {
                         textView.text = name
                     }
                 }
             }
     }
-
-
 
 
     override fun onBackPressed() {

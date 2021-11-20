@@ -125,8 +125,8 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/s_border_background"
-        android:backgroundTint="@color/gray_800"
+        android:background="@drawable/s_shape_bg_2"
+        android:backgroundTint="@color/gray_400"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -139,11 +139,12 @@
             android:id="@+id/textView36"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="6dp"
 
             android:text="Qty:"
+            android:textSize="16sp"
             android:textColor="@color/black" />
 
         <TextView
@@ -152,6 +153,8 @@
             android:layout_height="wrap_content"
 
             android:text="1"
+            android:textStyle="bold"
+            android:textSize="16sp"
             android:textColor="@color/black" />
     </LinearLayout>
 

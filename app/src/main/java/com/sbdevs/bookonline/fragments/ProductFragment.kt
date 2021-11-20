@@ -286,8 +286,8 @@ class ProductFragment : Fragment() {
 
                     val productName = it.getString("book_title")!!
 
-                    val priceOriginal = it.get("price_original").toString().trim()
-                    val priceSelling = it.get("price_selling").toString().trim()
+                    val priceOriginal = it.getLong("price_original")!!.toLong()
+                    val priceSelling = it.getLong("price_selling")!!.toLong()
 
                     val avgRating = it.getString("rating_avg")!!
                     val sellerId = it.getString("PRODUCT_SELLER_ID")!!
@@ -323,8 +323,8 @@ class ProductFragment : Fragment() {
 
                     lay11.productName.text = productName
 
-                    if (priceOriginal == "") {
-                        lay11.productPrice.text = priceSelling
+                    if (priceOriginal == 0L) {
+                        lay11.productPrice.text = priceSelling.toString()
                         lay11.strikeThroughPrice.visibility = gone
                         lay11.percentOff.visibility = gone
 
@@ -336,8 +336,8 @@ class ProductFragment : Fragment() {
                         val percent =
                             100 * (priceOriginal.toInt() - priceSelling.toInt()) / (priceOriginal.toInt())
 
-                        lay11.productPrice.text = priceSelling
-                        lay11.strikeThroughPrice.text = priceOriginal
+                        lay11.productPrice.text = priceSelling.toString()
+                        lay11.strikeThroughPrice.text = priceOriginal.toString()
                         lay11.percentOff.text = "${percent}% off"
 
 

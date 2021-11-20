@@ -41,6 +41,8 @@
     <string name="out_of_stock">OUT OF STOCK</string>
     <string name="rs_0_rs_500">Rs.0 - Rs.500</string>
     <string name="rs_500_rs_1000">Rs.500 - Rs.1000</string>
+    <string name="remove">Remove</string>
+    <string name="apply">Apply</string>
 
     <string-array name="address_type">
         <item>Home(7am to 9pm)</item>
@@ -87,5 +89,10 @@
     </string-array>
 
     <!--    .backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)      -->
+
+<!--    Deu task in this app-->
+<!--    1 - filter activity. -->
+<!--    online payment-->
+<!--    for more see buyer app isseu 3-->
 
 </resources>

@@ -195,8 +195,8 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
                         val title = it.result!!.getString("book_title")!!
                         val stockQuantity = it.result!!.getLong("in_stock_quantity")!!
 
-                        val priceOriginal = it.result!!.get("price_original").toString().trim()
-                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
+                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
 
                         sendingList.add(CartModel(productId,sellerId,url,title,priceOriginal,priceSelling,stockQuantity,qty))
 //                        adapter.notifyDataSetChanged()
@@ -217,7 +217,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
     }
 
-    override fun onItemClick(position: Int, view: View) {
+    override fun onItemClick(position: Int) {
         cartList.removeAt(position)
         adapter.notifyItemRemoved(position)
         val cartmap:MutableMap<String,Any> = HashMap()
@@ -319,11 +319,11 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
         for ( group  in list){
 
-            val priceOriginal:String = group.priceOriginal.trim()
-            val priceSelling:String = group.priceSelling.trim()
+            val priceOriginal:Long = group.priceOriginal
+            val priceSelling:Long = group.priceSelling
             val quantity:Long = group.orderQuantity
 
-            if (priceOriginal == ""){
+            if (priceOriginal == 0L){
 
                 priceToPay += priceSelling.toInt()*quantity.toInt()
 

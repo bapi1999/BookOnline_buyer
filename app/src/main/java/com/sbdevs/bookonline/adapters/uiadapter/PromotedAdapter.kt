@@ -6,14 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
-import com.sbdevs.bookonline.activities.ProductDetailsActivity
 import com.squareup.picasso.Picasso
 
 class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<PromotedAdapter.ViewHolder>() {
@@ -54,17 +51,17 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
                         val title:String = it.result!!.getString("book_title")!!
 
 
-                        val priceOriginal = it.result!!.get("price_original").toString().trim()
-                        val priceSelling = it.result!!.get("price_selling").toString().trim()
+                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
+                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
 
-                        if (priceOriginal == ""){
-                            productPrice.text = priceSelling
+                        if (priceOriginal == 0L){
+                            productPrice.text = priceSelling.toString()
                             priceOff.text = "Buy Now"
 
                         }else{
                             val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
 
-                            productPrice.text = priceSelling
+                            productPrice.text = priceSelling.toString()
                             priceOff.text = "get ${percent}% off"
 
                         }
