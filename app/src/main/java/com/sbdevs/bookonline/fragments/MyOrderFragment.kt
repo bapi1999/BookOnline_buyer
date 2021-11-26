@@ -36,7 +36,14 @@ class MyOrderFragment : Fragment() {
     ): View? {
         _binding = FragmentMyOrderBinding.inflate(inflater, container, false)
 
-        getAllMyOrder()
+        if (user != null){
+            getAllMyOrder()
+        }else{
+            binding.emptyContainer.visibility = View.VISIBLE
+            binding.ordersRecycler.visibility = View.GONE
+        }
+
+
 
 
         val recyclerView = binding.ordersRecycler
@@ -48,7 +55,8 @@ class MyOrderFragment : Fragment() {
         return binding.root
     }
 
-    fun getAllMyOrder(){
+    private fun getAllMyOrder(){
+
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
             .document("MY_ORDERS").get().addOnSuccessListener {
                 val x = it.get("order_list")

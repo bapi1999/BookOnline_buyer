@@ -2,6 +2,7 @@ package com.sbdevs.bookonline.fragments
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +14,11 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.HomeAdapter
-import com.sbdevs.bookonline.adapters.CategoryAdapter
 import com.sbdevs.bookonline.databinding.FragmentHomeBinding
 import com.sbdevs.bookonline.models.HomeModel
 import kotlinx.coroutines.*
@@ -31,7 +29,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val firebaseFirestore = Firebase.firestore
-    val firebaseAuth = Firebase.auth
+
     private var uiViewLIst:List<HomeModel> = ArrayList()
     private lateinit var homeAdapter: HomeAdapter
 
@@ -45,11 +43,11 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
 
-        loadingDialog = Dialog(activity!!)
+        loadingDialog = Dialog(requireContext())
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
         loadingDialog.setCancelable(false)
         loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext,R.drawable.s_shape_bg_2)
+            AppCompatResources.getDrawable(requireContext().applicationContext,R.drawable.s_shape_bg_2)
         )
         loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         loadingDialog.show()
@@ -70,17 +68,6 @@ class HomeFragment : Fragment() {
 
 
 
-
-
-
-
-//        val categorylist1 = cateGoryList()
-//        var categoryRecyclerView = binding.categoryRecyclerHome
-//        categoryRecyclerView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
-//        miniCategoryAdapter = MiniCategoryAdapter(categorylist1)
-//        categoryRecyclerView.adapter = miniCategoryAdapter
-
-
         var recyclerView = binding.homeRecycler
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -98,21 +85,21 @@ class HomeFragment : Fragment() {
 
     private fun loadUi() = CoroutineScope(Dispatchers.IO).launch{
         firebaseFirestore.collection("HOMEPAGE").orderBy("index", Query.Direction.ASCENDING)
-            .get().addOnCompleteListener {
-                if (it.isSuccessful){
+            .get().addOnSuccessListener{
+                Toast.makeText(context,"Success home page", Toast.LENGTH_LONG).show()
+                uiViewLIst = it.toObjects(HomeModel::class.java)
+                homeAdapter.homeModelList =uiViewLIst
+                homeAdapter.notifyDataSetChanged()
+                swipeRefreshLayout.isRefreshing = false
 
-                    uiViewLIst = it.result!!.toObjects(HomeModel::class.java)
-                    homeAdapter.homeModelList =uiViewLIst
-                    homeAdapter.notifyDataSetChanged()
-                    swipeRefreshLayout.isRefreshing = false
-                }else{
-                    Toast.makeText(context,it.exception?.message, Toast.LENGTH_LONG).show()
-                }
+            }.addOnFailureListener{
+                Toast.makeText(context,it.message, Toast.LENGTH_LONG).show()
+                Log.e("HomeFragment","Failed to load home ${it.message}",it.cause)
             }.await()
         delay(1500)
     }
 
-    fun refreshFragment(){
+    private fun refreshFragment(){
         val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
         navController.run {
             popBackStack()

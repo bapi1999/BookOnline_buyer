@@ -3,6 +3,7 @@ package com.sbdevs.bookonline.adapters
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Color.parseColor
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -102,9 +103,9 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
     }
 
     class SliderViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val sliderView:ViewPager2 = itemView.findViewById(R.id.imageSliderNew)
-        var sliderModelList = ArrayList<SliderModel>()
-        val dotsIndicator = itemView.findViewById<DotsIndicator>(R.id.dots_indicator)
+        private val sliderView:ViewPager2 = itemView.findViewById(R.id.imageSliderNew)
+        private var sliderModelList = ArrayList<SliderModel>()
+        private val dotsIndicator = itemView.findViewById<DotsIndicator>(R.id.dots_indicator)
         lateinit var sliderHandel:android.os.Handler
 
         lateinit var adapter: SliderAdapter
@@ -146,28 +147,27 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
         private fun getFirebaeData(uiId:String )  = CoroutineScope(Dispatchers.IO).launch {
 
             val firebaseFirestore = Firebase.firestore.collection("UI_SLIDER").document(uiId)
-            firebaseFirestore.get().addOnCompleteListener {
-                if(it.isSuccessful){
-                    val noOfSl = it.result?.getLong("no_of_slider")
-                    for (i in 1..noOfSl!!){
-                        val url = it.result!!.getString("${i}_slider")?.trim()
-                        val sliderAction = it.result!!.getString("${i}_slider_bg")
-                        sliderModelList.add(SliderModel(url!!, sliderAction!!))
-                    }
-                    adapter.picList = sliderModelList
-                    adapter.notifyDataSetChanged()
-                }else{
-                    Toast.makeText(itemView.context,it.exception!!.message,Toast.LENGTH_LONG).show()
+            firebaseFirestore.get().addOnSuccessListener {
+                val noOfSl = it.getLong("no_of_slider")
+                for (i in 1..noOfSl!!){
+                    val url = it.getString("${i}_slider")?.trim()
+                    val sliderAction = it.getString("${i}_slider_bg")
+                    sliderModelList.add(SliderModel(url!!, sliderAction!!))
                 }
+                adapter.picList = sliderModelList
+                adapter.notifyDataSetChanged()
+
+            }.addOnFailureListener {
+                Log.e("SliderViewModel","${it.message}")
             }.await()
         }
 
     }
 
     class CategoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val categoryRecycler:RecyclerView = itemView.findViewById(R.id.topCategoryRecycler)
+        private val categoryRecycler:RecyclerView = itemView.findViewById(R.id.topCategoryRecycler)
         private val firebaseFirestore = Firebase.firestore
-        var categoryList = ArrayList<String>()
+        private var categoryList = ArrayList<String>()
         private lateinit var categoryAdapter: TopCategoryAdapter
         fun bind(homeModel: HomeModel){
 
@@ -183,16 +183,15 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
         fun getfireBsedata(uiId:String) = CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO){
                 firebaseFirestore.collection("UI_TOP_4_CATEGORY").document(uiId)
-                    .get().addOnCompleteListener {
-                        if (it.isSuccessful){
-                            categoryList = it.result!!.get("categories") as ArrayList<String>
-                            categoryAdapter.notifyDataSetChanged()
+                    .get().addOnSuccessListener{
+                        categoryList = it.get("categories") as ArrayList<String>
+                        categoryAdapter.notifyDataSetChanged()
 
-                            categoryAdapter = TopCategoryAdapter(categoryList)
-                            categoryRecycler.adapter = categoryAdapter
-                        }else{
+                        categoryAdapter = TopCategoryAdapter(categoryList)
+                        categoryRecycler.adapter = categoryAdapter
 
-                        }
+                    }.addOnFailureListener {
+                        Log.e("CategoryViewModel","${it.message}")
                     }
             }
             withContext(Dispatchers.Main){
@@ -224,29 +223,28 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
         private fun getFirebaeData(uiId:String ) = CoroutineScope(Dispatchers.IO).launch {
 
             val firebaseFirestore = Firebase.firestore.collection("UI_PRODUCT_HORIZONTAL").document(uiId)
-            firebaseFirestore.get().addOnCompleteListener {
-                if(it.isSuccessful){
-                    val header = it.result?.getString("layout_title")
-                    val bgColor = it.result?.getString("bg_color")?.trim()
-                    productIdList = it.result!!.get("products") as ArrayList<String>
-                    batchHeader.text = header
-                    batchBackground.setBackgroundColor(parseColor(bgColor))
+            firebaseFirestore.get().addOnSuccessListener {
+                val header = it.getString("layout_title")
+                val bgColor = it.getString("bg_color")?.trim()
+                productIdList = it.get("products") as ArrayList<String>
+                batchHeader.text = header
+                batchBackground.setBackgroundColor(parseColor(bgColor))
 
-                    productRecycler.layoutManager = LinearLayoutManager(itemView.context,LinearLayoutManager.HORIZONTAL ,false)
-                    adapter1 = HorizontalAdapter(productIdList)
-                    productRecycler.adapter = adapter1
+                productRecycler.layoutManager = LinearLayoutManager(itemView.context,LinearLayoutManager.HORIZONTAL ,false)
+                adapter1 = HorizontalAdapter(productIdList)
+                productRecycler.adapter = adapter1
 
-                    adapter1.notifyDataSetChanged()
-                }else{
-                    Toast.makeText(itemView.context,it.exception!!.message,Toast.LENGTH_LONG).show()
-                }
+                adapter1.notifyDataSetChanged()
+
+            }.addOnFailureListener {
+                Log.e("HorizontalViewModel","${it.message}")
             }
 
         }
     }
 
     class StripViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        var stripImage:ImageView = itemView.findViewById(R.id.strip_image)
+        private var stripImage:ImageView = itemView.findViewById(R.id.strip_image)
         private val firebaseFirestore = Firebase.firestore
         fun bind(homeModel: HomeModel){
             val uiId:String = homeModel.UI_VIEW_ID.trim()
@@ -271,21 +269,17 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
             val pos:String = adapterPosition.toString()
             viewAllBtn.setOnClickListener {
-//                Toast.makeText(itemView.context,"this is $uiId",Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(itemView.context,"View all",Toast.LENGTH_SHORT).show()
             }
-
-
         }
 
         private fun getFirebaeData(uiId:String ) = CoroutineScope(Dispatchers.IO).launch {
 
             firebaseFirestore.collection("UI_PROMOTED_PRODUCT").document(uiId)
-                .get().addOnCompleteListener {
-                if(it.isSuccessful){
-                    val description = it.result?.getString("description")
-                    val btnColor = it.result?.getString("button_color")?.trim()
-                    productIdList = it.result!!.get("products") as ArrayList<String>
+                .get().addOnSuccessListener {
+                    val description = it.getString("description")
+                    val btnColor = it.getString("button_color")?.trim()
+                    productIdList = it.get("products") as ArrayList<String>
 
                     viewAllBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(btnColor))
 
@@ -294,20 +288,20 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
                     productRecycler.adapter = adapter1
 
                     adapter1.notifyDataSetChanged()
-                }else{
-                    Toast.makeText(itemView.context,it.exception!!.message,Toast.LENGTH_LONG).show()
+
+            }.addOnFailureListener {
+                    Log.e("PromotedViewModel","${it.message}")
                 }
-            }
 
         }
     }
 
 
     class BigAdsLinkViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        var adsImage:ImageView = itemView.findViewById(R.id.bigads_image)
-        val adTitleTxt:TextView =itemView.findViewById(R.id.ad_title)
-        val adDescriptionTxt:TextView =itemView.findViewById(R.id.ad_description)
-        val adProviderTxt:TextView =itemView.findViewById(R.id.ad_provider_name)
+        private var adsImage:ImageView = itemView.findViewById(R.id.bigads_image)
+        private val adTitleTxt:TextView =itemView.findViewById(R.id.ad_title)
+        private val adDescriptionTxt:TextView =itemView.findViewById(R.id.ad_description)
+        private val adProviderTxt:TextView =itemView.findViewById(R.id.ad_provider_name)
 
         private val firebaseFirestore = Firebase.firestore
 
@@ -315,18 +309,18 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
             val uiId:String = homeModel.UI_VIEW_ID.trim()
 
             firebaseFirestore.collection("UI_BIG_ADS").document(uiId)
-                .get().addOnCompleteListener {
+                .get().addOnSuccessListener {
                     CoroutineScope(Dispatchers.IO).launch{
-                        val url = it.result?.getString("image")
-                        val adtitle = it.result?.getString("ad_title")
-                        val adDescription = it.result?.getString("ad_description")
-                        val provider = it.result?.getString("ad_provider")
-                        val actionType =it.result?.getLong("action_type")
+                        val url = it.getString("image")
+                        val addTitle = it.getString("ad_title")
+                        val adDescription = it.getString("ad_description")
+                        val provider = it.getString("ad_provider")
+                        val actionType =it.getLong("action_type")
 
 
                         withContext(Dispatchers.Main){
                             Glide.with(itemView.context).load(url).placeholder(R.drawable.as_banner_placeholder).into(adsImage)
-                            adTitleTxt.text = adtitle
+                            adTitleTxt.text = addTitle
                             adDescriptionTxt.text = adDescription
                             adProviderTxt.text = provider
                         }
@@ -334,6 +328,8 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
 
                     }
+                }.addOnFailureListener {
+                    Log.e("HorizontalAdapter","${it.message}")
                 }
 
 

@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 
@@ -21,11 +22,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MyAddressActivity
+import com.sbdevs.bookonline.activities.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentMyAccountBinding
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MyAccountFragment : Fragment() {
@@ -36,7 +39,7 @@ class MyAccountFragment : Fragment() {
     val firebaseAuth = Firebase.auth
     private val user = firebaseAuth.currentUser
     lateinit var userImage:CircleImageView
-
+    //private lateinit var navController: NavController
     var profilePicture:String = ""
     var buyerName:String =""
     var mobileNumber = ""
@@ -52,20 +55,32 @@ class MyAccountFragment : Fragment() {
         userImage = binding.lay1.userImage
 
 
-        loadingDialog = Dialog(activity!!)
+        loadingDialog = Dialog(requireContext())
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
         loadingDialog.setCancelable(false)
         loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext,R.drawable.s_shape_bg_2)
+            AppCompatResources.getDrawable(requireContext().applicationContext,R.drawable.s_shape_bg_2)
         )
         loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         loadingDialog.show()
 
-        lifecycleScope.launch(Dispatchers.IO){
-            getMyAccount()
-            delay(1000)
+        if(user != null){
+            binding.myAccountScroll.visibility = View.VISIBLE
+            binding.notLoginContainer.visibility = View.GONE
+
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+                getMyAccount()
+                delay(1000)
+                loadingDialog.dismiss()
+            }
+
+        }else{
+            binding.myAccountScroll.visibility = View.GONE
+            binding.notLoginContainer.visibility = View.VISIBLE
             loadingDialog.dismiss()
+
         }
+
 
         binding.lay3.myAddressLay.setOnClickListener {
             val intent = Intent(context,MyAddressActivity::class.java)
@@ -114,14 +129,34 @@ class MyAccountFragment : Fragment() {
         binding.lay1.editProfileBtn.setOnClickListener{
            goToEditdFragment()
         }
+        binding.notLoginLay.loginOrSignupBtn.setOnClickListener {
+            val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
+            startActivity(registerIntent)
+        }
 
 
 
 
         binding.logout.setOnClickListener {
-            Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
-            firebaseAuth.signOut()
+
+//            Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
+//            val action = MyAccountFragmentDirections.actionMyAccountFragmentToHomeFragment()
+//            findNavController().navigate(action)
+
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    firebaseAuth.signOut()
+                }
+                withContext(Dispatchers.Main){
+                    Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
+                    val action = MyAccountFragmentDirections.actionMyAccountFragmentToHomeFragment()
+                    findNavController().navigate(action)
+                }
+            }
         }
+
+
+
 
     }
 
@@ -160,15 +195,13 @@ class MyAccountFragment : Fragment() {
 
                 if (profile!=""){
                     binding.lay1.textView57.visibility = View.GONE
-                    Glide.with(context!!).load(profile).placeholder(R.drawable.as_user_placeholder).into(userImage)
+                    Glide.with(requireContext()).load(profile).placeholder(R.drawable.as_user_placeholder).into(userImage)
                 }else{
                     binding.lay1.textView57.visibility = View.VISIBLE
                 }
 
-            }
-
-        userRef.addOnFailureListener {
-            it.message?.let { it1 -> Log.e(TAG, it1) }
+            }.addOnFailureListener {
+           Log.e("User","${it.message}")
         }
     }
 

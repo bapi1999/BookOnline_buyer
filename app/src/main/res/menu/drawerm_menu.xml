@@ -70,11 +70,6 @@
             android:id="@+id/sell_on_book"
             android:icon="@drawable/i_sell"
             android:title="Sell on BookOnline" />
-
-        <item
-            android:id="@+id/nav_logOut"
-            android:icon="@drawable/i_logout"
-            android:title="Log Out" />
     </group>
 
 </menu>

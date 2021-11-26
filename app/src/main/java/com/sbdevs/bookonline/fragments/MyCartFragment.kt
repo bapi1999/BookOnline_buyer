@@ -57,11 +57,11 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         _binding = FragmentMyCartBinding.inflate(inflater, container, false)
 
-        val loadingDialog :Dialog = Dialog(activity!!)
+        val loadingDialog :Dialog = Dialog(requireActivity())
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
         loadingDialog.setCancelable(false)
         loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext, R.drawable.s_shape_bg_2)
+            AppCompatResources.getDrawable(requireActivity().applicationContext, R.drawable.s_shape_bg_2)
         )
         loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         loadingDialog.show()
@@ -70,31 +70,43 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.isNestedScrollingEnabled = false
 
-        this.lifecycleScope.launch(Dispatchers.IO){
-            withContext(Dispatchers.IO){
+
+
+        if (user != null){
+
+            this.lifecycleScope.launch(Dispatchers.IO){
+                withContext(Dispatchers.IO){
 
 //                getFirebaseData()
-                getFirebaseData3()
-                delay(1000)
-            }
+                    getFirebaseData3()
+                    delay(1000)
+                }
 
-            withContext(Dispatchers.Main){
-                delay(500)
-                calculateThePrice(sendingList)
+                withContext(Dispatchers.Main){
+                    delay(500)
+                    calculateThePrice(sendingList)
 
 
-            }
+                }
 //            withContext(Dispatchers.Main){
 ////                delay(500)
 //               setValueToTextView()
 //
 //
 //            }
-            withContext(Dispatchers.Main){
-                loadingDialog.dismiss()
-            }
+                withContext(Dispatchers.Main){
+                    loadingDialog.dismiss()
+                }
 
+            }
+        }else{
+            binding.emptyContainer.visibility = View.VISIBLE
+            binding.btnContainer.visibility =View.GONE
+            binding.scrollviewCart.visibility = View.GONE
+            loadingDialog.dismiss()
         }
+
+
 
 
         swipeRefresh = binding.swipeRefresh
@@ -154,21 +166,20 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
                     val x = it.result?.get("cart_list")
                     if (x ==null){
                         binding.emptyContainer.visibility = View.VISIBLE
-                        binding.linearLayout10.visibility =View.GONE
+                        binding.btnContainer.visibility =View.GONE
                         binding.scrollviewCart.visibility = View.GONE
-                        binding.proceedBtn.isEnabled = false
-                        binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_800)
+
+
                     }else{
                         binding.proceedBtn.isEnabled = true
-                        binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.purple_500)
+                        binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.purple_500)
 
                         cartList = x as ArrayList<MutableMap<String, Any>>
                         if (cartList.size == 0){
                             binding.emptyContainer.visibility = View.VISIBLE
-                            binding.linearLayout10.visibility =View.GONE
+                            binding.btnContainer.visibility =View.GONE
                             binding.scrollviewCart.visibility = View.GONE
-                            binding.proceedBtn.isEnabled = false
-                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_800)
+
                         }else{
                             adapter.list = cartList
                             adapter.notifyDataSetChanged()
@@ -203,7 +214,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
                         if (stockQuantity == 0L){
 //                            binding.proceedBtn.isEnabled = false
-                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_400)
+                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
                             allItemStocked = false
 
                         }
@@ -238,12 +249,12 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
     }
 
     override fun onQuantityChange(position: Int, textView: TextView) {
-        val qtyDialog :Dialog = Dialog(context!!)
+        val qtyDialog :Dialog = Dialog(requireContext())
         qtyDialog.setContentView(R.layout.ar_qualtity_dialog)
         qtyDialog.setCancelable(false)
         val cartModelAtIndex = sendingList[position]
         qtyDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext, R.drawable.s_shape_bg_2)
+            AppCompatResources.getDrawable(requireActivity().applicationContext, R.drawable.s_shape_bg_2)
         )
 
         qtyDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)

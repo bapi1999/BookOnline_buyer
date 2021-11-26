@@ -1,16 +1,14 @@
-package com.sbdevs.bookonline.fragments.register
+package com.sbdevs.bookonline.fragments
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
@@ -18,57 +16,58 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
+import com.sbdevs.bookonline.activities.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
+import com.sbdevs.bookonline.databinding.FragmentLoginDialogBinding
+import com.sbdevs.bookonline.fragments.register.LoginFragmentDirections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class LoginFragment : Fragment() {
-    private var _binding:FragmentLoginBinding?=null
+class LoginDialogFragment : DialogFragment() {
+    private var _binding:FragmentLoginDialogBinding ? = null
     private val binding get() = _binding!!
 
     val firebaseAuth = Firebase.auth
-    lateinit var email:TextInputLayout
-    lateinit var pass:TextInputLayout
-    lateinit var errorTxt:TextView
+    lateinit var email: TextInputLayout
+    lateinit var pass: TextInputLayout
+    lateinit var errorTxt: TextView
 
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
 
-    lateinit var loadingDialog : Dialog
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        _binding = FragmentLoginDialogBinding.inflate(inflater, container, false)
 
-        errorTxt  = binding.loginLay.errorMessageText
+
+        errorTxt  = binding.errorMessageText
         errorTxt.visibility =View.GONE
-        email = binding.loginLay.emailInput
-        pass = binding.loginLay.passwordInput
-        binding.loginLay.signupText.setOnClickListener {
-            val action  = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()
-            findNavController().navigate(action)
+        email = binding.emailInput
+        pass = binding.passwordInput
+
+        binding.signupText.setOnClickListener {
+            val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
+            startActivity(registerIntent)
+        }
+
+        binding.forgotPassword.setOnClickListener {
+            val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
+            startActivity(registerIntent)
+        }
+
+        binding.cancelButton.setOnClickListener {
+            dismiss()
         }
 
 
-        binding.loginLay.forgotPassword.setOnClickListener {
-            val action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment()
-            findNavController().navigate(action1)
-        }
 
 
-
-        binding.loginLay.loginBtn.setOnClickListener {
+        binding.loginBtn.setOnClickListener {
             checkAllDetails()
         }
-
-        binding.loginLay.skipBtn.setOnClickListener{
-            val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
-            startActivity(mainActivityIntent)
-        }
-
-
-
 
         return binding.root
     }
@@ -131,7 +130,7 @@ class LoginFragment : Fragment() {
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         errorTxt.visibility = View.VISIBLE
-                        Toast.makeText(context,e.message,Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,e.message, Toast.LENGTH_LONG).show()
                     }
                 }
             }

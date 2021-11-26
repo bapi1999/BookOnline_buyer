@@ -41,9 +41,8 @@ import kotlinx.coroutines.withContext
 
 
 class ProductFragment : Fragment() {
-    private var _binding :FragmentProductBinding? = null
+    private var _binding: FragmentProductBinding? = null
     private val binding get() = _binding!!
-
 
 
     private val firebaseFirestore = Firebase.firestore
@@ -65,33 +64,33 @@ class ProductFragment : Fragment() {
     private lateinit var productImgViewPager: ViewPager
     private lateinit var productImgIndicator: TabLayout
 
-    private var cartList :ArrayList<MutableMap<String,Any>> = ArrayList()
-    private var fbCartList:ArrayList<MutableMap<String,Any>> = ArrayList()
+    private var cartList: ArrayList<MutableMap<String, Any>> = ArrayList()
+    private var fbCartList: ArrayList<MutableMap<String, Any>> = ArrayList()
 
-    private var wishList :ArrayList<String> = ArrayList()
-    private var fbWishList :ArrayList<String> = ArrayList()
+    private var wishList: ArrayList<String> = ArrayList()
+    private var fbWishList: ArrayList<String> = ArrayList()
 
-    private var sendingList:ArrayList<CartModel> = ArrayList()
+    private var sendingList: ArrayList<CartModel> = ArrayList()
     private var totalPrice: Int = 0
     private var discount = 0
-    private var totalAmount= 0
+    private var totalAmount = 0
 
     private var productImgList: ArrayList<String> = ArrayList()
-    private var ALREADY_ADDED_TO_WISHLIST :Boolean = false
-    private var ALREADY_ADDED_TO_CART :Boolean = false
+    private var ALREADY_ADDED_TO_WISHLIST: Boolean = false
+    private var ALREADY_ADDED_TO_CART: Boolean = false
     private lateinit var productId: String
     private var wishListIndex = 0
     lateinit var enterQuantityInput: TextInputLayout
 
     var dbStockQty = 0
-
+    private var loginDialog = LoginDialogFragment()
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding  = FragmentProductBinding.inflate(inflater, container, false)
+        _binding = FragmentProductBinding.inflate(inflater, container, false)
 
 
 
@@ -103,12 +102,12 @@ class ProductFragment : Fragment() {
         productImgIndicator.setupWithViewPager(productImgViewPager, true)
 
 
-        val loadingDialog = Dialog(context!!)
+        val loadingDialog = Dialog(requireContext())
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
         loadingDialog.setCancelable(false)
         loadingDialog.window!!.setBackgroundDrawable(
             AppCompatResources.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.s_shape_bg_2
             )
         )
@@ -119,7 +118,7 @@ class ProductFragment : Fragment() {
         loadingDialog.show();
 
         val intent = requireActivity().intent
-        productId= intent.getStringExtra("productId").toString().trim()
+        productId = intent.getStringExtra("productId").toString().trim()
 
         fabBtn = binding.lay1.floatingActionButton
 
@@ -130,9 +129,12 @@ class ProductFragment : Fragment() {
 
             getFirebaseData(productId)
 
-            withContext(Dispatchers.IO){
-                getWishList()
-                getCartList()
+            withContext(Dispatchers.IO) {
+                if (user!=null){
+                    getWishList()
+                    getCartList()
+                }
+
             }
 
             withContext(Dispatchers.Main) {
@@ -167,105 +169,141 @@ class ProductFragment : Fragment() {
         super.onStart()
 
         fabBtn.setOnClickListener {
-            if (!ALREADY_ADDED_TO_WISHLIST){
 
-                wishList.add(productId)
-                val wishmap:MutableMap<String,Any> = HashMap()
-                wishmap["wish_list"] = wishList
-                firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-                    .document("MY_WISHLIST").update(wishmap)
-
-                ALREADY_ADDED_TO_WISHLIST = true
-                fabBtn.supportImageTintList =
-                    ContextCompat.getColorStateList(context!!, R.color.red)
-                fabBtn.rippleColor =
-                    ContextCompat.getColor(context!!, R.color.gray_400)
+            if (user == null){
+                loginDialog.show(childFragmentManager, "custom login dialog")
             }else{
-                Toast.makeText(context!!,"Removed from position $wishListIndex ",Toast.LENGTH_SHORT).show()
+                if (!ALREADY_ADDED_TO_WISHLIST) {
 
-                wishList.removeAt(wishListIndex)
-                val cartmap:MutableMap<String,Any> = HashMap()
-                cartmap["wish_list"] = wishList
-                firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-                    .document("MY_WISHLIST").update(cartmap)
+                    wishList.add(productId)
+                    val wishmap: MutableMap<String, Any> = HashMap()
+                    wishmap["wish_list"] = wishList
+                    firebaseFirestore.collection("USERS").document(user.uid).collection("USER_DATA")
+                        .document("MY_WISHLIST").update(wishmap)
 
-                ALREADY_ADDED_TO_WISHLIST = false
-                fabBtn.supportImageTintList =
-                    ContextCompat.getColorStateList(context!!, R.color.gray_400)
-                fabBtn.rippleColor =
-                    ContextCompat.getColor(context!!, R.color.red)
+                    ALREADY_ADDED_TO_WISHLIST = true
+                    fabBtn.supportImageTintList =
+                        ContextCompat.getColorStateList(requireContext(), R.color.red)
+                    fabBtn.rippleColor =
+                        ContextCompat.getColor(requireContext(), R.color.gray_400)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Removed from position $wishListIndex ",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    wishList.removeAt(wishListIndex)
+                    val cartmap: MutableMap<String, Any> = HashMap()
+                    cartmap["wish_list"] = wishList
+                    firebaseFirestore.collection("USERS").document(user.uid).collection("USER_DATA")
+                        .document("MY_WISHLIST").update(cartmap)
+
+                    ALREADY_ADDED_TO_WISHLIST = false
+                    fabBtn.supportImageTintList =
+                        ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+                    fabBtn.rippleColor =
+                        ContextCompat.getColor(requireContext(), R.color.red)
+                }
+
             }
+
 
         }
 
-        addToCartBtn.setOnClickListener {
 
-            if (ALREADY_ADDED_TO_CART){
-                Snackbar.make(it, "Already added to cart", Snackbar.LENGTH_SHORT).show()
-
-            }else{
-                val listMap:MutableMap<String,Any> = HashMap()
-                listMap["product"] = productId
-                listMap["quantity"] = 1
-                cartList.add(listMap)
-                val cartmap:MutableMap<String,Any> = HashMap()
-                cartmap["cart_list"] = cartList
-                val snack = Snackbar.make(it, "Successfully added to cart", Snackbar.LENGTH_SHORT)
-                firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-                    .document("MY_CART").update(cartmap).addOnCompleteListener {itdb->
-                        if (itdb.isSuccessful){
-
+        addToCartBtn.setOnClickListener { it1 ->
+            if (user == null) {
+                loginDialog.show(childFragmentManager, "custom login dialog")
+            } else {
+                if (ALREADY_ADDED_TO_CART) {
+                    Snackbar.make(it1, "Already added to cart", Snackbar.LENGTH_SHORT).show()
+                } else {
+                    val listMap: MutableMap<String, Any> = HashMap()
+                    listMap["product"] = productId
+                    listMap["quantity"] = 1
+                    cartList.add(listMap)
+                    val cartmap: MutableMap<String, Any> = HashMap()
+                    cartmap["cart_list"] = cartList
+                    val snack = Snackbar.make(it1, "Successfully added to cart", Snackbar.LENGTH_SHORT)
+                    firebaseFirestore.collection("USERS").document(user.uid).collection("USER_DATA")
+                        .document("MY_CART").update(cartmap).addOnSuccessListener {
                             snack.show()
-                        }else{
-                            Toast.makeText(context!!,"Failed",Toast.LENGTH_SHORT).show()
-                        }
-                    }
-            }
 
+                        }.addOnFailureListener{
+                            Log.e("AddToCart","${it.message}",it.cause)
+                        }
+                }
+            }
 
 
         }
 
         buyNowBtn.setOnClickListener {
 
-            if(!checkIsQuantityEntered(dbStockQty)){
-                return@setOnClickListener
+            if (user != null){
+                if (!checkIsQuantityEntered(dbStockQty)) {
+                    return@setOnClickListener
+                }
+                else {
+                    val qty = enterQuantityInput.editText?.text.toString().toLong()
+                    val newSendingList: ArrayList<CartModel> = ArrayList()
+                    newSendingList.add(
+                        CartModel(
+                            productId,
+                            sendingList[0].sellerId,
+                            sendingList[0].url,
+                            sendingList[0].title,
+                            sendingList[0].priceOriginal,
+                            sendingList[0].priceSelling,
+                            sendingList[0].stockQty,
+                            qty
+                        )
+                    )
+
+
+                    val intentProceedOrderActivity =
+                        Intent(requireContext(), ProceedOrderActivity::class.java);
+                    intentProceedOrderActivity.putExtra("From_To", 2);
+                    //todo: 1=> MyCart / 2=> BuyNow
+
+
+                    intentProceedOrderActivity.putParcelableArrayListExtra(
+                        "productList",
+                        newSendingList
+                    );
+                    intentProceedOrderActivity.putExtra("total_price", (totalPrice * qty.toInt()))
+                    intentProceedOrderActivity.putExtra("total_discount", (discount * qty.toInt()))
+                    intentProceedOrderActivity.putExtra("total_amount", (totalAmount * qty.toInt()))
+                    startActivity(intentProceedOrderActivity)
+
+                }
             }else{
-                val qty = enterQuantityInput.editText?.text.toString().toLong()
-                val newSendingList:ArrayList<CartModel> = ArrayList()
-                newSendingList.add(CartModel(productId,sendingList[0].sellerId, sendingList[0].url,sendingList[0].title
-                    ,sendingList[0].priceOriginal, sendingList[0].priceSelling,sendingList[0].stockQty,qty))
-
-
-                val intentProceedOrderActivity = Intent(context!!, ProceedOrderActivity::class.java);
-                intentProceedOrderActivity.putExtra("From_To",2);
-                //todo: 1=> MyCart / 2=> BuyNow
-
-
-                intentProceedOrderActivity.putParcelableArrayListExtra("productList",newSendingList);
-                intentProceedOrderActivity.putExtra("total_price",(totalPrice*qty.toInt()))
-                intentProceedOrderActivity.putExtra("total_discount",(discount*qty.toInt()))
-                intentProceedOrderActivity.putExtra("total_amount",(totalAmount*qty.toInt()))
-                startActivity(intentProceedOrderActivity)
-
+                loginDialog.show(childFragmentManager, "custom login dialog")
             }
+
+
 
         }
 
 
         binding.layRating.rateNowBtn.setOnClickListener {
-            val action = ProductFragmentDirections.actionProductFragmentToRateNowFragment(productId)
-            findNavController().navigate(action)
+            if (user !=null){
+                val action = ProductFragmentDirections.actionProductFragmentToRateNowFragment(productId)
+                findNavController().navigate(action)
+            }else{
+                loginDialog.show(childFragmentManager, "custom login dialog")
+            }
+
         }
 
         binding.layRating.viewAllButton.setOnClickListener {
-            val action = ProductFragmentDirections.actionProductFragmentToAllRatingFragment(productId)
+            val action =
+                ProductFragmentDirections.actionProductFragmentToAllRatingFragment(productId)
             findNavController().navigate(action)
         }
 
     }
-
-
 
 
     private fun getFirebaseData(productId: String) = CoroutineScope(Dispatchers.IO).launch {
@@ -304,7 +342,18 @@ class ProductFragment : Fragment() {
 //                    totalAmount = priceSelling.toInt()
 //                    totalPrice = priceOriginal.toInt()
 //                    discount = totalPrice - totalAmount
-                    sendingList.add(CartModel(productId,sellerId,url,productName,priceOriginal,priceSelling,stock,1))
+                    sendingList.add(
+                        CartModel(
+                            productId,
+                            sellerId,
+                            url,
+                            productName,
+                            priceOriginal,
+                            priceSelling,
+                            stock,
+                            1
+                        )
+                    )
 
 
                     for (catrgorys in categoryList) {
@@ -358,14 +407,15 @@ class ProductFragment : Fragment() {
                     } else if (stock in 1..5) {
                         lay11.stockState.text = "low"
                         lay11.stockQuantity.text = "only $stock available in stock"
-                    }
-                    else {
+                    } else {
                         lay11.stockState.text = "out of stock"
                         lay11.stockQuantity.visibility = gone
                         binding.addToCartBtn.isEnabled = false
-                        binding.addToCartBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_400)
+                        binding.addToCartBtn.backgroundTintList =
+                            ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
                         binding.buyNowBtn.isEnabled = false
-                        binding.buyNowBtn.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_400)
+                        binding.buyNowBtn.backgroundTintList =
+                            ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
                     }
 
 // todo layout 2
@@ -405,6 +455,8 @@ class ProductFragment : Fragment() {
 
 
                 }
+            }.addOnFailureListener {
+                Log.e("Product","${it.message}",it.cause)
             }.await()
     }
 
@@ -412,16 +464,14 @@ class ProductFragment : Fragment() {
         firebaseFirestore.collection("PRODUCTS").document(productID)
             .collection("PRODUCT_REVIEW")
             .orderBy("review_Date", Query.Direction.DESCENDING).limit(7)
-            .get().addOnCompleteListener {
+            .get().addOnSuccessListener {
+                reviewList = it.toObjects(ProductReviewModel::class.java)
+                reviewAdapter.list = reviewList
+                reviewAdapter.notifyDataSetChanged()
 
-                if (it.isSuccessful) {
-                    reviewList = it.result!!.toObjects(ProductReviewModel::class.java)
-                    reviewAdapter.list = reviewList
-                    reviewAdapter.notifyDataSetChanged()
-                } else {
-                    Toast.makeText(context!!, it.exception?.message, Toast.LENGTH_LONG).show()
-                }
 
+            }.addOnFailureListener{
+                Log.e("Review","${it.message}",it.cause)
             }.await()
 
     }
@@ -429,82 +479,82 @@ class ProductFragment : Fragment() {
     private fun getCartList() {
 
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_CART").get().addOnCompleteListener {
-                if (it.isSuccessful){
-                    val x = it.result?.get("cart_list")
+            .document("MY_CART").get().addOnSuccessListener {
 
-                    if (x != null){
-                        fbCartList = x as ArrayList<MutableMap<String,Any>>
-                        cartList.addAll(fbCartList)
+                val x = it.get("cart_list")
 
-                        for (item in fbCartList){
-                            val productIdDB:String = item["product"] as String
-                            if (productIdDB.contentEquals(productId)){
-                                ALREADY_ADDED_TO_CART = true
-                            }
+                if (x != null) {
+                    fbCartList = x as ArrayList<MutableMap<String, Any>>
+                    cartList.addAll(fbCartList)
+
+                    for (item in fbCartList) {
+                        val productIdDB: String = item["product"] as String
+                        if (productIdDB.contentEquals(productId)) {
+                            ALREADY_ADDED_TO_CART = true
                         }
-
-                    }else{
-                        Log.d("CartList","NoCart list found")
                     }
-                }else{
-                    Toast.makeText(context!!,"Failed cart", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Log.w("CartList", "Cart list not found")
                 }
+
+            }.addOnFailureListener {
+                Log.e("CartList", "${it.message}",it.cause)
             }
 
     }
-
 
 
     private fun getWishList() = lifecycleScope.launch(Dispatchers.IO) {
 
 
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_WISHLIST").get().addOnCompleteListener {
-                if (it.isSuccessful){
-                    val x = it.result?.get("wish_list")
+            .document("MY_WISHLIST").get().addOnSuccessListener {
 
-                    if (x != null){
-                        fbWishList = x as ArrayList<String>
+                val x = it.get("wish_list")
 
-                        wishList.addAll(fbWishList)
-                        var index = 0
-                        for (ids: String in fbWishList) {
+                if (x != null) {
+                    fbWishList = x as ArrayList<String>
 
-                            if (ids.contains(productId) ) {
-                                wishListIndex = index
-                                ALREADY_ADDED_TO_WISHLIST = true
+                    wishList.addAll(fbWishList)
+                    var index = 0
+                    for (ids: String in fbWishList) {
+
+                        if (ids.contains(productId)) {
+                            wishListIndex = index
+                            ALREADY_ADDED_TO_WISHLIST = true
 //                                Toast.makeText(this@ProductDetailsActivity,"ALREADY_ADDED_TO_WISHLIST ",Toast.LENGTH_SHORT).show()
-                                fabBtn.supportImageTintList =
-                                    ContextCompat.getColorStateList(context!!, R.color.red)
-                                fabBtn.rippleColor =
-                                    ContextCompat.getColor(context!!, R.color.gray_400)
-
-                            }
-                            index++
+                            fabBtn.supportImageTintList =
+                                ContextCompat.getColorStateList(requireContext(), R.color.red)
+                            fabBtn.rippleColor =
+                                ContextCompat.getColor(requireContext(), R.color.gray_400)
 
                         }
+                        index++
 
-                    }else{
-                        Log.d("WishList","No wish list found")
                     }
-                }else{
-                    Toast.makeText(context!!,"Failed", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Log.w("WishList", "No wish list found")
                 }
+
+
+            }.addOnFailureListener{
+                Log.e("WishList", "${it.message}",it.cause)
             }.await()
 
     }
 
 
-    private fun checkIsQuantityEntered(stockQty:Int):Boolean{
+    private fun checkIsQuantityEntered(stockQty: Int): Boolean {
         val quantityString = enterQuantityInput.editText!!.text.toString().trim()
         return if (quantityString.isNotEmpty() && quantityString.toInt() != 0) {
-            if(quantityString.toInt() > stockQty ){
+            if (quantityString.toInt() > stockQty) {
 
                 enterQuantityInput.isErrorEnabled = true
                 enterQuantityInput.error = "Your entered Quantity exceeds Stock Quantity"
                 false
-            }else{
+            } else {
 
                 enterQuantityInput.isErrorEnabled = false
                 enterQuantityInput.error = null
@@ -519,11 +569,8 @@ class ProductFragment : Fragment() {
             false
 
 
-
         }
     }
-
-
 
 
 }

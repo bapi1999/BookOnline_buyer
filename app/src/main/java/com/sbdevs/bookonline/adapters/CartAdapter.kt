@@ -86,59 +86,53 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
             }
 
             firebaseFirestore.collection("PRODUCTS").document(productId)
-                .get().addOnCompleteListener {
-                    if (it.isSuccessful){
-                        var categoryString = ""
-                        val url = it.result!!.get("product_thumbnail").toString().trim()
-                        val title:String = it.result!!.getString("book_title")!!
-                        val stock = it.result!!.getLong("in_stock_quantity")!!
-                        val categoryList: ArrayList<String> = it.result!!.get("categories") as ArrayList<String>
+                .get().addOnSuccessListener {
+                    var categoryString = ""
+                    val url = it.get("product_thumbnail").toString().trim()
+                    val title:String = it.getString("book_title")!!
+                    val stock = it.getLong("in_stock_quantity")!!
+                    val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
 
-                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
-                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
+                    val priceOriginal = it.getLong("price_original")!!.toLong()
+                    val priceSelling = it.getLong("price_selling")!!.toLong()
 
-                        productName.text = title
+                    productName.text = title
 
-                        Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
+                    Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
-                        if (priceOriginal == 0L){
-                            val price = priceSelling.toInt()*quantity.toInt()
-                            productPrice.text = price.toString()
-                            productRealPrice.visibility = View.GONE
-                            percentOff.text = "Buy Now"
-
-                        }else{
-
-                            val price = priceSelling.toInt()*quantity.toInt()
-                            val realPrice = priceOriginal.toInt()*quantity.toInt()
-
-                            val percent:Int = (100* (realPrice - price)) / ( realPrice )
-
-                            productPrice.text = price.toString()
-                            productRealPrice.text = realPrice.toString()
-                            percentOff.text = "${percent}% off"
-
-                        }
-                        if (stock != 0L){
-                            stockNumberTxt.text = stock.toString()
-                            outofstockTxt.visibility = View.GONE
-                        }else{
-                            stockNumberTxt.text = stock.toString()
-                            outofstockTxt.visibility = View.VISIBLE
-                        }
-
-                        for (catrgorys in categoryList) {
-                            categoryString += "$catrgorys,  "
-                        }
-                        variantTxt.text = categoryString
-
+                    if (priceOriginal == 0L){
+                        val price = priceSelling.toInt()*quantity.toInt()
+                        productPrice.text = price.toString()
+                        productRealPrice.visibility = View.GONE
+                        percentOff.text = "Buy Now"
 
                     }else{
-                        Log.d("Firebase error","nullable reference on firebase ")
+
+                        val price = priceSelling.toInt()*quantity.toInt()
+                        val realPrice = priceOriginal.toInt()*quantity.toInt()
+
+                        val percent:Int = (100* (realPrice - price)) / ( realPrice )
+
+                        productPrice.text = price.toString()
+                        productRealPrice.text = realPrice.toString()
+                        percentOff.text = "${percent}% off"
+
+                    }
+                    if (stock != 0L){
+                        stockNumberTxt.text = stock.toString()
+                        outofstockTxt.visibility = View.GONE
+                    }else{
+                        stockNumberTxt.text = stock.toString()
+                        outofstockTxt.visibility = View.VISIBLE
                     }
 
+                    for (catrgorys in categoryList) {
+                        categoryString += "$catrgorys,  "
+                    }
+                    variantTxt.text = categoryString
 
-
+                }.addOnFailureListener {
+                    Log.e("CartAdapter","${it.message}")
                 }
         }
     }

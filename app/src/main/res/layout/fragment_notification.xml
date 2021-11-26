@@ -6,9 +6,11 @@
     tools:context=".fragments.NotificationFragment">
 
     <LinearLayout
+        android:id="@+id/emptyContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
         <include layout="@layout/le_empty_layout"/>
     </LinearLayout>
 

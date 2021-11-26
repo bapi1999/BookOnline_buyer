@@ -56,6 +56,11 @@ class SignUpFragment : Fragment() {
             checkAllDetails()
         }
 
+        binding.signupLay.skipBtn.setOnClickListener{
+            val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
+            startActivity(mainActivityIntent)
+        }
+
         return binding.root
     }
 
@@ -178,11 +183,11 @@ class SignUpFragment : Fragment() {
         addressMap["select_No"] = 0L
 
         val itemsMap: MutableMap<String, Any> = HashMap()
-        addressMap["info"] = "rating Id is userId of the buyer, as 1 user can review once"
+        itemsMap["info"] = "rating Id is userId of the buyer, as 1 user can review once"
 
 
         val notificationMap: MutableMap<String, Any> = HashMap()
-        addressMap["new_notification"] = 0
+        notificationMap["new_notification"] = 0
 
 
         val userMap: MutableMap<String, Any> = HashMap()

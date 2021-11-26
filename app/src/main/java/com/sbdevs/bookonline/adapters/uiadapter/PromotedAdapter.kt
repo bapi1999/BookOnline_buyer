@@ -1,6 +1,7 @@
 package com.sbdevs.bookonline.adapters.uiadapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,39 +46,38 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
                 itemView.context.startActivity(productIntent)
             }
             firebaseFirestore.collection("PRODUCTS").document(productId)
-                .get().addOnCompleteListener {
-                    if (it.isSuccessful){
-                        val url:String = it.result!!.get("product_thumbnail").toString().trim()
-                        val title:String = it.result!!.getString("book_title")!!
+                .get().addOnSuccessListener {
+
+                    val url:String = it.get("product_thumbnail").toString().trim()
+                    val title:String = it.getString("book_title")!!
 
 
-                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
-                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
+                    val priceOriginal = it.getLong("price_original")!!.toLong()
+                    val priceSelling = it.getLong("price_selling")!!.toLong()
 
-                        if (priceOriginal == 0L){
-                            productPrice.text = priceSelling.toString()
-                            priceOff.text = "Buy Now"
+                    if (priceOriginal == 0L){
+                        productPrice.text = priceSelling.toString()
+                        priceOff.text = "Buy Now"
 
-                        }else{
-                            val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
+                    }else{
+                        val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
 
-                            productPrice.text = priceSelling.toString()
-                            priceOff.text = "get ${percent}% off"
-
-                        }
-                        productName.text = title
-
-                        Picasso.get()
-                            .load(url)
-                            .placeholder(R.drawable.as_square_placeholder)
-                            //.resize(300, 300)
-                            .fit()
-                            .into(productImage)
-
-                        //Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
-
+                        productPrice.text = priceSelling.toString()
+                        priceOff.text = "get ${percent}% off"
 
                     }
+                    productName.text = title
+
+                    Picasso.get()
+                        .load(url)
+                        .placeholder(R.drawable.as_square_placeholder)
+                        //.resize(300, 300)
+                        .fit()
+                        .into(productImage)
+
+
+                }.addOnFailureListener {
+                    Log.e("PromotedAdapter","${it.message}")
                 }
         }
 

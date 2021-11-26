@@ -1,6 +1,7 @@
 package com.sbdevs.bookonline.adapters.uiadapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,7 +48,6 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
         val visible = View.VISIBLE
 
         private val firebaseFirestore = Firebase.firestore
-//        val storageReference = Firebase.storage//.reference
         val storage = FirebaseStorage.getInstance()
         fun bind(productId:String) {
             itemView.setOnClickListener {
@@ -56,43 +56,43 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
                 itemView.context.startActivity(productIntent)
             }
             firebaseFirestore.collection("PRODUCTS").document(productId)
-                .get().addOnCompleteListener {
-                    if (it.isSuccessful){
-                        val url = it.result!!.get("product_thumbnail").toString().trim()
-                        val title:String = it.result!!.getString("book_title")!!
-                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
-                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
+                .get().addOnSuccessListener{
+                    val url = it.get("product_thumbnail").toString().trim()
+                    val title:String = it.getString("book_title")!!
+                    val priceOriginal = it.getLong("price_original")!!.toLong()
+                    val priceSelling = it.getLong("price_selling")!!.toLong()
 
 
-                        if (priceOriginal == 0L){
-                            productPrice.text = priceSelling.toString()
-                            productRealPrice.visibility = gone
-                            percentOffContainer.visibility = gone
-                            buyNowContainer.visibility = visible
+                    if (priceOriginal == 0L){
+                        productPrice.text = priceSelling.toString()
+                        productRealPrice.visibility = gone
+                        percentOffContainer.visibility = gone
+                        buyNowContainer.visibility = visible
 
-                        }else{
-                            val priceOff = priceOriginal.toInt() - priceSelling.toInt()
-                            offsetPriceText.text = priceOff.toString()
-                            productRealPrice.text = priceOriginal.toString()
-                            productPrice.text = priceSelling.toString()
-                            buyNowContainer.visibility =gone
-                            percentOffContainer.visibility = visible
-                            productRealPrice.visibility = visible
-                        }
-                        productName.text = title
-
-                        val requestOptions = RequestOptions()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        // resize does not respect aspect ratio
-
-                        Glide.with(itemView.context)
-                            .load(url)
-                            .placeholder(R.drawable.as_square_placeholder)
-                            .apply(requestOptions)
-                            .into(productImage);
-
-
+                    }else{
+                        val priceOff = priceOriginal.toInt() - priceSelling.toInt()
+                        offsetPriceText.text = priceOff.toString()
+                        productRealPrice.text = priceOriginal.toString()
+                        productPrice.text = priceSelling.toString()
+                        buyNowContainer.visibility =gone
+                        percentOffContainer.visibility = visible
+                        productRealPrice.visibility = visible
                     }
+                    productName.text = title
+
+                    val requestOptions = RequestOptions()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    // resize does not respect aspect ratio
+
+                    Glide.with(itemView.context)
+                        .load(url)
+                        .placeholder(R.drawable.as_square_placeholder)
+                        .apply(requestOptions)
+                        .into(productImage);
+
+
+                }.addOnFailureListener {
+                    Log.e("HorizontalAdapter","${it.message}")
                 }
         }
 

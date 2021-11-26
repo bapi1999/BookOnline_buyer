@@ -3,6 +3,7 @@ package com.sbdevs.bookonline.fragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -44,29 +45,37 @@ class NotificationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentNotificationBinding.inflate(inflater, container, false)
 
-        loadingDialog = Dialog(activity!!)
+        loadingDialog = Dialog(requireActivity())
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
         loadingDialog.setCancelable(false)
         loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext,R.drawable.s_shape_bg_2)
+            AppCompatResources.getDrawable(requireActivity().applicationContext,R.drawable.s_shape_bg_2)
         )
         loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         loadingDialog.show()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO){
-                getNotificationFormDB()
-            }
-            withContext(Dispatchers.Main){
-                delay(1000)
-                loadingDialog.dismiss()
-            }
+        if (user != null){
+            viewLifecycleOwner.lifecycleScope.launch {
+                withContext(Dispatchers.IO){
+                    getNotificationFormDB()
+                }
+                withContext(Dispatchers.Main){
+                    delay(1000)
+                    loadingDialog.dismiss()
+                }
 
 
+            }
+        }else{
+            binding.emptyContainer.visibility = View.VISIBLE
+            binding.notificationRecycler.visibility = View.GONE
+            loadingDialog.dismiss()
         }
+
+
 
 
         val recyclerView = binding.notificationRecycler
@@ -77,8 +86,8 @@ class NotificationFragment : Fragment() {
 
         return binding.root
     }
-    fun getNotificationFormDB(){
-        val ref = firebaseFirestore.collection("USERS").document(user!!.uid)
+    private fun getNotificationFormDB(){
+        firebaseFirestore.collection("USERS").document(user!!.uid)
             .collection("USER_DATA")
             .document("MY_NOTIFICATION")
             .collection("NOTIFICATION")
@@ -91,11 +100,20 @@ class NotificationFragment : Fragment() {
                 }
                 notificationAdapter.docNameList = notificationDocIdList
                 notificationList = it.toObjects(NotificationModel::class.java)
-                notificationAdapter.list = notificationList
-                notificationAdapter.notifyDataSetChanged()
+                if (notificationList.isEmpty()){
+                    binding.emptyContainer.visibility = View.VISIBLE
+                    binding.notificationRecycler.visibility = View.GONE
+                }else{
+                    binding.emptyContainer.visibility = View.GONE
+                    binding.notificationRecycler.visibility = View.VISIBLE
+
+                    notificationAdapter.list = notificationList
+                    notificationAdapter.notifyDataSetChanged()
+                }
+
 
             }.addOnFailureListener{
-                Toast.makeText(context,"Failed to load Notification List",Toast.LENGTH_LONG).show()
+                Log.e("NotificationFragment","${it.message}")
             }
 
     }

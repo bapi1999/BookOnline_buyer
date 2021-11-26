@@ -43,6 +43,9 @@
     <string name="rs_500_rs_1000">Rs.500 - Rs.1000</string>
     <string name="remove">Remove</string>
     <string name="apply">Apply</string>
+    <string name="you_aren_t_logged_in">You aren\'t logged in</string>
+    <string name="email_or_password_is_incorrect">Email or Password is incorrect</string>
+    <string name="login_or_signup_for_user">you aren\'t logged in. If you ar a new user create an account first</string>
 
     <string-array name="address_type">
         <item>Home(7am to 9pm)</item>
@@ -90,9 +93,9 @@
 
     <!--    .backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)      -->
 
-<!--    Deu task in this app-->
-<!--    1 - filter activity. -->
-<!--    online payment-->
-<!--    for more see buyer app isseu 3-->
+    <!--    Deu task in this app-->
+    <!--    1 - filter activity. -->
+    <!--    online payment-->
+    <!--    for more see buyer app isseu 3-->
 
 </resources>
