@@ -40,7 +40,7 @@ class NotificationFragment : Fragment() {
 
     var notificationDocIdList:ArrayList<String> = ArrayList()
 
-    lateinit var loadingDialog : Dialog
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,14 +48,7 @@ class NotificationFragment : Fragment() {
     ): View {
         _binding = FragmentNotificationBinding.inflate(inflater, container, false)
 
-        loadingDialog = Dialog(requireActivity())
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(requireActivity().applicationContext,R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        loadingDialog.show()
+        loadingDialog.show(childFragmentManager,"Show")
 
         if (user != null){
             viewLifecycleOwner.lifecycleScope.launch {

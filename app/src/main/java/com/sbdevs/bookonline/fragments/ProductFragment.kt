@@ -84,6 +84,7 @@ class ProductFragment : Fragment() {
 
     var dbStockQty = 0
     private var loginDialog = LoginDialogFragment()
+    private val loadingDialog = LoadingDialog()
 
 
     override fun onCreateView(
@@ -101,21 +102,7 @@ class ProductFragment : Fragment() {
         productImgIndicator = binding.lay1.productImgIndicator
         productImgIndicator.setupWithViewPager(productImgViewPager, true)
 
-
-        val loadingDialog = Dialog(requireContext())
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(
-                requireContext(),
-                R.drawable.s_shape_bg_2
-            )
-        )
-        loadingDialog.window!!.setLayout(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        loadingDialog.show();
+        loadingDialog.show(childFragmentManager,"Show");
 
         val intent = requireActivity().intent
         productId = intent.getStringExtra("productId").toString().trim()
@@ -141,7 +128,7 @@ class ProductFragment : Fragment() {
                 getReview(productId)
             }
             withContext(Dispatchers.Main) {
-                loadingDialog.dismiss()
+
             }
         }
 
@@ -453,6 +440,7 @@ class ProductFragment : Fragment() {
                         progressBar.progress = progress
                     }
 
+                    loadingDialog.dismiss()
 
                 }
             }.addOnFailureListener {

@@ -33,30 +33,35 @@ class HomeFragment : Fragment() {
     private var uiViewLIst:List<HomeModel> = ArrayList()
     private lateinit var homeAdapter: HomeAdapter
 
-    lateinit var loadingDialog :Dialog
+    private val loadingDialog  = LoadingDialog()
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
-
-        loadingDialog = Dialog(requireContext())
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(requireContext().applicationContext,R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        loadingDialog.show()
+        loadingDialog.show(childFragmentManager,"Show")
 
         swipeRefreshLayout = binding.refreshLayout
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
             withContext(Dispatchers.IO){
-                loadUi()
+                firebaseFirestore.collection("HOMEPAGE").orderBy("index", Query.Direction.ASCENDING)
+                    .get().addOnSuccessListener{
+                        Toast.makeText(context,"Success home page", Toast.LENGTH_LONG).show()
+                        uiViewLIst = it.toObjects(HomeModel::class.java)
+                        homeAdapter.homeModelList =uiViewLIst
+                        homeAdapter.notifyDataSetChanged()
+                        swipeRefreshLayout.isRefreshing = false
+
+                    }.addOnFailureListener{
+                        Toast.makeText(context,it.message, Toast.LENGTH_LONG).show()
+                        Log.e("HomeFragment","Failed to load home ${it.message}",it.cause)
+                    }.await()
+
+                delay(1500)
 
             }
             withContext(Dispatchers.Main){
@@ -68,7 +73,7 @@ class HomeFragment : Fragment() {
 
 
 
-        var recyclerView = binding.homeRecycler
+        val recyclerView = binding.homeRecycler
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.layoutManager = LinearLayoutManager(context)
         homeAdapter = HomeAdapter(uiViewLIst);
@@ -81,22 +86,6 @@ class HomeFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    private fun loadUi() = CoroutineScope(Dispatchers.IO).launch{
-        firebaseFirestore.collection("HOMEPAGE").orderBy("index", Query.Direction.ASCENDING)
-            .get().addOnSuccessListener{
-                Toast.makeText(context,"Success home page", Toast.LENGTH_LONG).show()
-                uiViewLIst = it.toObjects(HomeModel::class.java)
-                homeAdapter.homeModelList =uiViewLIst
-                homeAdapter.notifyDataSetChanged()
-                swipeRefreshLayout.isRefreshing = false
-
-            }.addOnFailureListener{
-                Toast.makeText(context,it.message, Toast.LENGTH_LONG).show()
-                Log.e("HomeFragment","Failed to load home ${it.message}",it.cause)
-            }.await()
-        delay(1500)
     }
 
     private fun refreshFragment(){

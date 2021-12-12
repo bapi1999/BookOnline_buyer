@@ -43,6 +43,8 @@
     <string name="rs_500_rs_1000">Rs.500 - Rs.1000</string>
     <string name="remove">Remove</string>
     <string name="apply">Apply</string>
+    <string name="welcome_image">https://firebasestorage.googleapis.com/v0/b/ecommerceapp2-891bc.appspot.com/o/image%2Fonline_shopping.png?alt=media&amp;token=47fb7558-d87d-4963-901a-9fc69bdbe098</string>
+
     <string name="you_aren_t_logged_in">You aren\'t logged in</string>
     <string name="email_or_password_is_incorrect">Email or Password is incorrect</string>
     <string name="login_or_signup_for_user">you aren\'t logged in. If you ar a new user create an account first</string>

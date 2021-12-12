@@ -52,19 +52,11 @@ class OrderSummaryFragment : Fragment() {
     var totalPrice1= 0
     var totalPrice2= 0
 
+    private val loadingDialog = LoadingDialog()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentOrderSummaryBinding.inflate(inflater, container, false)
-
-        val loadingDialog : Dialog = Dialog(activity!!)
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext, R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-//        loadingDialog.show()
-
 
         recyclerView = binding.summerRecycler
         recyclerView.layoutManager = LinearLayoutManager(context)

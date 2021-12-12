@@ -48,7 +48,9 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
     lateinit var recyclerView:RecyclerView
     lateinit var adapter:CartAdapter //= CartAdapter(cartList,sendingList,this)
 
-    var allItemStocked = true
+    private var allItemStocked = true
+
+    private val loadingDialog = LoadingDialog()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -57,14 +59,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         _binding = FragmentMyCartBinding.inflate(inflater, container, false)
 
-        val loadingDialog :Dialog = Dialog(requireActivity())
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(requireActivity().applicationContext, R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        loadingDialog.show()
+        loadingDialog.show(childFragmentManager,"Show")
 
         recyclerView = binding.cartRecycler
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -158,7 +153,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
     }
 
-    fun getFirebaseData3(){
+    private fun getFirebaseData3(){
          firebaseFirestore.collection("USERS").document(user!!.uid)
              .collection("USER_DATA").document("MY_CART")
             .get().addOnCompleteListener {
@@ -303,7 +298,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
     }
 
-    fun setValueToTextView(){
+    private fun setValueToTextView(){
         binding.lay2.totalPrice.text = totalPrice.toString()
         binding.lay2.totalDiscount.text = discount.toString()
 
@@ -314,7 +309,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
     fun refreshList(){
         getFirebaseData3()
     }
-    fun refreshFragment(){
+    private fun refreshFragment(){
         val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
         navController.run {
             popBackStack()
@@ -322,7 +317,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
         }
     }
 
-    fun calculateThePrice(list: ArrayList<CartModel> ){
+    private fun calculateThePrice(list: ArrayList<CartModel> ){
 
         priceToPay = 0
         discount = 0
@@ -349,7 +344,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
         }
     }
 
-    fun updateProductQuantityInsideDB(productId:String,qty:Long,position: Int){
+    private fun updateProductQuantityInsideDB(productId:String, qty:Long, position: Int){
         val listMap:MutableMap<String,Any> = HashMap()
         listMap["product"] = productId
         listMap["quantity"] = qty

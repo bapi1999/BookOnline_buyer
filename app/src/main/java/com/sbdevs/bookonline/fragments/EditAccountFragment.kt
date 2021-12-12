@@ -29,6 +29,7 @@ import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.ktx.auth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,7 +44,7 @@ class EditAccountFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    private val user = FirebaseAuth.getInstance().currentUser
+    private val user = Firebase.auth.currentUser
     private val firebaseStorage = Firebase.storage
     private var storageReference1: StorageReference = firebaseStorage.reference
 
@@ -54,7 +55,7 @@ class EditAccountFragment : Fragment() {
 
     var fileUri: Uri? = null
 
-    lateinit var loadingDialog: Dialog
+    private val loadingDialog =LoadingDialog()
 
     private val startForProfileImageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -80,18 +81,6 @@ class EditAccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEditAccountBinding.inflate(inflater, container, false)
-
-        loadingDialog = Dialog(activity!!)
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext, R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
 
         val profilePicture: String = args.profilePic
         val buyerName: String = args.buyerName
@@ -129,7 +118,7 @@ class EditAccountFragment : Fragment() {
         }
 
         binding.updateBtn.setOnClickListener {
-            loadingDialog.show()
+            loadingDialog.show(childFragmentManager,"Show")
             viewLifecycleOwner.lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     checkAllDetails()

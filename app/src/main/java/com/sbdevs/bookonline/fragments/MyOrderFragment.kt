@@ -29,12 +29,15 @@ class MyOrderFragment : Fragment() {
     var dbOrderList:ArrayList<MutableMap<String,Any>> = ArrayList()
     lateinit var adapter:MyOrderAdapter
 
+    private val loadingDialog = LoadingDialog()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentMyOrderBinding.inflate(inflater, container, false)
+        loadingDialog.show(childFragmentManager,"Show")
 
         if (user != null){
             getAllMyOrder()
@@ -67,11 +70,13 @@ class MyOrderFragment : Fragment() {
                     adapter.notifyDataSetChanged()
 
 
+
                 }else{
                     binding.emptyContainer.visibility = View.VISIBLE
                     binding.ordersRecycler.visibility = View.GONE
                     Log.d("MyOrder","No order foung")
                 }
+                loadingDialog.dismiss()
             }.addOnFailureListener {
                 Toast.makeText(context,it.message.toString(), Toast.LENGTH_SHORT).show()
             }

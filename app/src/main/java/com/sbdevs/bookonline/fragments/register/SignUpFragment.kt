@@ -183,12 +183,19 @@ class SignUpFragment : Fragment() {
         addressMap["select_No"] = 0L
 
         val itemsMap: MutableMap<String, Any> = HashMap()
-        itemsMap["info"] = "rating Id is userId of the buyer, as 1 user can review once"
+        itemsMap["info1"] = "rating Id is userId of the buyer, as 1 user can review once"
+        itemsMap["info2"] = "Brought item id is product id"
 
 
-        val notificationMap: MutableMap<String, Any> = HashMap()
-        notificationMap["new_notification"] = 0
+        val myNotificationMap: MutableMap<String, Any> = HashMap()
+        myNotificationMap["new_notification"] = 1
 
+        val notificationMap:MutableMap<String,Any> = HashMap()
+        notificationMap["date"] = FieldValue.serverTimestamp()
+        notificationMap["title"] ="Welcome to Books Online"
+        notificationMap["description"] ="Welcome to Books Online"
+        notificationMap["image"] = getString(R.string.welcome_image).toString()
+        notificationMap["order_id"] = ""
 
         val userMap: MutableMap<String, Any> = HashMap()
 
@@ -220,6 +227,10 @@ class SignUpFragment : Fragment() {
                 docRef.document("MY_WISHLIST").set(listSizeMap).await()
 
                 docRef.document("THINGS_I_BOUGHT").set(itemsMap).await()
+
+                docRef.document("MY_NOTIFICATION")
+                    .collection("")
+
 
                 withContext(Dispatchers.Main){
                     activity?.finish()

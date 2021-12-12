@@ -44,7 +44,7 @@ class MyAccountFragment : Fragment() {
     var buyerName:String =""
     var mobileNumber = ""
 
-    lateinit var loadingDialog :Dialog
+    private var loadingDialog = LoadingDialog()
 
 
     override fun onCreateView(
@@ -55,14 +55,7 @@ class MyAccountFragment : Fragment() {
         userImage = binding.lay1.userImage
 
 
-        loadingDialog = Dialog(requireContext())
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(requireContext().applicationContext,R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        loadingDialog.show()
+        loadingDialog.show(childFragmentManager,"Show")
 
         if(user != null){
             binding.myAccountScroll.visibility = View.VISIBLE

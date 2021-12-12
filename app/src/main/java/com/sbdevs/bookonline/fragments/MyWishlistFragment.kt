@@ -32,7 +32,7 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
 
     private var _binding: FragmentMyWishlistBinding? = null
     private val binding get() = _binding!!
-    lateinit var loadingDialog: Dialog
+    private val loadingDialog = LoadingDialog()
     var list = ArrayList<String>()
     lateinit var wishlistAdapter: WishlistAdapter
 
@@ -43,22 +43,7 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
 
         _binding = FragmentMyWishlistBinding.inflate(inflater, container, false)
 
-
-        loadingDialog = Dialog(requireContext())
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(
-                requireContext().applicationContext,
-                R.drawable.s_shape_bg_2
-            )
-        )
-        loadingDialog.window!!.setLayout(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        loadingDialog.show()
-
+        loadingDialog.show(childFragmentManager,"Show")
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {

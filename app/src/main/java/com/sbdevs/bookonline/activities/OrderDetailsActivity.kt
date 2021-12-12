@@ -10,11 +10,13 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.ActivityOrderDetailsBinding
+import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.othercalss.FireStoreData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +29,7 @@ import kotlin.collections.HashMap
 class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var binding:ActivityOrderDetailsBinding
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val user = Firebase.auth.currentUser
 
     private lateinit var productImage:ImageView
 
@@ -36,12 +38,16 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var orderID:String
     private lateinit var sellerID:String
 
+    private val loadingDialog = LoadingDialog()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrderDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         orderID = intent.getStringExtra("orderID")!!
         sellerID = intent.getStringExtra("sellerID")!!
+
+        loadingDialog.show(supportFragmentManager,"show")
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO){
@@ -71,7 +77,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     }
 
-    fun getMyOrder(orderID:String,sellerID:String)= CoroutineScope(Dispatchers.IO).launch {
+    private fun getMyOrder(orderID:String, sellerID:String)= CoroutineScope(Dispatchers.IO).launch {
 
         val lay1 = binding.lay1
         val lay2 = binding.lay2
@@ -173,6 +179,8 @@ class OrderDetailsActivity : AppCompatActivity() {
                 lay2.buyerState.text = buyerState
                 lay2.buyerPhone.text = buyerPhone
 
+                loadingDialog.dismiss()
+
             }
 
         }
@@ -181,7 +189,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     }
 
-    fun cancelOrder(orderID:String,sellerID:String){
+    private fun cancelOrder(orderID:String, sellerID:String){
         val cancelMap:MutableMap<String,Any> = HashMap()
         cancelMap["status"] = "canceled"
         cancelMap["time_cancellation_request"] = FieldValue.serverTimestamp()
@@ -193,7 +201,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         orderRef.update(cancelMap)
     }
 
-    fun returnOrder(orderID:String,sellerID:String){
+    private fun returnOrder(orderID:String, sellerID:String){
         val returnMap:MutableMap<String,Any> = HashMap()
         returnMap["status"] = "returned"
         returnMap["time_returned_request"] = FieldValue.serverTimestamp()

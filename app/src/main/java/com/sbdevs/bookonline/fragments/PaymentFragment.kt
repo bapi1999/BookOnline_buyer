@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -40,28 +41,23 @@ class PaymentFragment : Fragment() {
     var dbOrderList:ArrayList<MutableMap<String,Any>> = ArrayList()
     var newOrderList:ArrayList<MutableMap<String,Any>> = ArrayList()
     var selecter = 0
-    lateinit var  loadingDialog : Dialog
+    private val  loadingDialog = LoadingDialog()
     var warnings:Int = 0
     // 0 = no warning  1= warning
     var orderedItem :Int = 0
 
     var boughtProductList: ArrayList<String> = ArrayList()
+    private lateinit var payOnline :LinearLayout
+    private lateinit var cashOnDelivery :LinearLayout
+
+    private lateinit var address: MutableMap<String, Any>
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentPaymentBinding.inflate(inflater, container, false)
-
-
-        loadingDialog = Dialog(context!!)
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(context!!.applicationContext, R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO){
@@ -76,15 +72,15 @@ class PaymentFragment : Fragment() {
 
 
 
-        val payOnline =  binding.linearLayout
-        val cashOnDelivery = binding.linearLayout22
+        payOnline =  binding.linearLayout
+        cashOnDelivery = binding.linearLayout22
 
 
         val intent = requireActivity().intent
         val totalAmount = intent.getIntExtra("total_amount", 0)
         binding.totalAmount.text = "Rs. $totalAmount /-"
 
-        val address = intent.getSerializableExtra("address") as MutableMap<String, Any>
+        address = intent.getSerializableExtra("address") as MutableMap<String, Any>
 
         val buyerName:String = address["name"].toString()
         val buyerAddress1:String = address["address1"].toString()
@@ -111,15 +107,25 @@ class PaymentFragment : Fragment() {
         recivdList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
 
 
+
+
+        return binding.root
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+
         payOnline.setOnClickListener {
-            payOnline.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.yellow)
-            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_400)
+            payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
+            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
             selecter = 1
         }
 
         cashOnDelivery.setOnClickListener {
-            payOnline.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.gray_400)
-            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.yellow)
+            payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
             selecter = 2
         }
 
@@ -134,11 +140,11 @@ class PaymentFragment : Fragment() {
                     }
                 }
                 2 -> {
-                    loadingDialog.show()
+                    loadingDialog.show(childFragmentManager,"Show")
                     lifecycleScope.launch(Dispatchers.Main) {
                         withContext(Dispatchers.IO){
                             checkAllOrderMethods(recivdList,address)
-                            delay(1000)
+                            delay(100)
                         }
                         withContext(Dispatchers.IO){
                             updateOrderToBuyer()
@@ -147,7 +153,7 @@ class PaymentFragment : Fragment() {
                             delay(100)
                             deleteProductFromCatr()
                         }
-                        delay(1000)
+                        delay(2700)
                         withContext(Dispatchers.Main){
                             loadingDialog.dismiss()
                             val action = PaymentFragmentDirections.actionPaymentFragmentToCongratulationFragment(warnings,orderedItem)
@@ -164,60 +170,66 @@ class PaymentFragment : Fragment() {
             }
         }
 
-        return binding.root
-
     }
 
 
     private fun checkAllOrderMethods(list: ArrayList<CartModel>, address: MutableMap<String, Any>) = CoroutineScope(Dispatchers.IO).launch{
         for (item in list){
-            firebaseFirestore.collection("PRODUCTS").document(item.productId).get().addOnSuccessListener {
+            firebaseFirestore.collection("PRODUCTS")
+                .document(item.productId).get()
+                .addOnSuccessListener {
+
                 val stockQty = it.getLong("in_stock_quantity")!!.toLong()
                 val docname:String = generateDocName()
                 val orderQuantity = item.orderQuantity
                 val sellerOrderMap:MutableMap<String,Any> = HashMap()
 
-                if(stockQty >= orderQuantity){
-                    val newQty = stockQty - orderQuantity
-                    orderedItem ++
-                    // update product
-                    updateProductStock(item.productId,newQty)
-                    // create order
-                    createOrderToSeller(item.url,item.title,item.productId,item.sellerId,orderQuantity,docname,address,item.priceSelling)
-                    //update MyOrder
-                    sellerOrderMap["orderID"] = docname
-                    sellerOrderMap["sellerId"] = item.sellerId
-                    newOrderList.add(sellerOrderMap)
-                    boughtProductList.add(item.productId)
+                when {
+                    stockQty >= orderQuantity -> {
+                        val newQty = stockQty - orderQuantity
+                        orderedItem ++
+                        // update product
+                        updateProductStock(item.productId,newQty)
+                        // create order
+                        createOrderToSeller(item.url,item.title,item.productId,item.sellerId,orderQuantity,docname,address,item.priceSelling)
+                        notifySeller(item.url,item.title,orderQuantity,docname,item.sellerId)
+                        //update MyOrder
+                        sellerOrderMap["orderID"] = docname
+                        sellerOrderMap["sellerId"] = item.sellerId
+                        newOrderList.add(sellerOrderMap)
+                        boughtProductList.add(item.productId)
 
 
-                }else if(stockQty  in 1 until orderQuantity){
-                    orderedItem ++
-                    val newQty = 0L
+                    }
+                    stockQty  in 1 until orderQuantity -> {
+                        orderedItem ++
+                        val newQty = 0L
 
 
-                    // update product
-                    updateProductStock(item.productId,newQty)
-                    // create order
-                    createOrderToSeller(item.url,item.title,item.productId,item.sellerId,stockQty,docname,address,item.priceSelling)
-                    //update MyOrder
-                    sellerOrderMap["orderID"] = docname
-                    sellerOrderMap["sellerId"] = item.sellerId
-                    newOrderList.add(sellerOrderMap)
-                    boughtProductList.add(item.productId)
+                        // update product
+                        updateProductStock(item.productId,newQty)
+                        // create order
+                        createOrderToSeller(item.url,item.title,item.productId,item.sellerId,stockQty,docname,address,item.priceSelling)
+                        notifySeller(item.url,item.title,orderQuantity,docname,item.sellerId)
+                        //update MyOrder
+                        sellerOrderMap["orderID"] = docname
+                        sellerOrderMap["sellerId"] = item.sellerId
+                        newOrderList.add(sellerOrderMap)
+                        boughtProductList.add(item.productId)
 
-                }
-                else if(stockQty == 0L){
-                    Toast.makeText(context,"Some Product just got out of stock now",Toast.LENGTH_SHORT).show()
-                    warnings = 1
-                    // Don't update product
-                    // Don't create order
+                    }
+                    stockQty == 0L -> {
+                        Toast.makeText(context,"Some Product just got out of stock now",Toast.LENGTH_SHORT).show()
+                        warnings = 1
+                        // Don't update product
+                        // Don't create order
+                    }
                 }
             }.await()
         }
     }
 
-    fun updateProductStock(productId:String,newQty:Long){
+    private fun updateProductStock(productId:String, newQty:Long){
 
         val productMap:MutableMap<String,Any> = HashMap()
 
@@ -226,8 +238,10 @@ class PaymentFragment : Fragment() {
         firebaseFirestore.collection("PRODUCTS").document(productId).update(productMap)
     }
 
-    fun createOrderToSeller(thumbnail:String,title:String,productId:String,sellerId:String,orderQuantity:Long,docName:String
-                            ,address:MutableMap<String,Any>,priceSelling:Long)= CoroutineScope(Dispatchers.IO).launch{
+    private fun createOrderToSeller(thumbnail:String, title:String, productId:String,
+                                    sellerId:String, orderQuantity:Long, docName:String
+                                    , address:MutableMap<String,Any>
+                                    , priceSelling:Long) = CoroutineScope(Dispatchers.IO).launch{
         val productMap:MutableMap<String,Any> = HashMap()
         productMap["productThumbnail"] = thumbnail
         productMap["productTitle"] = title
@@ -245,12 +259,12 @@ class PaymentFragment : Fragment() {
 
         firebaseFirestore.collection("USERS").document(sellerId)
             .collection("SELLER_DATA")
-            .document("5_ALL_ORDERS").collection("ORDER")
+            .document("SELLER_DATA").collection("ORDERS")
             .document(docName).set(productMap).await()
 
     }
 
-    fun updateOrderToBuyer(){
+    private fun updateOrderToBuyer(){
 
 
 
@@ -286,7 +300,7 @@ class PaymentFragment : Fragment() {
             }
     }
 
-    fun getAllMyOrder(){
+    private fun getAllMyOrder(){
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
             .document("MY_ORDERS").get().addOnSuccessListener {
                 val x = it.get("order_list")
@@ -302,7 +316,7 @@ class PaymentFragment : Fragment() {
                 Toast.makeText(context,it.message.toString(),Toast.LENGTH_SHORT).show()
             }
     }
-    fun deleteProductFromCatr(){
+    private fun deleteProductFromCatr(){
 
         val updates = hashMapOf<String, Any>(
             "cart_list" to FieldValue.delete()
@@ -313,7 +327,7 @@ class PaymentFragment : Fragment() {
             }
     }
 
-    fun generateDocName():String{
+    private fun generateDocName():String{
 
         val timeString = LocalDateTime.now().toString()
         val userString = user!!.uid.toString().substring(0,5)
@@ -322,6 +336,30 @@ class PaymentFragment : Fragment() {
         docBuilder.append(timeString).append(userString).append(randomString)
         val docName = docBuilder.toString().replace(".","_").replace("-","_").replace(":","_")
         return docName
+    }
+
+    private fun notifySeller(thumbnail:String, title:String,
+                                              orderQuantity:Long, docName:String,sellerId:String){
+
+        val notificationMap:MutableMap<String,Any> = HashMap()
+        notificationMap["date"] = FieldValue.serverTimestamp()
+        notificationMap["title"] ="You got a new order"
+        notificationMap["description"] ="$orderQuantity $title has been ordered"
+        notificationMap["image"] = thumbnail
+        notificationMap["order_id"] = docName
+
+
+
+        firebaseFirestore.collection("USERS").document(sellerId)
+            .collection("SELLER_DATA")
+            .document("SELLER_DATA")
+            .collection("NOTIFICATION").add(notificationMap)
+            .addOnSuccessListener {
+                Log.i("Notify Seller","successful")
+            }
+            .addOnFailureListener {
+                Log.e("Notify Seller","${it.message}")
+            }
     }
 
 

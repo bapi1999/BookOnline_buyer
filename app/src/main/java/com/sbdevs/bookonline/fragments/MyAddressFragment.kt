@@ -3,6 +3,7 @@ package com.sbdevs.bookonline.fragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -36,26 +37,18 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
     var list:ArrayList<MutableMap<String,Any>> = ArrayList()
     lateinit var addressAddapter: MyAddressAddapter
     var selectNo:Long = 0
-    var seter = 0
 
-    lateinit var loadingDialog : Dialog
-    lateinit var swipeRefresh: SwipeRefreshLayout
+    private var loadingDialog = LoadingDialog()
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentMyAddressBinding.inflate(inflater, container, false)
-        loadingDialog = Dialog(activity!!)
-        loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
-        loadingDialog.setCancelable(false)
-        loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(activity!!.applicationContext,R.drawable.s_shape_bg_2)
-        )
-        loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        loadingDialog.show()
+
+        loadingDialog.show(childFragmentManager,"Show")
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
             withContext(Dispatchers.Main){
@@ -68,17 +61,13 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
                 val long = selectNo
             }
         }
-        swipeRefresh = binding.swipeRefresh
+
 
         val recyclerView = binding.addressRecycler
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.isNestedScrollingEnabled = false
         addressAddapter = MyAddressAddapter(list,selectNo,this)
         recyclerView.adapter = addressAddapter
-
-        swipeRefresh.setOnRefreshListener {
-            swipeRefresh.isRefreshing =true
-        }
 
 
         binding.addNewAddress.setOnClickListener {
@@ -87,23 +76,37 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
         }
 
 
-
         return binding.root
     }
 
 
-
-    fun getAddressList() {
+    private fun getAddressList() {
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
             .document("MY_ADDRESSES").addSnapshotListener { value ,error ->
                 error?.let {
-                    Toast.makeText(context,"Problem in fetching address",Toast.LENGTH_SHORT).show()
+                    Log.e("Get Address","${it.message}")
                     return@addSnapshotListener
                 }
                 value?.let {
                     val position: Long = value.getLong("select_No")!!
                     selectNo =  value.getLong("select_No")!!
-                    list = value.get("address_list") as ArrayList<MutableMap<String, Any>>
+                    val x = value.get("address_list")
+
+                    if(x!= null){
+
+                        list =  x as ArrayList<MutableMap<String, Any>>
+                        if (list.size == 0){
+                            binding.linearLayout1.visibility = View.VISIBLE
+                            binding.addressRecycler.visibility = View.GONE
+                        }else{
+                            binding.linearLayout1.visibility = View.GONE
+                            binding.addressRecycler.visibility = View.VISIBLE
+                        }
+                    }else{
+                        binding.linearLayout1.visibility = View.VISIBLE
+                        binding.addressRecycler.visibility = View.GONE
+                    }
+
 
 
 
@@ -127,17 +130,14 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
         val addressMap:MutableMap<String,Any> = HashMap<String,Any>()
         addressMap["select_No"] = position
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_ADDRESSES").update(addressMap).addOnCompleteListener {
-                if (it.isSuccessful){
-                    Toast.makeText(context,"updated", Toast.LENGTH_SHORT).show()
-                }
-                else{
-                    Toast.makeText(context,"Failed to update", Toast.LENGTH_SHORT).show()
-                }
+            .document("MY_ADDRESSES").update(addressMap)
+            .addOnSuccessListener {
+                Log.i("update selected address","successful")
+            }.addOnFailureListener {
+                Log.e("update selected address","${it.message}")
             }
 
 
     }
-
 
 }
