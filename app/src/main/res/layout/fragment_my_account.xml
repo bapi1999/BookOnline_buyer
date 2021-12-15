@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:background="@drawable/s_border_background"
-                android:backgroundTint="@color/gray_800"
+                android:backgroundTint="@color/grey_800"
                 android:paddingStart="16sp"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"

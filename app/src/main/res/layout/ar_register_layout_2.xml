@@ -121,7 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/gray_800"
+        android:backgroundTint="@color/grey_800"
         android:text="Sing Up"
         android:textAllCaps="false"
         android:textColor="@color/white"
@@ -147,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="All ready have an account ? "
-            android:textColor="@color/gray_800"
+            android:textColor="@color/grey_800"
             android:textSize="16sp" />
 
         <TextView
@@ -170,7 +170,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/cancel"
-        app:tint="@color/gray_900" />
+        app:tint="@color/grey_900" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

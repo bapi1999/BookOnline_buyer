@@ -15,7 +15,7 @@
         app:cardCornerRadius="5dp"
         app:cardElevation="5dp"
         app:strokeWidth="1dp"
-        app:strokeColor="@color/gray_50"
+        app:strokeColor="@color/grey_50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
                 android:layout_marginEnd="4dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/gray_900"
+                android:textColor="@color/grey_900"
                 android:text="@string/lorem_ipsum"
                 android:textSize="14sp" />
 

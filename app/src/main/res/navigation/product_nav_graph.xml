@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_productFragment_to_allRatingFragment"
             app:destination="@id/allRatingFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_productImageFragment"
+            app:destination="@id/productImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/rateNowFragment"
@@ -34,6 +37,15 @@
         tools:layout="@layout/fragment_all_rating" >
         <argument
             android:name="product_Id"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/productImageFragment"
+        android:name="com.sbdevs.bookonline.fragments.ProductImageFragment"
+        android:label="fragment_product_image"
+        tools:layout="@layout/fragment_product_image" >
+        <argument
+            android:name="product_url"
             app:argType="string" />
     </fragment>
 </navigation>

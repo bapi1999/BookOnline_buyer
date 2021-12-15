@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -31,7 +30,7 @@ import com.sbdevs.bookonline.models.CartModel
 import kotlinx.coroutines.*
 
 
-class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
+class MyCartFragment : Fragment(),CartAdapter.MyOnItemClickListener {
     private var _binding: FragmentMyCartBinding?=null
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
@@ -209,7 +208,7 @@ class MyCartFragment : Fragment(),CartAdapter.MyonItemClickListener {
 
                         if (stockQuantity == 0L){
 //                            binding.proceedBtn.isEnabled = false
-                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+                            binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
                             allItemStocked = false
 
                         }

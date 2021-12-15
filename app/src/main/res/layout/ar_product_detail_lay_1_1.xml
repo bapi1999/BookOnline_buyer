@@ -17,7 +17,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="Product Name"
-        android:textColor="@color/gray_900"
+        android:textColor="@color/grey_900"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +101,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="5dp"
             android:text="121 ratings"
-            android:textColor="@color/gray_700"
+            android:textColor="@color/grey_700"
             android:textSize="12sp" />
     </LinearLayout>
 

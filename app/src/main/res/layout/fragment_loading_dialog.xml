@@ -29,7 +29,7 @@
         android:layout_marginBottom="16dp"
         android:text="Loading..."
         android:textSize="17sp"
-        android:textColor="@color/gray_900"
+        android:textColor="@color/grey_900"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/progressBar"

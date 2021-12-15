@@ -7,6 +7,7 @@
     tools:context=".fragments.OrderSummaryFragment">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/continue_to_payment_btn"
@@ -23,12 +24,11 @@
                 android:id="@+id/no_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/orange"
+                android:background="@color/brikeRed"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/textView31"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -75,30 +75,21 @@
                 layout="@layout/le_cart_item_lay_2" />
         </LinearLayout>
     </ScrollView>
-    <LinearLayout
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/continue_to_payment_btn"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
-        android:orientation="vertical"
+        android:backgroundTint="@color/orange"
+        android:gravity="center"
+        android:text="Continue"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/orange"
-        android:gravity="center"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/textView44"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Continue"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            />
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 

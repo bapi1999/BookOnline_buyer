@@ -17,7 +17,7 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderSummaryAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_order_summery_item_lay, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_order_summery_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -39,8 +39,7 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
         private val productImage : ImageView = itemView.findViewById(R.id.product_image)
         private val productName: TextView = itemView.findViewById(R.id.product_name)
         private val productPrice: TextView = itemView.findViewById(R.id.product_price)
-        private val productRealPrice: TextView = itemView.findViewById(R.id.product_real_price)
-        private val percentOff: TextView = itemView.findViewById(R.id.percent_off)
+        //private val productRealPrice: TextView = itemView.findViewById(R.id.product_real_price)
         private val quantitiesTxt: TextView = itemView.findViewById(R.id.quantity)
 
         private val stockNumberTxt:TextView = itemView.findViewById(R.id.stock)
@@ -77,19 +76,16 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
             if (priceOriginal == 0L){
                 val price = priceSelling.toInt()*quantity.toInt()
                 productPrice.text = price.toString()
-                productRealPrice.visibility = View.GONE
-                percentOff.text = "Buy Now"
+
 
             }else{
 
                 val price = priceSelling.toInt()*quantity.toInt()
                 val realPrice = priceOriginal.toInt()*quantity.toInt()
 
-                val percent:Int = (100* (realPrice - price)) / ( realPrice )
-
                 productPrice.text = price.toString()
-                productRealPrice.text = realPrice.toString()
-                percentOff.text = "${percent}% off"
+
+
 
             }
 

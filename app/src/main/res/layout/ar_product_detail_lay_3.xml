@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Writer name :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Publisher :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Language :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Print date :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -153,7 +153,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Book contion :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -178,7 +178,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Page count :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -203,7 +203,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="ISBN No :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView
@@ -228,7 +228,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Dimension(wxhxl) :"
-                android:textColor="@color/gray_700"
+                android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
             <TextView

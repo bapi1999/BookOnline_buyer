@@ -1,6 +1,5 @@
 package com.sbdevs.bookonline.fragments
 
-import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.os.Parcelable
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -53,6 +51,7 @@ class PaymentFragment : Fragment() {
     private lateinit var address: MutableMap<String, Any>
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -91,6 +90,16 @@ class PaymentFragment : Fragment() {
         val buyerState:String = address["state"].toString()
         val buyerPhone:String = address["phone"].toString()
 
+        if (buyerName.equals(null) and buyerPhone.equals(null)){
+            binding.confirmButton.isEnabled = false
+            binding.addressLay.visibility = View.GONE
+            binding.noAddress.visibility = View.VISIBLE
+        }else{
+            binding.confirmButton.isEnabled = true
+            binding.addressLay.visibility = View.VISIBLE
+            binding.noAddress.visibility = View.GONE
+        }
+
         val addressBuilder  = StringBuilder()
         addressBuilder.append(buyerAddress1).append(", ").append(buyerAddress2)
 
@@ -119,12 +128,12 @@ class PaymentFragment : Fragment() {
 
         payOnline.setOnClickListener {
             payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
-            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
             selecter = 1
         }
 
         cashOnDelivery.setOnClickListener {
-            payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+            payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
             cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
             selecter = 2
         }
@@ -360,7 +369,14 @@ class PaymentFragment : Fragment() {
             .addOnFailureListener {
                 Log.e("Notify Seller","${it.message}")
             }
+
+
+
+
+
+
     }
+
 
 
 

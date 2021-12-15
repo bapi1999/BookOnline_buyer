@@ -1,6 +1,5 @@
 package com.sbdevs.bookonline.fragments
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,12 +11,12 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -40,7 +39,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
-class ProductFragment : Fragment() {
+class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var _binding: FragmentProductBinding? = null
     private val binding get() = _binding!!
 
@@ -48,9 +47,6 @@ class ProductFragment : Fragment() {
     private val firebaseFirestore = Firebase.firestore
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val user = firebaseAuth.currentUser
-//
-//    lateinit var addToCartBtn: AppCompatButton
-//    lateinit var buyNowBtn: AppCompatButton
 
     lateinit var addToCartBtn: Button
     lateinit var buyNowBtn: Button
@@ -61,8 +57,8 @@ class ProductFragment : Fragment() {
     private var reviewList: List<ProductReviewModel> = ArrayList()
     private lateinit var reviewAdapter: ProductReviewAdapter
 
-    private lateinit var productImgViewPager: ViewPager
-    private lateinit var productImgIndicator: TabLayout
+    private lateinit var productImgViewPager: ViewPager2
+
 
     private var cartList: ArrayList<MutableMap<String, Any>> = ArrayList()
     private var fbCartList: ArrayList<MutableMap<String, Any>> = ArrayList()
@@ -99,8 +95,7 @@ class ProductFragment : Fragment() {
 
         buyNowBtn = binding.lay21.buyNowBtn
         productImgViewPager = binding.lay1.productImgViewPager
-        productImgIndicator = binding.lay1.productImgIndicator
-        productImgIndicator.setupWithViewPager(productImgViewPager, true)
+
 
         loadingDialog.show(childFragmentManager,"Show");
 
@@ -145,10 +140,6 @@ class ProductFragment : Fragment() {
 
 
 
-
-
-
-
         return binding.root
     }
 
@@ -172,7 +163,7 @@ class ProductFragment : Fragment() {
                     fabBtn.supportImageTintList =
                         ContextCompat.getColorStateList(requireContext(), R.color.red)
                     fabBtn.rippleColor =
-                        ContextCompat.getColor(requireContext(), R.color.gray_400)
+                        ContextCompat.getColor(requireContext(), R.color.grey_400)
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -188,7 +179,7 @@ class ProductFragment : Fragment() {
 
                     ALREADY_ADDED_TO_WISHLIST = false
                     fabBtn.supportImageTintList =
-                        ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+                        ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
                     fabBtn.rippleColor =
                         ContextCompat.getColor(requireContext(), R.color.red)
                 }
@@ -317,7 +308,6 @@ class ProductFragment : Fragment() {
                     val avgRating = it.getString("rating_avg")!!
                     val sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     val totalRating: Int = it.getLong("rating_total")!!.toInt()
-                    val inStock = it.getBoolean("in_stock")!!
                     val stock = it.getLong("in_stock_quantity")!!
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
@@ -351,13 +341,13 @@ class ProductFragment : Fragment() {
                         tagsString += "#$tag  "
                     }
 
-                    for (x in 0 until it.getLong("no_of_img")!!) {
-                        productImgList.add(it.get("product_img_$x").toString().trim())
-                    }
-                    val adapter = ProductImgAdapter(productImgList)
-                    productImgViewPager.adapter = adapter
+                    productImgList = it.get("productImage_List") as ArrayList<String>
 
-                    lay11.productName.text = productName
+                    val adapter = ProductImgAdapter(productImgList,this@ProductFragment)
+
+                    productImgViewPager.adapter = adapter
+                    binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
+
 
                     if (priceOriginal == 0L) {
                         lay11.productPrice.text = priceSelling.toString()
@@ -384,25 +374,41 @@ class ProductFragment : Fragment() {
                     }
 
 
-                    lay11.productState.text = it.getString("book_state")!!
+                    lay11.productState.text = it.getString("book_type")!!
                     lay11.miniProductRating.text = avgRating
                     lay11.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
 
-                    if (stock > 5) {
-                        lay11.stockState.visibility = gone
-                        lay11.stockQuantity.visibility = gone
-                    } else if (stock in 1..5) {
-                        lay11.stockState.text = "low"
-                        lay11.stockQuantity.text = "only $stock available in stock"
-                    } else {
-                        lay11.stockState.text = "out of stock"
-                        lay11.stockQuantity.visibility = gone
-                        binding.addToCartBtn.isEnabled = false
-                        binding.addToCartBtn.backgroundTintList =
-                            ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
-                        binding.buyNowBtn.isEnabled = false
-                        binding.buyNowBtn.backgroundTintList =
-                            ContextCompat.getColorStateList(requireContext(), R.color.gray_400)
+                    when {
+                        stock > 5 -> {
+                            lay11.stockState.visibility = gone
+                            lay11.stockQuantity.visibility = gone
+                        }
+                        stock in 1..5 -> {
+                            lay11.stockState.visibility = visible
+                            lay11.stockQuantity.visibility = visible
+                            lay11.stockState.text = "low"
+                            lay11.stockQuantity.text = "only $stock available in stock"
+                        }
+                        stock == 0L ->{
+                            lay11.stockState.text = "out of stock"
+                            lay11.stockQuantity.visibility = gone
+                            binding.addToCartBtn.isEnabled = false
+                            binding.addToCartBtn.backgroundTintList =
+                                ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
+                            binding.buyNowBtn.isEnabled = false
+                            binding.buyNowBtn.backgroundTintList =
+                                ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
+                        }
+//                        else -> {
+//                            lay11.stockState.text = "out of stock"
+//                            lay11.stockQuantity.visibility = gone
+//                            binding.addToCartBtn.isEnabled = false
+//                            binding.addToCartBtn.backgroundTintList =
+//                                ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
+//                            binding.buyNowBtn.isEnabled = false
+//                            binding.buyNowBtn.backgroundTintList =
+//                                ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
+//                        }
                     }
 
 // todo layout 2
@@ -515,7 +521,7 @@ class ProductFragment : Fragment() {
                             fabBtn.supportImageTintList =
                                 ContextCompat.getColorStateList(requireContext(), R.color.red)
                             fabBtn.rippleColor =
-                                ContextCompat.getColor(requireContext(), R.color.gray_400)
+                                ContextCompat.getColor(requireContext(), R.color.grey_400)
 
                         }
                         index++
@@ -558,6 +564,11 @@ class ProductFragment : Fragment() {
 
 
         }
+    }
+
+    override fun onItemClick(position: Int, url: String) {
+        val action = ProductFragmentDirections.actionProductFragmentToProductImageFragment(url)
+        findNavController().navigate(action)
     }
 
 

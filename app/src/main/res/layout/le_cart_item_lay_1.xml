@@ -126,7 +126,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/s_border_background"
-        android:backgroundTint="@color/gray_800"
+        android:backgroundTint="@color/grey_800"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -183,7 +183,7 @@
                 android:layout_marginStart="6dp"
                 android:padding="5dp"
                 android:text="View Product"
-                android:textColor="@color/gray_500"
+                android:textColor="@color/grey_500"
                 android:textSize="17sp" />
         </LinearLayout>
 

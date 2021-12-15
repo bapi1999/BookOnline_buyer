@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:background="@drawable/s_bordar_2"
-    android:backgroundTint="@color/gray_800"
+    android:backgroundTint="@color/grey_800"
     android:padding="5dp">
 
     <TextView
@@ -45,7 +45,7 @@
         android:maxLength="8"
         android:maxLines="1"
         android:text="245"
-        android:textColor="@color/gray_800"
+        android:textColor="@color/grey_800"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

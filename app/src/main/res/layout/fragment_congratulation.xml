@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="You Ordered:"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="22sp" />
 
         <TextView
@@ -91,7 +91,7 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:text="0"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="25sp"
             android:textStyle="bold" />
 
@@ -102,7 +102,7 @@
             android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:text="Item"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="22sp"
             android:textStyle="bold" />
     </LinearLayout>

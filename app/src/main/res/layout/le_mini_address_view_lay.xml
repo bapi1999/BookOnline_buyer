@@ -12,7 +12,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/gray_100"
+        android:backgroundTint="@color/grey_100"
         android:paddingStart="9dp"
         android:paddingTop="2dp"
         android:paddingEnd="9dp"
@@ -97,7 +97,7 @@
         app:srcCompat="@drawable/ic_baseline_check_box_outline_blank_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/gray_800" />
+        app:tint="@color/grey_800" />
 
     <Button
         android:id="@+id/edit_address_btn"

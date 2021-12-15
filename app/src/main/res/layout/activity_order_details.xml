@@ -55,7 +55,7 @@
 
                     android:layout_marginStart="16dp"
                     android:text="ago"
-                    android:textColor="@color/gray_900"
+                    android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -74,7 +74,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Order ID: "
-                    android:textColor="@color/gray_900"
+                    android:textColor="@color/grey_900"
                     android:textSize="15sp" />
 
 
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:text="@string/order_id"
-                    android:textColor="@color/gray_900"
+                    android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
 
                     android:text="Tracking ID: "
-                    android:textColor="@color/gray_900"
+                    android:textColor="@color/grey_900"
                     android:textSize="15sp" />
 
 
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:text=""
-                    android:textColor="@color/gray_900"
+                    android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:text="@string/tracking_id_won_t_generate"
-                    android:textColor="@color/gray_900"
+                    android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
 

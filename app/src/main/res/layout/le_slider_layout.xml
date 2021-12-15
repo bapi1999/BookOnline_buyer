@@ -13,7 +13,7 @@
         android:id="@+id/imageSliderNew"
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:background="@color/gray_400"
+        android:background="@color/grey_400"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
-        app:dotsColor="@color/gray_50"
+        app:dotsColor="@color/grey_50"
 
         app:dotsCornerRadius="8dp"
         app:dotsSize="13dp"
@@ -33,5 +33,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:progressMode="true"
-        app:selectedDotColor="@color/gray_50" />
+        app:selectedDotColor="@color/grey_50" />
 </androidx.constraintlayout.widget.ConstraintLayout>

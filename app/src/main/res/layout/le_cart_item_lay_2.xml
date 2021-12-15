@@ -150,7 +150,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:text="( 0 items )"
-        android:textColor="@color/gray_700"
+        android:textColor="@color/grey_700"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/textView40"
         app:layout_constraintStart_toEndOf="@+id/textView40" />

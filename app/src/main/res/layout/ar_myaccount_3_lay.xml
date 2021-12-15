@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/s_border_background"
-    android:backgroundTint="@color/gray_400">
+    android:backgroundTint="@color/grey_400">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -41,7 +41,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_400" />
+            android:background="@color/grey_400" />
 
         <LinearLayout
             android:id="@+id/my_order_lay"
@@ -73,7 +73,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_400" />
+            android:background="@color/grey_400" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -104,7 +104,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_400" />
+            android:background="@color/grey_400" />
 
         <LinearLayout
             android:id="@+id/my_address_lay"
@@ -136,7 +136,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_400" />
+            android:background="@color/grey_400" />
 
         <LinearLayout
             android:id="@+id/my_cart_lay"
@@ -168,7 +168,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_400" />
+            android:background="@color/grey_400" />
 
         <LinearLayout
             android:id="@+id/my_wishlist_lay"

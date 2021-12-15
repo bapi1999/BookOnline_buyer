@@ -25,7 +25,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/lorem_ipsum"
-        android:textColor="@color/gray_900"
+        android:textColor="@color/grey_900"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
@@ -109,7 +109,7 @@
             android:layout_marginStart="8dp"
             android:maxLength="13"
             android:text="00% off"
-            android:textColor="@color/gray_700"
+            android:textColor="@color/grey_700"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -154,7 +154,7 @@
             android:paddingEnd="5dp"
             android:paddingBottom="2dp"
             android:text="Good and new"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="13sp" />
 
         <TextView

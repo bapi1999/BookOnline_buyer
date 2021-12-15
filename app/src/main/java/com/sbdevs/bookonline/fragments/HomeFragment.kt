@@ -50,14 +50,12 @@ class HomeFragment : Fragment() {
             withContext(Dispatchers.IO){
                 firebaseFirestore.collection("HOMEPAGE").orderBy("index", Query.Direction.ASCENDING)
                     .get().addOnSuccessListener{
-                        Toast.makeText(context,"Success home page", Toast.LENGTH_LONG).show()
                         uiViewLIst = it.toObjects(HomeModel::class.java)
                         homeAdapter.homeModelList =uiViewLIst
                         homeAdapter.notifyDataSetChanged()
                         swipeRefreshLayout.isRefreshing = false
 
                     }.addOnFailureListener{
-                        Toast.makeText(context,it.message, Toast.LENGTH_LONG).show()
                         Log.e("HomeFragment","Failed to load home ${it.message}",it.cause)
                     }.await()
 

@@ -15,7 +15,7 @@
         android:text="Your rating"
         android:textStyle="bold"
         android:textSize="17sp"
-        android:textColor="@color/gray_900"
+        android:textColor="@color/grey_900"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,7 +52,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:text="Write a review"
-        android:textColor="@color/gray_900"
+        android:textColor="@color/grey_900"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:numStars="5"
-        android:progressBackgroundTint="@color/gray_400"
+        android:progressBackgroundTint="@color/grey_400"
         android:progressTint="@color/yellow"
         android:stepSize="1.0"
         app:layout_constraintEnd_toEndOf="parent"

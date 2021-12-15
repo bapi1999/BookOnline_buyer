@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Enter Name"
-                android:textColor="@color/gray_900"
+                android:textColor="@color/grey_900"
                 android:textSize="17sp"
                 android:inputType="text"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -110,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_mobile_number"
-                android:textColor="@color/gray_900"
+                android:textColor="@color/grey_900"
                 android:textSize="17sp"
                 android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -141,7 +141,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/gray_800"
+                android:background="@color/grey_800"
                 android:gravity="center"
                 android:paddingTop="13dp"
                 android:paddingBottom="13dp"

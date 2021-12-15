@@ -26,7 +26,7 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:text="Total Amount "
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="23sp" />
 
         <TextView
@@ -37,9 +37,34 @@
             android:layout_weight="1"
             android:gravity="end"
             android:text="Rs. 1000/-"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="23sp"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/no_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brikeRed"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider8">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="10dp"
+            android:text="Address not found. Go back to  add a nw address before confirm"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -51,11 +76,13 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider8">
+        app:layout_constraintTop_toBottomOf="@+id/no_address">
         <include
             android:id="@+id/mini_address"
             layout="@layout/ar_address_detail_lay" />
     </LinearLayout>
+
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -65,7 +92,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/s_bordar_2"
-        android:backgroundTint="@color/gray_400"
+        android:backgroundTint="@color/grey_400"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,7 +115,7 @@
             android:layout_marginEnd="10dp"
             android:gravity="center_vertical"
             android:text="Pay online"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView17"
             app:layout_constraintEnd_toEndOf="parent"
@@ -104,7 +131,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/s_bordar_2"
-        android:backgroundTint="@color/gray_400"
+        android:backgroundTint="@color/grey_400"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -128,7 +155,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:text="Cash on delivery"
-            android:textColor="@color/gray_900"
+            android:textColor="@color/grey_900"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView18"
             app:layout_constraintEnd_toEndOf="parent"
@@ -162,7 +189,7 @@
         android:id="@+id/divider8"
         android:layout_width="0dp"
         android:layout_height="2dp"
-        android:background="@color/gray_900"
+        android:background="@color/grey_900"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

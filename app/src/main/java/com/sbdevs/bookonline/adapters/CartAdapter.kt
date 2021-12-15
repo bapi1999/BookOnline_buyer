@@ -17,10 +17,10 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
 
 
-class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonItemClickListener) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnItemClickListener) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
 
-    interface MyonItemClickListener{
+    interface MyOnItemClickListener{
         fun onItemClick(position: Int)
         fun onQuantityChange(position: Int,textView: TextView)
     }
@@ -71,12 +71,12 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listner: MyonIt
 
             quantitiesTxt.text = quantity.toString()
             removeBtn.setOnClickListener {
-                listner.onItemClick(adapterPosition)
+                listener.onItemClick(adapterPosition)
 
             }
 
             quantityContainer.setOnClickListener {
-                listner.onQuantityChange(adapterPosition,quantitiesTxt)
+                listener.onQuantityChange(adapterPosition,quantitiesTxt)
             }
 
             viewBtn.setOnClickListener {

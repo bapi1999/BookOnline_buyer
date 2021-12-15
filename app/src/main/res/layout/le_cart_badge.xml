@@ -10,7 +10,7 @@
         android:layout_height="24dp"
         android:layout_gravity="center"
         app:srcCompat="@drawable/ic_shopping_cart_24"
-        app:tint="@color/gray_50" />
+        app:tint="@color/grey_50" />
     <TextView
         android:id="@+id/cart_badge_counter"
         android:layout_width="20dp"
