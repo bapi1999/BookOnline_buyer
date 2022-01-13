@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/s_border_background"
+    android:background="@drawable/s_border_1"
     android:backgroundTint="@color/grey_400">
 
     <LinearLayout

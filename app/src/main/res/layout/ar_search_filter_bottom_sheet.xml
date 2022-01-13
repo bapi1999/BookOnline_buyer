@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:text="Relevance"
             android:textColor="@color/grey_900"
-            android:textSize="17sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <com.google.android.material.chip.ChipGroup
@@ -32,7 +32,6 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView63"
@@ -40,14 +39,15 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/relevance_chip1"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
+                android:checked="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Price Low - High" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/relevance_chip2"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Price High - Low" />
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,14 +74,13 @@
             android:layout_height="wrap_content"
             android:text="Type"
             android:textColor="@color/grey_900"
-            android:textSize="17sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/type_chipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView61"
@@ -89,36 +88,28 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip1"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_new"
+                android:tag="new"
                 android:text="New" />
 
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip2"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_used"
+                android:tag="used"
                 android:text="Used Book" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip3"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_refurbished"
+                android:tag="refurbished"
                 android:text="Refurbished" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/type_chip4"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:tag="TAG_year"
-                android:text="This year edition" />
 
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
@@ -128,7 +119,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,7 +132,7 @@
             android:layout_height="wrap_content"
             android:text="Condition"
             android:textColor="@color/grey_900"
-            android:textSize="17sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
@@ -150,7 +141,6 @@
             android:id="@+id/condition_chipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView62"
@@ -158,35 +148,95 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip1"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_good"
+                android:tag="good"
                 android:text="Good" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip2"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_almost_new"
+                android:tag="almost_new"
                 android:text="Almost new" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip3"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_half_bad"
+                android:tag="half_bad"
                 android:text="Half bad" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip4"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
+                style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="TAG_bad"
+                android:tag="bad"
                 android:text="Bad" />
+        </com.google.android.material.chip.ChipGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/printed_yera_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/condition_container">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Printed year"
+            android:textColor="@color/grey_900"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/print_chipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView62"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/print_chip1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:tag="all"
+                android:text="All" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/print_chip2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2022"
+                android:text="2022" />
+
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                android:id="@+id/print_chip3"-->
+            <!--                style="@style/CustomChipStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:tag="2021"-->
+            <!--                android:text="2021" />-->
+
         </com.google.android.material.chip.ChipGroup>
 
     </LinearLayout>
@@ -197,119 +247,154 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/condition_container">
-
-
-        <TextView
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="By price"
-            android:textColor="@color/grey_900"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
-
-        <TextView
-            android:id="@+id/error_message_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="TextView"
-            android:textColor="@color/brikeRed"
-            android:visibility="gone" />
+        app:layout_constraintTop_toBottomOf="@+id/printed_yera_container">
 
         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="By price"
+                android:textColor="@color/grey_900"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
+            <ImageView
+                android:layout_width="17dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_baseline_currency_rupee_24"
+                app:tint="@color/grey_900" />
+
+        </LinearLayout>
+
+
+
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/price_chipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView62"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/price_chip1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:tag="all_price"
+                android:text="All price" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/price_chip2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2022"
+                android:text="Custom price range" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/price_range_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.0"
+            android:valueTo="15000.0"
+            android:stepSize="5"
+            app:haloColor="@color/secondaryLightColor"
+            app:haloRadius="20dp"
+            app:tickVisible="false"
+            app:thumbColor="@color/secondaryColor"
+            app:thumbRadius="12dp"
+            app:trackColorActive="@color/secondaryColor"
+
+            app:trackHeight="5dp"
+            app:minSeparation="100dp"
+            app:values="@array/initial_slider_values"
+            android:visibility="visible"/>
+
+        <LinearLayout
+            android:id="@+id/price_range_text_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-            <EditText
+            <TextView
                 android:id="@+id/lower_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
                 android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:ems="10"
+                android:background="@drawable/s_border_1"
+                android:backgroundTint="@color/grey_700"
+                android:text="0.0"
+                android:textSize="17sp"
                 android:gravity="center"
-                android:hint="Lower limit"
-                android:inputType="number"
-                android:maxLength="3"
-                android:maxLines="1" />
+                android:maxLines="1"
+                app:drawableStartCompat="@drawable/ic_baseline_currency_rupee_24"
+                />
 
-            <EditText
-                android:id="@+id/upper_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+            <View
+                android:id="@+id/divider15"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:ems="10"
+                android:visibility="invisible"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/upper_input"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:background="@drawable/s_border_1"
+                android:backgroundTint="@color/grey_700"
+                android:layout_marginStart="4dp"
+                android:text="1000.0"
                 android:gravity="center"
-                android:hint="Upper limit"
-                android:inputType="number"
-                android:maxLength="4"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textSize="17sp"
+                app:drawableStartCompat="@drawable/ic_baseline_currency_rupee_24"/>
         </LinearLayout>
 
 
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
+
+    <Button
+        android:id="@+id/apply_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="30dp"
+        android:layout_marginBottom="16dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/apply"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout24">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/cancel_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/grey_800"
-                android:gravity="center"
-                android:paddingTop="13dp"
-                android:paddingBottom="13dp"
-                android:text="@string/action_cancel"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/apply_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/teal_700"
-                android:gravity="center"
-                android:paddingTop="13dp"
-                android:paddingBottom="13dp"
-                android:text="@string/apply"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout24" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

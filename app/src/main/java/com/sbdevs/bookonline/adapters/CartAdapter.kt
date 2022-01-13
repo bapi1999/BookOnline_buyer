@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -55,10 +56,9 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
         private val productRealPrice:TextView = itemView.findViewById(R.id.product_real_price)
         private val percentOff: TextView = itemView.findViewById(R.id.percent_off)
         private val quantitiesTxt:TextView = itemView.findViewById(R.id.quantity)
-        private val stockNumberTxt:TextView = itemView.findViewById(R.id.stock)
-        private val outofstockTxt:TextView = itemView.findViewById(R.id.outofstockText)
+        private val outofstockIcon:ImageView = itemView.findViewById(R.id.outofstock_icon)
         private val variantTxt:TextView = itemView.findViewById(R.id.variant)
-        private val viewBtn:LinearLayout = itemView.findViewById(R.id.view_details)
+        private val viewBtn:AppCompatButton = itemView.findViewById(R.id.view_details)
         private val removeBtn:LinearLayout = itemView.findViewById(R.id.remove_btn)
         private val quantityContainer:LinearLayout = itemView.findViewById(R.id.quantity_container)
 
@@ -104,7 +104,7 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
                         val price = priceSelling.toInt()*quantity.toInt()
                         productPrice.text = price.toString()
                         productRealPrice.visibility = View.GONE
-                        percentOff.text = "Buy Now"
+                        percentOff.visibility = View.GONE
 
                     }else{
 
@@ -118,12 +118,10 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
                         percentOff.text = "${percent}% off"
 
                     }
-                    if (stock != 0L){
-                        stockNumberTxt.text = stock.toString()
-                        outofstockTxt.visibility = View.GONE
+                    if (stock == 0L){
+                        outofstockIcon.visibility = View.VISIBLE
                     }else{
-                        stockNumberTxt.text = stock.toString()
-                        outofstockTxt.visibility = View.VISIBLE
+                        outofstockIcon.visibility = View.GONE
                     }
 
                     for (catrgorys in categoryList) {

@@ -42,8 +42,7 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
         //private val productRealPrice: TextView = itemView.findViewById(R.id.product_real_price)
         private val quantitiesTxt: TextView = itemView.findViewById(R.id.quantity)
 
-        private val stockNumberTxt:TextView = itemView.findViewById(R.id.stock)
-        private val outofstockTxt:TextView = itemView.findViewById(R.id.outofstockText)
+        private val outofstockIcon:ImageView = itemView.findViewById(R.id.outofstock_icon)
         private val variantTxt:TextView = itemView.findViewById(R.id.variant)
         init {
             variantTxt.visibility = View.GONE
@@ -63,11 +62,9 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
             productName.text = title
 
             if (stockQuantity != 0L){
-                stockNumberTxt.text = stockQuantity.toString()
-                outofstockTxt.visibility = View.GONE
+                outofstockIcon.visibility = View.GONE
             }else{
-                stockNumberTxt.text = stockQuantity.toString()
-                outofstockTxt.visibility = View.VISIBLE
+                outofstockIcon.visibility = View.VISIBLE
             }
 
             Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);

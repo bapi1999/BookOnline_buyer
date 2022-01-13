@@ -46,9 +46,9 @@
         android:id="@+id/no_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/brikeRed"
+        android:background="@color/red_600"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider8">
@@ -77,11 +77,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/no_address">
+
         <include
             android:id="@+id/mini_address"
             layout="@layout/ar_address_detail_lay" />
     </LinearLayout>
-
 
 
     <LinearLayout
@@ -91,7 +91,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/s_bordar_2"
+        android:background="@drawable/s_border_2"
         android:backgroundTint="@color/grey_400"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -130,7 +130,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/s_bordar_2"
+        android:background="@drawable/s_border_2"
         android:backgroundTint="@color/grey_400"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -164,7 +164,7 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/confirm_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -172,11 +172,10 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/yellow"
+        android:backgroundTint="@color/secondaryColor"
         android:text="Confirm"
         android:textAllCaps="false"
-        android:textColor="@color/white"
+        android:textColor="@color/primaryDarkColor"
         android:textSize="17sp"
 
         android:textStyle="bold"

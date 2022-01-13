@@ -24,7 +24,7 @@
                 android:id="@+id/no_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/brikeRed"
+                android:background="@color/red_600"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -62,6 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Change or Add address"
+                android:textColor="@color/secondaryColor"
                 android:textAllCaps="false" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -80,12 +81,12 @@
         android:id="@+id/continue_to_payment_btn"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:backgroundTint="@color/orange"
+        android:backgroundTint="@color/primaryColor"
         android:gravity="center"
         android:text="Continue"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textColor="@color/secondaryColor"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

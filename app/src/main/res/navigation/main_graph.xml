@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.sbdevs.bookonline.fragments.HomeFragment"
-        android:label="Home"
+
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_myCartFragment"
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/myCartFragment"
         android:name="com.sbdevs.bookonline.fragments.MyCartFragment"
-        android:label="Cart"
+
         tools:layout="@layout/fragment_my_cart" >
 
     </fragment>
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/myWishlistFragment"
         android:name="com.sbdevs.bookonline.fragments.MyWishlistFragment"
-        android:label="My Wishlist"
+
         tools:layout="@layout/fragment_my_wishlist" />
     <fragment
         android:id="@+id/notificationFragment"

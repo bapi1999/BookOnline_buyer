@@ -62,7 +62,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/address_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         tools:listitem="@layout/le_mini_address_view_lay"
         app:layout_constraintBottom_toTopOf="@+id/continue_to_order_btn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -73,14 +73,14 @@
     <LinearLayout
         android:id="@+id/continue_to_order_btn"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/orange"
+        android:background="@color/primaryColor"
         android:gravity="center"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -90,8 +90,8 @@
             android:layout_height="wrap_content"
             android:text="Continue"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textColor="@color/secondaryColor"
+            android:textSize="17sp"
             />
     </LinearLayout>
 

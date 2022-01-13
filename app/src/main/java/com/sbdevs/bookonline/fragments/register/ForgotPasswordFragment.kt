@@ -10,7 +10,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -55,7 +54,7 @@ class ForgotPasswordFragment : Fragment() {
     fun validateEmail(){
         val email:String =  emailEditText.text.toString().trim()
         if (email.isEmpty()){
-            emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)
+            emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red_a700)
             emailEditText.requestFocus()
         } else {
             Toast.makeText(context,email,Toast.LENGTH_SHORT).show()
@@ -65,7 +64,7 @@ class ForgotPasswordFragment : Fragment() {
                 forgotPassWord(email)
 
             }else{
-                emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)
+                emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red_a700)
                 emailEditText.requestFocus()
             }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
+    android:id="@+id/cart_badge_container_lay"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="?attr/actionBarSize"
     android:layout_height="?attr/actionBarSize"

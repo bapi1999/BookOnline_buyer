@@ -3,23 +3,19 @@ package com.sbdevs.bookonline.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
@@ -27,16 +23,16 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProceedOrderActivity
+import com.sbdevs.bookonline.activities.SearchActivity
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import com.sbdevs.bookonline.adapters.ProductReviewAdapter
 import com.sbdevs.bookonline.databinding.FragmentProductBinding
 import com.sbdevs.bookonline.models.CartModel
 import com.sbdevs.bookonline.models.ProductReviewModel
-import kotlinx.coroutines.CoroutineScope
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 
 class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
@@ -48,7 +44,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val user = firebaseAuth.currentUser
 
-    lateinit var addToCartBtn: Button
+    lateinit var addToCartBtn: LinearLayout
     lateinit var buyNowBtn: Button
 
     lateinit var fabBtn: FloatingActionButton
@@ -61,6 +57,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
     private var cartList: ArrayList<MutableMap<String, Any>> = ArrayList()
+    lateinit var cartBadgeText: TextView
     private var fbCartList: ArrayList<MutableMap<String, Any>> = ArrayList()
 
     private var wishList: ArrayList<String> = ArrayList()
@@ -91,9 +88,11 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
 
-        addToCartBtn = binding.lay21.addToCartBtn
 
-        buyNowBtn = binding.lay21.buyNowBtn
+
+        addToCartBtn = binding.lay3.addToCartBtn
+
+        buyNowBtn = binding.lay3.buyNowBtn
         productImgViewPager = binding.lay1.productImgViewPager
 
 
@@ -106,28 +105,21 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
 
+
+
         lifecycleScope.launch(Dispatchers.IO) {
 
 
-            getFirebaseData(productId)
-
-            withContext(Dispatchers.IO) {
-                if (user!=null){
-                    getWishList()
-                    getCartList()
-                }
-
+            getProductData(productId)
+            if (user!=null){
+                getWishList()
+                getCartList()
             }
+            getReview(productId)
 
-            withContext(Dispatchers.Main) {
-                getReview(productId)
-            }
-            withContext(Dispatchers.Main) {
-
-            }
         }
 
-        enterQuantityInput = binding.lay21.enterQuantityInput
+        enterQuantityInput = binding.lay3.enterQuantityInput
 
 
         val layoutManager = LinearLayoutManager(context)
@@ -137,14 +129,58 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         reviewAdapter = ProductReviewAdapter(reviewList)
         reviewRecyclerView.adapter = reviewAdapter
 
+        cartBadgeText = binding.layCart.cartBadgeCounter
+
+        val scrollView = binding.scrollView
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+            val view = scrollView.getChildAt(scrollView.childCount - 1)
+            val diff =
+                view.bottom + scrollView.paddingBottom - (scrollView.height + scrollView.scrollY)
+
+            // if diff is zero, then the bottom has been reached
+
+            // if diff is zero, then the bottom has been reached
+            if (diff == 0) {
+                // do stuff
+                Toast.makeText(requireContext(),"Bottom reached",Toast.LENGTH_LONG).show()
+            }
+        }
 
 
 
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val dataClass = SharedDataClass()
+        cartBadgeText.text = dataClass.cartNumber.toString()
+        //dataClass.getCartListForOptionMenu(cartBadgeText)
+
+        binding.searchBtn.setOnClickListener {
+            val intent = Intent(requireContext(), SearchActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.layCart.cartBadgeContainerLay.setOnClickListener {
+            if (user != null){
+                val action = ProductFragmentDirections.actionProductFragmentToMyCartFragment2()
+                findNavController().navigate(action)
+            }else{
+                loginDialog.show(childFragmentManager, "custom login dialog")
+
+            }
+        }
+
+    }
+
     override fun onStart() {
         super.onStart()
+
+
+
+
 
         fabBtn.setOnClickListener {
 
@@ -161,7 +197,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
                     ALREADY_ADDED_TO_WISHLIST = true
                     fabBtn.supportImageTintList =
-                        ContextCompat.getColorStateList(requireContext(), R.color.red)
+                        ContextCompat.getColorStateList(requireContext(), R.color.red_a700)
                     fabBtn.rippleColor =
                         ContextCompat.getColor(requireContext(), R.color.grey_400)
                 } else {
@@ -181,7 +217,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     fabBtn.supportImageTintList =
                         ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
                     fabBtn.rippleColor =
-                        ContextCompat.getColor(requireContext(), R.color.red)
+                        ContextCompat.getColor(requireContext(), R.color.red_a700)
                 }
 
             }
@@ -219,12 +255,10 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
         buyNowBtn.setOnClickListener {
 
+            val quantityString = enterQuantityInput.editText!!.text.toString().trim()
             if (user != null){
-                if (!checkIsQuantityEntered(dbStockQty)) {
-                    return@setOnClickListener
-                }
-                else {
-                    val qty = enterQuantityInput.editText?.text.toString().toLong()
+
+                if (quantityString.isEmpty()){
                     val newSendingList: ArrayList<CartModel> = ArrayList()
                     newSendingList.add(
                         CartModel(
@@ -235,7 +269,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                             sendingList[0].priceOriginal,
                             sendingList[0].priceSelling,
                             sendingList[0].stockQty,
-                            qty
+                            1
                         )
                     )
 
@@ -247,15 +281,51 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
                     intentProceedOrderActivity.putParcelableArrayListExtra(
-                        "productList",
-                        newSendingList
-                    );
-                    intentProceedOrderActivity.putExtra("total_price", (totalPrice * qty.toInt()))
-                    intentProceedOrderActivity.putExtra("total_discount", (discount * qty.toInt()))
-                    intentProceedOrderActivity.putExtra("total_amount", (totalAmount * qty.toInt()))
+                        "productList", newSendingList)
+                    intentProceedOrderActivity.putExtra("total_price", (totalPrice *1))
+                    intentProceedOrderActivity.putExtra("total_discount", (discount *1))
+                    intentProceedOrderActivity.putExtra("total_amount", (totalAmount *1))
                     startActivity(intentProceedOrderActivity)
+                }else{
 
+                    if (!checkIsQuantityEntered(dbStockQty)) {
+                        return@setOnClickListener
+
+                    }
+                    else {
+                        val qty =quantityString.toLong()
+                        val newSendingList: ArrayList<CartModel> = ArrayList()
+                        newSendingList.add(
+                            CartModel(
+                                productId,
+                                sendingList[0].sellerId,
+                                sendingList[0].url,
+                                sendingList[0].title,
+                                sendingList[0].priceOriginal,
+                                sendingList[0].priceSelling,
+                                sendingList[0].stockQty,
+                                qty
+                            )
+                        )
+
+
+                        val intentProceedOrderActivity =
+                            Intent(requireContext(), ProceedOrderActivity::class.java);
+                        intentProceedOrderActivity.putExtra("From_To", 2);
+                        //todo: 1=> MyCart / 2=> BuyNow
+
+
+                        intentProceedOrderActivity.putParcelableArrayListExtra(
+                            "productList", newSendingList)
+                        intentProceedOrderActivity.putExtra("total_price", (totalPrice * qty.toInt()))
+                        intentProceedOrderActivity.putExtra("total_discount", (discount * qty.toInt()))
+                        intentProceedOrderActivity.putExtra("total_amount", (totalAmount * qty.toInt()))
+                        startActivity(intentProceedOrderActivity)
+
+                    }
                 }
+
+
             }else{
                 loginDialog.show(childFragmentManager, "custom login dialog")
             }
@@ -284,19 +354,16 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     }
 
 
-    private fun getFirebaseData(productId: String) = CoroutineScope(Dispatchers.IO).launch {
-        val lay1 = binding.lay1
-        val lay11 = binding.lay11
+    private suspend fun getProductData(productId: String) {
         val lay2 = binding.lay2
-        val lay3 = binding.lay3
         val lay4 = binding.lay4
+        val lay5 = binding.lay5
+        val lay6 = binding.lay6
         val layR = binding.layRating
         firebaseFirestore.collection("PRODUCTS").document(productId).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-//                    lifecycleScope.launch(Dispatchers.IO) {
-//
-//                    }
+
                     var categoryString = ""
                     var tagsString = ""
 
@@ -314,11 +381,18 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
                     val url = it.get("product_thumbnail").toString().trim()
 
+                    val bookWriter = it.getString("book_writer")
+                    val bookPublisherName = it.getString("book_publisher")
+                    val bookLanguage = it.getString("book_language")
+                    val bookType = it.getString("book_type")!!
+                    val bookPrintDate = it.getLong("book_printed_ON")
+                    val bookCondition = it.getString("book_condition")
+                    val bookPageCount = it.getString("book_pageCount")
+                    val isbnNumber = it.getString("book_ISBN")
+                    val bookDimension = it.getString("book_dimension")
+
                     dbStockQty = stock.toInt()
 
-//                    totalAmount = priceSelling.toInt()
-//                    totalPrice = priceOriginal.toInt()
-//                    discount = totalPrice - totalAmount
                     sendingList.add(
                         CartModel(
                             productId,
@@ -348,11 +422,13 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     productImgViewPager.adapter = adapter
                     binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
 
+                    lay2.productName.text = productName
+
 
                     if (priceOriginal == 0L) {
-                        lay11.productPrice.text = priceSelling.toString()
-                        lay11.strikeThroughPrice.visibility = gone
-                        lay11.percentOff.visibility = gone
+                        lay2.productPrice.text = priceSelling.toString()
+                        lay2.strikeThroughPrice.visibility = gone
+                        lay2.percentOff.visibility = gone
 
                         totalAmount = priceSelling.toInt()
                         totalPrice = priceSelling.toInt()
@@ -362,9 +438,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                         val percent =
                             100 * (priceOriginal.toInt() - priceSelling.toInt()) / (priceOriginal.toInt())
 
-                        lay11.productPrice.text = priceSelling.toString()
-                        lay11.strikeThroughPrice.text = priceOriginal.toString()
-                        lay11.percentOff.text = "${percent}% off"
+                        lay2.productPrice.text = priceSelling.toString()
+                        lay2.strikeThroughPrice.text = priceOriginal.toString()
+                        lay2.percentOff.text = "${percent}% off"
 
 
                         totalAmount = priceSelling.toInt()
@@ -374,60 +450,58 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     }
 
 
-                    lay11.productState.text = it.getString("book_type")!!
-                    lay11.miniProductRating.text = avgRating
-                    lay11.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
+                    lay2.productState.text = bookType
+
+                    lay2.miniProductRating.text = avgRating
+
+                    lay2.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
 
                     when {
                         stock > 5 -> {
-                            lay11.stockState.visibility = gone
-                            lay11.stockQuantity.visibility = gone
+                            lay2.stockState.visibility = gone
+                            lay2.stockQuantity.visibility = gone
                         }
                         stock in 1..5 -> {
-                            lay11.stockState.visibility = visible
-                            lay11.stockQuantity.visibility = visible
-                            lay11.stockState.text = "low"
-                            lay11.stockQuantity.text = "only $stock available in stock"
+                            lay2.stockState.visibility = visible
+                            lay2.stockQuantity.visibility = visible
+                            lay2.stockState.text = "low"
+                            lay2.stockQuantity.text = "only $stock available in stock"
                         }
                         stock == 0L ->{
-                            lay11.stockState.text = "out of stock"
-                            lay11.stockQuantity.visibility = gone
-                            binding.addToCartBtn.isEnabled = false
-                            binding.addToCartBtn.backgroundTintList =
+                            lay2.stockState.text = "out of stock"
+                            lay2.stockQuantity.visibility = gone
+                            addToCartBtn.isEnabled = false
+                            addToCartBtn.backgroundTintList =
                                 ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
-                            binding.buyNowBtn.isEnabled = false
-                            binding.buyNowBtn.backgroundTintList =
+                            buyNowBtn.isEnabled = false
+                            buyNowBtn.backgroundTintList =
                                 ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
                         }
-//                        else -> {
-//                            lay11.stockState.text = "out of stock"
-//                            lay11.stockQuantity.visibility = gone
-//                            binding.addToCartBtn.isEnabled = false
-//                            binding.addToCartBtn.backgroundTintList =
-//                                ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
-//                            binding.buyNowBtn.isEnabled = false
-//                            binding.buyNowBtn.backgroundTintList =
-//                                ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
-//                        }
                     }
 
 // todo layout 2
 
-                    lay2.productDetailsText.text = description
+                    lay4.productDetailsText.text = description
 
                     //todo layout 3
-                    lay3.writerName.text = it.getString("book_writer")
-                    lay3.publisherName.text = it.getString("book_publisher")
-                    lay3.bookLanguage.text = it.getString("book_language")
-                    lay3.printDate.text = it.getString("book_printed_ON")
-                    lay3.bookCondition.text = it.getString("book_condition")
-                    lay3.pageCount.text = it.getString("book_pageCount")
-                    lay3.isbnNumber.text = it.getString("book_ISBN")
-//                    lay3.bookDimension.text = it.getString("")
+                    lay5.writerName.text = bookWriter
+                    lay5.publisherName.text = bookPublisherName
+                    lay5.bookLanguage.text = bookLanguage
+
+                    if (bookPrintDate == 0L) {
+                        lay5.printDate.text = "Not available"
+                    } else {
+                        lay5.printDate.text = bookPrintDate.toString()
+                    }
+                    lay5.bookType.text = bookType
+                    lay5.bookCondition.text =bookCondition
+                    lay5.pageCount.text = bookPageCount
+                    lay5.isbnNumber.text = isbnNumber
+                    lay5.bookDimension.text = bookDimension
 
                     //todo layout 4
-                    lay4.categoryText.text = categoryString
-                    lay4.tagsText.text = tagsString
+                    lay6.categoryText.text = categoryString
+                    lay6.tagsText.text = tagsString
 
                     //todo rating
                     layR.averageRatingText.text = avgRating
@@ -454,10 +528,10 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
             }.await()
     }
 
-    private fun getReview(productID: String) = CoroutineScope(Dispatchers.IO).launch {
+    private fun getReview(productID: String) {
         firebaseFirestore.collection("PRODUCTS").document(productID)
             .collection("PRODUCT_REVIEW")
-            .orderBy("review_Date", Query.Direction.DESCENDING).limit(7)
+            .orderBy("review_Date", Query.Direction.DESCENDING).limit(5)
             .get().addOnSuccessListener {
                 reviewList = it.toObjects(ProductReviewModel::class.java)
                 reviewAdapter.list = reviewList
@@ -466,7 +540,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
             }.addOnFailureListener{
                 Log.e("Review","${it.message}",it.cause)
-            }.await()
+            }
 
     }
 
@@ -499,7 +573,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     }
 
 
-    private fun getWishList() = lifecycleScope.launch(Dispatchers.IO) {
+    private fun getWishList(){
 
 
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
@@ -511,21 +585,18 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     fbWishList = x as ArrayList<String>
 
                     wishList.addAll(fbWishList)
-                    var index = 0
-                    for (ids: String in fbWishList) {
+
+                    for ((index, ids: String) in fbWishList.withIndex()) {
 
                         if (ids.contains(productId)) {
                             wishListIndex = index
                             ALREADY_ADDED_TO_WISHLIST = true
-//                                Toast.makeText(this@ProductDetailsActivity,"ALREADY_ADDED_TO_WISHLIST ",Toast.LENGTH_SHORT).show()
                             fabBtn.supportImageTintList =
-                                ContextCompat.getColorStateList(requireContext(), R.color.red)
+                                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
                             fabBtn.rippleColor =
                                 ContextCompat.getColor(requireContext(), R.color.grey_400)
 
                         }
-                        index++
-
                     }
 
                 } else {
@@ -535,14 +606,15 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
             }.addOnFailureListener{
                 Log.e("WishList", "${it.message}",it.cause)
-            }.await()
+            }
 
     }
 
 
     private fun checkIsQuantityEntered(stockQty: Int): Boolean {
         val quantityString = enterQuantityInput.editText!!.text.toString().trim()
-        return if (quantityString.isNotEmpty() && quantityString.toInt() != 0) {
+        return if (quantityString.toInt() != 0) {
+
             if (quantityString.toInt() > stockQty) {
 
                 enterQuantityInput.isErrorEnabled = true
@@ -557,8 +629,8 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
             }
         } else {
-            enterQuantityInput.isErrorEnabled = true
-            enterQuantityInput.error = "Field can't be empty"
+            enterQuantityInput.isErrorEnabled = false
+            enterQuantityInput.error = "Quantity mustn't be 0"
 
             false
 
@@ -569,6 +641,16 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     override fun onItemClick(position: Int, url: String) {
         val action = ProductFragmentDirections.actionProductFragmentToProductImageFragment(url)
         findNavController().navigate(action)
+    }
+
+    private fun getRecommendedProduct(){
+        //todo= generates from converting product name to array and query the array
+
+    }
+
+    private fun getSimilarProduct(){
+        //todo= generates from user search result
+
     }
 
 

@@ -38,7 +38,9 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
 
         private val avgRatingText: TextView = itemView.findViewById(R.id.mini_product_rating)
         private val totalRatingsText: TextView = itemView.findViewById(R.id.mini_totalNumberOf_ratings)
-        private val outOfStockText: TextView = itemView.findViewById(R.id.outofstockText)
+        private val outOfStockIcon: ImageView = itemView.findViewById(R.id.outofstock_icon)
+        private val bookTypeText:TextView = itemView.findViewById(R.id.book_type)
+        private val bookConditionText:TextView = itemView.findViewById(R.id.product_condition)
 
         fun bind(model:SearchModel){
             itemView.setOnClickListener {
@@ -46,12 +48,15 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
                 productIntent.putExtra("productId",model.productId)
                 itemView.context.startActivity(productIntent)
             }
-            productName.text = model.productName
-            val url = model.url
-            val stockQty:Long = model.stockQty
+            productName.text = model.book_title
+            val url = model.product_thumbnail
+            val stockQty:Long = model.in_stock_quantity
 
-            val priceOriginal:Long = model.priceOriginal
-            val priceSelling:Long =model.priceSelling
+            val priceOriginal:Long = model.price_original
+            val priceSelling:Long =model.price_selling
+            avgRatingText.text = model.rating_avg
+            totalRatingsText.text = "( ${model.rating_total} ratings )"
+            bookConditionText.text = model.book_condition
 
             Picasso.get()
                 .load(url)
@@ -63,7 +68,7 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
             if (priceOriginal == 0L){
                 productPrice.text = priceSelling.toString()
                 productRealPrice.visibility = View.GONE
-                percentOff.text = "Buy Now"
+                percentOff.visibility = View.GONE
 
             }else{
 
@@ -78,10 +83,16 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
 
             }
 
-            if (stockQty != 0L){
-                outOfStockText.visibility = View.GONE
+            if (stockQty == 0L){
+                outOfStockIcon.visibility = View.VISIBLE
             }else{
-                outOfStockText.visibility = View.VISIBLE
+                outOfStockIcon.visibility = View.GONE
+            }
+
+            if (model.book_printed_ON == 0L) {
+                bookTypeText.text = "${model.book_type}"
+            } else {
+                bookTypeText.text = "${model.book_type} (${model.book_printed_ON})"
             }
 
 

@@ -9,8 +9,10 @@
         android:id="@+id/product_image"
         android:layout_width="110dp"
         android:layout_height="110dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/as_square_placeholder" />
@@ -20,13 +22,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/grey_900"
-        android:textSize="15sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
@@ -61,10 +63,10 @@
         <TextView
             android:id="@+id/mini_totalNumberOf_ratings"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="4dp"
-            android:text="121 ratings"
+            android:text="ratings"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -75,8 +77,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="6dp"
         android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="17sp"
+            android:src="@drawable/ic_baseline_currency_rupee_24"
+            app:tint="@color/grey_900" />
 
         <TextView
             android:id="@+id/product_price"
@@ -84,9 +92,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:maxLength="9"
-            android:text="Rs.XXXXXXX"
+            android:text="XXXXXXX"
             android:textColor="@color/black"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -109,7 +117,7 @@
             android:layout_marginStart="8dp"
             android:maxLength="13"
             android:text="00% off"
-            android:textColor="@color/grey_700"
+            android:textColor="@color/successGreen"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -121,7 +129,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/product_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout20">
@@ -129,32 +136,32 @@
         <TextView
             android:id="@+id/book_type"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/s_shape_bg_3"
-            android:backgroundTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingStart="5dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="5dp"
-            android:paddingBottom="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/s_shape_bg_2"
+            android:backgroundTint="@color/grey_200"
+            android:paddingStart="10dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
             android:text="New"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/product_condition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/s_shape_bg_3"
-
-            android:gravity="center"
-            android:paddingStart="5dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="5dp"
-            android:paddingBottom="2dp"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/s_shape_bg_2"
+            android:backgroundTint="@color/grey_200"
+            android:layout_gravity="center"
+            android:paddingStart="10dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
             android:text="Good and new"
-            android:textColor="@color/grey_900"
+            android:textColor="@color/black"
             android:textSize="13sp" />
 
         <TextView
@@ -163,7 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="@drawable/s_shape_bg_3"
-            android:backgroundTint="@color/red"
+            android:backgroundTint="@color/red_a700"
             android:gravity="center"
             android:paddingStart="5dp"
             android:paddingTop="2dp"
@@ -176,20 +183,20 @@
             android:visibility="gone" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/outofstockText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/out_of_stock"
-        android:textColor="@color/brikeRed"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
+
+    <ImageView
+        android:id="@+id/outofstock_icon"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:background="#77FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/product_image"
+        app:layout_constraintEnd_toEndOf="@+id/product_image"
+        app:layout_constraintStart_toStartOf="@+id/product_image"
+        app:layout_constraintTop_toTopOf="@+id/product_image"
+        app:srcCompat="@drawable/as_out_of_stock"
+        android:visibility="gone"
+        android:padding="10dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

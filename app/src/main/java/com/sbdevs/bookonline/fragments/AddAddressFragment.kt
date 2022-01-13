@@ -47,12 +47,12 @@ class AddAddressFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        autoCompleteType = binding.autoCompleteType
+        autoCompleteType = binding.lay1.autoCompleteType
         val addressTypelist = resources.getStringArray(R.array.address_type)
         val typeAdapter = ArrayAdapter(context!!,R.layout.le_dropdown_item,addressTypelist)
         autoCompleteType.setAdapter(typeAdapter)
 
-        autoCompleteState = binding.autoCompleteState
+        autoCompleteState = binding.lay1.autoCompleteState
         val stateList = resources.getStringArray(R.array.india_states)
         val sateAdapter = ArrayAdapter(context!!,R.layout.le_dropdown_item,stateList)
         autoCompleteState.setAdapter(sateAdapter)
@@ -81,17 +81,17 @@ class AddAddressFragment : Fragment() {
 
 
 
-        buyerName = binding.buyerName
-        buyerPhone = binding.buyerPhone
-        buyerPincode = binding.buyerPincode
-        buyerAddress1 = binding.buyerAddress1
-        buyerAddress2 = binding.buyerAddress2
-        buyerTown = binding.buyerTown
-        buyerState =binding.buyerState
-        buyerAddressType = binding.buyerAddressType
+        buyerName = binding.lay1.buyerName
+        buyerPhone = binding.lay1.buyerPhone
+        buyerPincode = binding.lay1.buyerPincode
+        buyerAddress1 = binding.lay1.buyerAddress1
+        buyerAddress2 = binding.lay1.buyerAddress2
+        buyerTown = binding.lay1.buyerTown
+        buyerState =binding.lay1.buyerState
+        buyerAddressType = binding.lay1.buyerAddressType
 
-        autoCompleteType = binding.autoCompleteType
-        autoCompleteState = binding.autoCompleteState
+        autoCompleteType = binding.lay1.autoCompleteType
+        autoCompleteState = binding.lay1.autoCompleteState
 
 
 

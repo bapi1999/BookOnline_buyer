@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,7 +10,7 @@
         android:id="@+id/product_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,42 +27,11 @@
         android:maxLines="1"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/product_name">
-
-        <TextView
-            android:id="@+id/textView25"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:text="@string/seller"
-            android:textColor="@color/grey_700"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/seller_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="1"
-            android:text="@string/book_stall"
-            android:textColor="@color/grey_700"
-            android:textSize="13sp" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -71,7 +41,7 @@
         android:layout_marginTop="4dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout11">
+        app:layout_constraintTop_toBottomOf="@+id/product_name">
 
         <TextView
             android:id="@+id/mini_product_rating"
@@ -96,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="4dp"
-            android:text="121 ratings"
+            android:text=" ratings"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -108,11 +78,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:gravity="center"
-        android:text="Almost new"
+        android:text="Type"
         android:textColor="@color/purple_500"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/linearLayout3"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout11"
+        app:layout_constraintTop_toBottomOf="@+id/product_name"
         app:drawableLeftCompat="@drawable/ic_label_important_24"
         app:drawableTint="@color/purple_500" />
 
@@ -122,24 +92,32 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="17sp"
+            android:src="@drawable/ic_baseline_currency_rupee_24"
+            app:tint="@color/grey_900"
+            android:layout_marginEnd="2dp"/>
 
         <TextView
             android:id="@+id/product_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLength="9"
-            android:text="Rs.XXXXXXX"
+            android:text="XXXXXXX"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/product_real_price"
-            android:layout_width="34dp"
-            android:layout_height="13dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="@drawable/s_strick_through"
             android:maxLength="8"
@@ -164,7 +142,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@color/white"
-        android:elevation="5dp"
+        android:elevation="2dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -179,7 +179,7 @@
         android:id="@+id/cancel_order_btn"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="@color/brikeRed"
+        android:background="@color/red_600"
         android:elevation="8dp"
 
         android:orientation="horizontal"
@@ -203,10 +203,10 @@
         android:id="@+id/return_order_btn"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="@color/orange"
+        android:background="@color/amber_900"
         android:elevation="8dp"
         android:orientation="horizontal"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">

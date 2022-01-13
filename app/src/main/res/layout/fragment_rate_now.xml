@@ -82,7 +82,7 @@
         android:layout_marginTop="16dp"
         android:numStars="5"
         android:progressBackgroundTint="@color/grey_400"
-        android:progressTint="@color/yellow"
+        android:progressTint="@color/amber_500"
         android:stepSize="1.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

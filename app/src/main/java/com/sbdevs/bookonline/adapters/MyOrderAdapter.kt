@@ -41,10 +41,7 @@ class MyOrderAdapter(var list:ArrayList<MutableMap<String,Any>>):
         private val productPriceTxt:TextView = itemView.findViewById(R.id.price_txt)
         private val productQuantityTxt:TextView = itemView.findViewById(R.id.product_quantity)
         private val productStatusTxt:TextView = itemView.findViewById(R.id.status_txt)
-        private val view_details:TextView = itemView.findViewById(R.id.view_details)
-        init {
-            view_details.visibility = View.GONE
-        }
+
 
         fun bind(group:MutableMap<String,Any>){
             val docName =  group["orderID"].toString()

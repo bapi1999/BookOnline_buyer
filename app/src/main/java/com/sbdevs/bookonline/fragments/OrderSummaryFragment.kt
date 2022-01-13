@@ -178,7 +178,7 @@ class OrderSummaryFragment : Fragment() {
                     binding.addressLay.visibility = View.GONE
                     binding.noAddress.visibility = View.VISIBLE
                     continueToPaymentBtn.isEnabled = false
-                    continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.brikeRed)
+                    continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_600)
                     continueToPaymentBtn.text = "No address found"
                     return@addSnapshotListener
                 }
@@ -222,13 +222,13 @@ class OrderSummaryFragment : Fragment() {
                             binding.addressLay.visibility = View.VISIBLE
                             binding.noAddress.visibility = View.GONE
                             continueToPaymentBtn.isEnabled = true
-                            continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.orange)
+                            continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.primaryColor)
                             continueToPaymentBtn.text = "Continue"
                         }else{
                             binding.addressLay.visibility = View.GONE
                             binding.noAddress.visibility = View.VISIBLE
                             continueToPaymentBtn.isEnabled = false
-                            continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.brikeRed)
+                            continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_600)
                             continueToPaymentBtn.text = "No address found"
                         }
 
@@ -237,7 +237,7 @@ class OrderSummaryFragment : Fragment() {
                         binding.addressLay.visibility = View.GONE
                         binding.noAddress.visibility = View.VISIBLE
                         continueToPaymentBtn.isEnabled = false
-                        continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.brikeRed)
+                        continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_600)
                         continueToPaymentBtn.text = "No address found"
                     }
 

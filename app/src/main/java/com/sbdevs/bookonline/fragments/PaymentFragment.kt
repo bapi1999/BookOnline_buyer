@@ -127,14 +127,14 @@ class PaymentFragment : Fragment() {
 
 
         payOnline.setOnClickListener {
-            payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
+            payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.amber_500)
             cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
             selecter = 1
         }
 
         cashOnDelivery.setOnClickListener {
             payOnline.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.grey_400)
-            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
+            cashOnDelivery.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.amber_500)
             selecter = 2
         }
 
@@ -261,6 +261,7 @@ class PaymentFragment : Fragment() {
         productMap["tracKingId"] = "No Available yet"
         productMap["status"] = "new" //0 for new
         //todo- All status must be in lowercase
+        productMap["is_order_canceled"] = false
         productMap["orderTime"] = FieldValue.serverTimestamp()
         productMap["address"] = address
 

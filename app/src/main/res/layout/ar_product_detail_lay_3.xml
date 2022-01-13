@@ -8,242 +8,85 @@
     android:background="@color/white"
     android:elevation="3dp">
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Details"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/divider69"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout12"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/enter_quantity_input"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter Quantity"
+            android:inputType="number"
+            android:textSize="17sp"
+            android:textColor="@color/grey_900"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        android:orientation="vertical"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider69">
+        app:layout_constraintTop_toBottomOf="@+id/enter_quantity_input">
 
         <LinearLayout
+            android:id="@+id/addTo_cart_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="47dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/s_shape_bg_1"
+            android:backgroundTint="@color/secondaryColor"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Writer name :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_shopping_cart_24" />
 
             <TextView
-                android:id="@+id/writer_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="PK ghose"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:text="Add to cart"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <LinearLayout
+
+        <Button
+            android:id="@+id/buy_now_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Publisher :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/publisherName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Ananda publisher"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Language :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/bookLanguage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="English"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Print date :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/printDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="PK ghose"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Book contion :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/bookCondition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Almost new"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Page count :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/pageCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="458"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="ISBN No :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/isbnNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="PK ghose"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Dimension(wxhxl) :"
-                android:textColor="@color/grey_700"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/bookDimension"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="24 x 84 x 31"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
+            android:layout_height="47dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Buy now"
+            android:textAllCaps="false"
+            android:textColor="@color/secondaryColor"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:cornerRadius="30dp" />
 
 
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

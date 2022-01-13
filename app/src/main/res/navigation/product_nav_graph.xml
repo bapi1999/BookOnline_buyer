@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_productFragment_to_productImageFragment"
             app:destination="@id/productImageFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_myCartFragment2"
+            app:destination="@id/myCartFragment2" />
     </fragment>
     <fragment
         android:id="@+id/rateNowFragment"
@@ -48,4 +51,9 @@
             android:name="product_url"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/myCartFragment2"
+        android:name="com.sbdevs.bookonline.fragments.MyCartFragment"
+        android:label="fragment_my_cart"
+        tools:layout="@layout/fragment_my_cart" />
 </navigation>

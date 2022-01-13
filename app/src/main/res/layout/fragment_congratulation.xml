@@ -50,7 +50,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/i_info_button"
-            app:tint="@color/red" />
+            app:tint="@color/red_a700" />
 
         <TextView
             android:id="@+id/textView32"
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/out_of_stock_now"
-            android:textColor="@color/red"
+            android:textColor="@color/red_a700"
             android:textSize="19sp" />
     </LinearLayout>
 
@@ -115,7 +115,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/orange"
+        android:backgroundTint="@color/amber_900"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"

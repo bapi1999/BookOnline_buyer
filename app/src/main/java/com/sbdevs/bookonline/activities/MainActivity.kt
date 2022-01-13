@@ -23,6 +23,7 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.ActivityMainBinding
 import com.sbdevs.bookonline.fragments.LoginDialogFragment
 import com.sbdevs.bookonline.othercalss.FireStoreData
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,8 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = Firebase.auth
-    private val user = firebaseAuth.currentUser
+    private val user = Firebase.auth.currentUser
 
 
     lateinit var cartBadgeText: TextView
@@ -52,6 +52,9 @@ class MainActivity : AppCompatActivity() {
 
 //        val list1 =  fireStoreData.getFirebaseCartList(this)
 
+        val actionBar = binding.toolbar
+
+
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment,
@@ -67,7 +70,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(actionBar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         setupActionBarWithNavController(navController, appBarConfiguration)
 //        (this as AppCompatActivity?)!!.supportActionBar!!.show()
         binding.navView.setupWithNavController(navController)
@@ -75,81 +81,49 @@ class MainActivity : AppCompatActivity() {
         val userName: TextView = header.findViewById(R.id.nav_header_txt)
         getUsername(userName)
 
+        notificationBadgeText = binding.layNotify.notificationBadgeCounter
+        cartBadgeText = binding.layCart.cartBadgeCounter
 
     }
 
     override fun onStart() {
         super.onStart()
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_option_menu, menu)
+        getNotificationForOptionMenu()
+        val dataClass = SharedDataClass()
+        dataClass.cartNumber
+        dataClass.getCartListForOptionMenu(cartBadgeText)
 
-        val cartMenu = menu.findItem(R.id.main_cart)
-        val notificationMenu = menu.findItem(R.id.main_notification)
+        binding.searchBtn.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
 
-        val cartActionView = cartMenu!!.actionView
-        cartBadgeText = cartActionView!!.findViewById(R.id.cart_badge_counter)
-        getCartListForOptionMenu(cartBadgeText)
-        cartActionView.setOnClickListener {
-            onOptionsItemSelected(cartMenu)
+        binding.layCart.cartBadgeContainerLay.setOnClickListener {
+            if (user != null){
+                navController.navigateUp() // to clear previous navigation history
+                navController.navigate(R.id.myCartFragment)
+            }else{
+                loginDialog.show(supportFragmentManager, "custom login dialog")
+
+            }
+        }
+
+        binding.layNotify.notificationBadgeContainerLay.setOnClickListener {
+            if (user != null){
+                updateNotificationForOptionMenu()
+                navController.navigateUp() // to clear previous navigation history
+                navController.navigate(R.id.notificationFragment)
+            }else{
+                loginDialog.show(supportFragmentManager, "custom login dialog")
+            }
         }
 
 
-        val notifyActionView = notificationMenu!!.actionView
-        notificationBadgeText = notifyActionView!!.findViewById(R.id.notification_badge_counter)
-        getNotificationForOptionMenu(notificationBadgeText)
-        notifyActionView.setOnClickListener {
-            onOptionsItemSelected(notificationMenu)
-        }
-
-
-
-        return true
     }
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
 
-        return when (item.itemId) {
-            R.id.main_cart -> {
-                if (user != null){
-                    navController.navigateUp() // to clear previous navigation history
-                    navController.navigate(R.id.myCartFragment)
-                }else{
-                    loginDialog.show(supportFragmentManager, "custom login dialog")
-
-                }
-                true
-            }
-            R.id.main_search -> {
-                val intent = Intent(this, SearchActivity::class.java)
-                startActivity(intent)
-
-                true
-            }
-            R.id.main_notification -> {
-                if (user != null){
-                    updateNotificationForOptionMenu()
-                    navController.navigateUp() // to clear previous navigation history
-                    navController.navigate(R.id.notificationFragment)
-                }else{
-                    loginDialog.show(supportFragmentManager, "custom login dialog")
-                }
-
-                true
-            }
-            else -> {
-                Log.d("Option menu", "Failed to clicked option menu")
-                false
-            }
-
-        }
-
-
-        //return super.onOptionsItemSelected(item)
-    }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
@@ -187,7 +161,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getNotificationForOptionMenu(textView: TextView) {
+    private fun getNotificationForOptionMenu() {
         if (user != null){
             val ref = firebaseFirestore.collection("USERS")
                 .document(user.uid)
@@ -202,9 +176,9 @@ class MainActivity : AppCompatActivity() {
                 value?.let {
                     val newNotification = it.getLong("new_notification")
                     if (newNotification == 0L) {
-                        textView.visibility = View.GONE
+                        notificationBadgeText.visibility = View.GONE
                     } else {
-                        textView.text = newNotification.toString()
+                        notificationBadgeText.text = newNotification.toString()
                     }
 
                 }

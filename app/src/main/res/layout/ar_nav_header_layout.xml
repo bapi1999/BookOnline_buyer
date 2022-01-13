@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
-    android:background="@color/orange">
+    android:background="@color/secondaryColor">
 
     <TextView
         android:id="@+id/nav_header_txt"
