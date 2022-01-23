@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="32dp"
-        android:text="@string/fake_address"
+        android:text="Address line 1"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -57,8 +57,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:text="Address line 2"
         android:textColor="@color/black"
-        android:text="kolkata, 700028"
         app:layout_constraintStart_toStartOf="@+id/buyer_address"
         app:layout_constraintTop_toBottomOf="@+id/buyer_address" />
 
@@ -67,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:text="westbengal"
+        android:text="state"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@+id/buyer_TownAndPin"
         app:layout_constraintTop_toBottomOf="@+id/buyer_TownAndPin" />
@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/phone"
+        android:text="Phone No"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"

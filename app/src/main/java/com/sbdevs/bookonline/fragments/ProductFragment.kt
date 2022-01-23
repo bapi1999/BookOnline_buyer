@@ -10,29 +10,39 @@ import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.CartActivity
 import com.sbdevs.bookonline.activities.ProceedOrderActivity
 import com.sbdevs.bookonline.activities.SearchActivity
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import com.sbdevs.bookonline.adapters.ProductReviewAdapter
+import com.sbdevs.bookonline.adapters.RecommendedProductAdapter
 import com.sbdevs.bookonline.databinding.FragmentProductBinding
 import com.sbdevs.bookonline.models.CartModel
 import com.sbdevs.bookonline.models.ProductReviewModel
+import com.sbdevs.bookonline.models.uidataclass.SearchModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.parcelize.Parcelize
 
 
 class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
@@ -40,25 +50,24 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private val binding get() = _binding!!
 
 
-    private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    private val user = firebaseAuth.currentUser
+    private var firebaseFirestore = Firebase.firestore
 
-    lateinit var addToCartBtn: LinearLayout
+    private var user = Firebase.auth.currentUser
+
+    private lateinit var addToCartBtn: LinearLayout
     lateinit var buyNowBtn: Button
 
     lateinit var fabBtn: FloatingActionButton
     private val gone = View.GONE
     private val visible = View.VISIBLE
-    private var reviewList: List<ProductReviewModel> = ArrayList()
+    private var reviewList: MutableList<ProductReviewModel> = ArrayList()
     private lateinit var reviewAdapter: ProductReviewAdapter
 
     private lateinit var productImgViewPager: ViewPager2
+    private var recommendedList:MutableList<String> = ArrayList()
 
 
-    private var cartList: ArrayList<MutableMap<String, Any>> = ArrayList()
     lateinit var cartBadgeText: TextView
-    private var fbCartList: ArrayList<MutableMap<String, Any>> = ArrayList()
 
     private var wishList: ArrayList<String> = ArrayList()
     private var fbWishList: ArrayList<String> = ArrayList()
@@ -68,7 +77,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var discount = 0
     private var totalAmount = 0
 
+
     private var productImgList: ArrayList<String> = ArrayList()
+
     private var ALREADY_ADDED_TO_WISHLIST: Boolean = false
     private var ALREADY_ADDED_TO_CART: Boolean = false
     private lateinit var productId: String
@@ -79,6 +90,18 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var loginDialog = LoginDialogFragment()
     private val loadingDialog = LoadingDialog()
 
+    private var allSearchList: ArrayList<SearchModel> = ArrayList()
+    private lateinit var recommendedProductAdapter: RecommendedProductAdapter
+    private lateinit var recommendedRecycler:RecyclerView
+    private var lastResult: DocumentSnapshot? =null
+    private lateinit var times: Timestamp
+    private var isRecyclerEnd:Boolean = false
+    private var isScrollEnd:Boolean = false
+
+    private var avgRating = ""
+    private var totalRating = 0
+    private var ratingNum :ArrayList<String> = ArrayList()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +109,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     ): View {
         _binding = FragmentProductBinding.inflate(inflater, container, false)
 
-
+//        Toast.makeText(requireContext(),"On CreateView",Toast.LENGTH_SHORT).show()
 
 
 
@@ -96,10 +119,12 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         productImgViewPager = binding.lay1.productImgViewPager
 
 
-        loadingDialog.show(childFragmentManager,"Show");
+
+
 
         val intent = requireActivity().intent
-        productId = intent.getStringExtra("productId").toString().trim()
+//        productId ="2022_01_06T22_50_02_682LgDXu4pnoRfxNJgF8bQrhN8Faxt2"
+        productId = arguments?.getString("productId").toString().trim()
 
         fabBtn = binding.lay1.floatingActionButton
 
@@ -111,8 +136,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
             getProductData(productId)
+
             if (user!=null){
-                getWishList()
+                getWishList1()
                 getCartList()
             }
             getReview(productId)
@@ -122,14 +148,20 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         enterQuantityInput = binding.lay3.enterQuantityInput
 
 
-        val layoutManager = LinearLayoutManager(context)
+        val layoutManager = LinearLayoutManager(requireContext())
         val reviewRecyclerView = binding.layRating.reviewRecycler
         reviewRecyclerView.layoutManager = layoutManager
-
         reviewAdapter = ProductReviewAdapter(reviewList)
         reviewRecyclerView.adapter = reviewAdapter
-
         cartBadgeText = binding.layCart.cartBadgeCounter
+
+        val layoutManager2 = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+        recommendedRecycler = binding.lay7.recommendProductRecycler
+        recommendedRecycler.layoutManager = layoutManager2
+        recommendedProductAdapter = RecommendedProductAdapter(allSearchList)
+        recommendedRecycler.adapter = recommendedProductAdapter
+
+
 
         val scrollView = binding.scrollView
         scrollView.viewTreeObserver.addOnScrollChangedListener {
@@ -140,11 +172,28 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
             // if diff is zero, then the bottom has been reached
 
             // if diff is zero, then the bottom has been reached
+
+
             if (diff == 0) {
+
+                if (isScrollEnd){
+                    Log.w("Query item","Last item is reached already")
+                    //Toast.makeText(requireContext()," already reached Bottom",Toast.LENGTH_LONG).show()
+
+                }else{
+
+                    Toast.makeText(requireContext(),"Bottom reached",Toast.LENGTH_LONG).show()
+                    isScrollEnd = true
+                    binding.lay7.container.visibility= visible
+                    binding.progressBar2.visibility = visible
+                    getRecommendedProduct()
+                }
                 // do stuff
-                Toast.makeText(requireContext(),"Bottom reached",Toast.LENGTH_LONG).show()
+
             }
         }
+
+
 
 
 
@@ -153,10 +202,8 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//        Toast.makeText(requireContext(),"On ViewCreated",Toast.LENGTH_SHORT).show()
 
-        val dataClass = SharedDataClass()
-        cartBadgeText.text = dataClass.cartNumber.toString()
-        //dataClass.getCartListForOptionMenu(cartBadgeText)
 
         binding.searchBtn.setOnClickListener {
             val intent = Intent(requireContext(), SearchActivity::class.java)
@@ -164,22 +211,70 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         }
 
         binding.layCart.cartBadgeContainerLay.setOnClickListener {
-            if (user != null){
-                val action = ProductFragmentDirections.actionProductFragmentToMyCartFragment2()
-                findNavController().navigate(action)
+            if (user != null) {
+
+                val cartIntent = Intent(requireContext(),CartActivity::class.java)
+                startActivity(cartIntent)
+
+
             }else{
                 loginDialog.show(childFragmentManager, "custom login dialog")
 
             }
         }
 
+
+        recommendedRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+
+                if (!recyclerView.canScrollHorizontally(RecyclerView.FOCUS_RIGHT) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // end scrolling: do what you want here and after calling the function change the value of boolean
+
+                    if (isRecyclerEnd){
+                        Log.w("Query item","Last item is reached already")
+
+                        Toast.makeText(requireContext()," already reached End",Toast.LENGTH_LONG).show()
+                    }else{
+
+                        Log.e("last query", "${lastResult.toString()}")
+                        getRecommendedProduct()
+                    }
+
+                }
+
+            }
+
+
+        })
+
+
+
     }
 
     override fun onStart() {
+
         super.onStart()
+        //Toast.makeText(requireContext(),"On Start",Toast.LENGTH_SHORT).show()
 
 
+        val cartNum = SharedDataClass.dbCartList
+        if(user != null){
+            if (cartNum.size == 0){
+                cartBadgeText.visibility = gone
+            }else{
+                cartBadgeText.text = cartNum.size.toString()
+            }
 
+        }else{
+            cartBadgeText.visibility = gone
+        }
+
+
+        val args = Bundle()
+        args.putString("productId",productId)
 
 
         fabBtn.setOnClickListener {
@@ -190,9 +285,10 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                 if (!ALREADY_ADDED_TO_WISHLIST) {
 
                     wishList.add(productId)
+                    SharedDataClass.dbWishList.add(productId)
                     val wishmap: MutableMap<String, Any> = HashMap()
                     wishmap["wish_list"] = wishList
-                    firebaseFirestore.collection("USERS").document(user.uid).collection("USER_DATA")
+                    firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
                         .document("MY_WISHLIST").update(wishmap)
 
                     ALREADY_ADDED_TO_WISHLIST = true
@@ -207,10 +303,11 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    wishList.removeAt(wishListIndex)
+                    wishList.remove(productId)
+                    SharedDataClass.dbWishList.remove(productId)
                     val cartmap: MutableMap<String, Any> = HashMap()
                     cartmap["wish_list"] = wishList
-                    firebaseFirestore.collection("USERS").document(user.uid).collection("USER_DATA")
+                    firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
                         .document("MY_WISHLIST").update(cartmap)
 
                     ALREADY_ADDED_TO_WISHLIST = false
@@ -227,26 +324,45 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
         addToCartBtn.setOnClickListener { it1 ->
+
+
             if (user == null) {
                 loginDialog.show(childFragmentManager, "custom login dialog")
             } else {
                 if (ALREADY_ADDED_TO_CART) {
                     Snackbar.make(it1, "Already added to cart", Snackbar.LENGTH_SHORT).show()
-                } else {
-                    val listMap: MutableMap<String, Any> = HashMap()
-                    listMap["product"] = productId
-                    listMap["quantity"] = 1
-                    cartList.add(listMap)
-                    val cartmap: MutableMap<String, Any> = HashMap()
-                    cartmap["cart_list"] = cartList
-                    val snack = Snackbar.make(it1, "Successfully added to cart", Snackbar.LENGTH_SHORT)
-                    firebaseFirestore.collection("USERS").document(user.uid).collection("USER_DATA")
-                        .document("MY_CART").update(cartmap).addOnSuccessListener {
-                            snack.show()
 
-                        }.addOnFailureListener{
-                            Log.e("AddToCart","${it.message}",it.cause)
-                        }
+                } else {
+                    val dbcart = SharedDataClass.dbCartList
+
+                    if (dbcart.size == 12){
+                        Snackbar.make(it1, "Only 12 product can be added to cart", Snackbar.LENGTH_SHORT).show()
+                    }else{
+
+                        val listMap: MutableMap<String, Any> = HashMap()
+                        listMap["product"] = productId
+                        listMap["quantity"] = 1
+                        dbcart.add(listMap)
+
+                        val cartmap: MutableMap<String, Any> = HashMap()
+                        cartmap["cart_list"] = dbcart
+
+                        cartBadgeText.visibility = visible
+                        cartBadgeText.text = dbcart.size.toString()
+
+                        val snack = Snackbar.make(it1, "Successfully added to cart", Snackbar.LENGTH_SHORT)
+                        firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
+                            .document("MY_CART").update(cartmap).addOnSuccessListener {
+                                snack.show()
+
+                            }.addOnFailureListener{
+                                Log.e("AddToCart","${it.message}",it.cause)
+                            }
+                    }
+
+
+
+
                 }
             }
 
@@ -336,21 +452,73 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
         binding.layRating.rateNowBtn.setOnClickListener {
+
+
+//            lifecycleScope.launch (Dispatchers.IO){
+//                creatNotification()
+//            }
+
             if (user !=null){
-                val action = ProductFragmentDirections.actionProductFragmentToRateNowFragment(productId)
-                findNavController().navigate(action)
+
+                val rateNowFragment = RateNowFragment()
+                rateNowFragment.arguments = args
+
+                parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.fragment_container,rateNowFragment)
+                    addToBackStack("rate_now")
+                }
+
             }else{
                 loginDialog.show(childFragmentManager, "custom login dialog")
             }
 
+
+
         }
 
         binding.layRating.viewAllButton.setOnClickListener {
-            val action =
-                ProductFragmentDirections.actionProductFragmentToAllRatingFragment(productId)
-            findNavController().navigate(action)
+//            val action =
+//                ProductFragmentDirections.actionProductFragmentToAllRatingFragment(productId)
+//            findNavController().navigate(action)
+
+
+            val allRatingArgs = Bundle()
+            allRatingArgs.putString("productId",productId)
+            allRatingArgs.putInt("totalRating",totalRating)
+            allRatingArgs.putString("avgRating",avgRating)
+            allRatingArgs.putStringArrayList("ratingCount",ratingNum)
+
+            val allRatingFragment = AllRatingFragment()
+            allRatingFragment.arguments = allRatingArgs
+
+            parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.fragment_container,allRatingFragment)
+                    addToBackStack("all_retting")
+                }
+
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        Toast.makeText(requireContext(),"On Resume",Toast.LENGTH_SHORT).show()
+
+        SharedDataClass.currentACtivity = 2
+        SharedDataClass.product_id = productId
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+//        Toast.makeText(requireContext(),"On Pause",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+//        Toast.makeText(requireContext(),"On Destroy",Toast.LENGTH_SHORT).show()
     }
 
 
@@ -360,9 +528,15 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         val lay5 = binding.lay5
         val lay6 = binding.lay6
         val layR = binding.layRating
+
+        loadingDialog.show(childFragmentManager,"show")
         firebaseFirestore.collection("PRODUCTS").document(productId).get()
             .addOnSuccessListener {
                 if (it.exists()) {
+
+                    binding.scrollView.visibility = visible
+                    binding.emptyProduct.visibility = gone
+
 
                     var categoryString = ""
                     var tagsString = ""
@@ -372,9 +546,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()
 
-                    val avgRating = it.getString("rating_avg")!!
+                    avgRating = it.getString("rating_avg")!!
                     val sellerId = it.getString("PRODUCT_SELLER_ID")!!
-                    val totalRating: Int = it.getLong("rating_total")!!.toInt()
+                    totalRating = it.getLong("rating_total")!!.toInt()
                     val stock = it.getLong("in_stock_quantity")!!
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
@@ -423,6 +597,10 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
 
                     lay2.productName.text = productName
+
+                    val queryList: List<String> = productName.lowercase().split(" ")
+
+                    recommendedList.addAll(queryList)
 
 
                     if (priceOriginal == 0L) {
@@ -508,23 +686,28 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     layR.totalRating.text = totalRating.toString()
 
                     for (x in 0..4) {
-                        var ratingtxt: TextView =
-                            layR.ratingsNumberContainer.getChildAt(x) as TextView
-                        ratingtxt.text = (it.get("rating_Star_" + (5 - x)).toString())
-                        val progressBar: ProgressBar =
-                            layR.ratingBarContainter.getChildAt(x) as ProgressBar
-                        val maxProgress: Int = it.getLong("rating_total")!!.toInt()
-                        progressBar.max = maxProgress
+                        var ratingtxt: TextView = layR.ratingsNumberContainer.getChildAt(x) as TextView
+
                         val perccing: String = it.get("rating_Star_" + (5 - x)).toString()
+                        ratingNum.add(perccing)
+                        ratingtxt.text = perccing
+                        val progressBar: ProgressBar = layR.ratingBarContainter.getChildAt(x) as ProgressBar
+                        val maxProgress: Int = totalRating
+                        progressBar.max = maxProgress
+
                         val progress = Integer.valueOf(perccing)
                         progressBar.progress = progress
                     }
 
                     loadingDialog.dismiss()
 
+                }else{
+                    binding.scrollView.visibility = gone
+                    binding.emptyProduct.visibility = visible
                 }
             }.addOnFailureListener {
                 Log.e("Product","${it.message}",it.cause)
+                loadingDialog.dismiss()
             }.await()
     }
 
@@ -546,29 +729,13 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
     private fun getCartList() {
 
-        firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_CART").get().addOnSuccessListener {
+        for (item in SharedDataClass.dbCartList){
+            val productIdDB: String = item["product"] as String
 
-                val x = it.get("cart_list")
-
-                if (x != null) {
-                    fbCartList = x as ArrayList<MutableMap<String, Any>>
-                    cartList.addAll(fbCartList)
-
-                    for (item in fbCartList) {
-                        val productIdDB: String = item["product"] as String
-                        if (productIdDB.contentEquals(productId)) {
-                            ALREADY_ADDED_TO_CART = true
-                        }
-                    }
-
-                } else {
-                    Log.w("CartList", "Cart list not found")
-                }
-
-            }.addOnFailureListener {
-                Log.e("CartList", "${it.message}",it.cause)
+            if (productIdDB.contentEquals(productId)) {
+                ALREADY_ADDED_TO_CART = true
             }
+        }
 
     }
 
@@ -586,7 +753,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
                     wishList.addAll(fbWishList)
 
-                    for ((index, ids: String) in fbWishList.withIndex()) {
+                    for ((index:Int, ids: String) in fbWishList.withIndex()) {
 
                         if (ids.contains(productId)) {
                             wishListIndex = index
@@ -607,6 +774,26 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
             }.addOnFailureListener{
                 Log.e("WishList", "${it.message}",it.cause)
             }
+
+    }
+
+
+    private fun getWishList1(){
+
+        wishList.addAll(SharedDataClass.dbWishList)
+
+        for ((index:Int, ids: String) in SharedDataClass.dbWishList.withIndex()) {
+
+            if (ids.contains(productId)) {
+                wishListIndex = index
+                ALREADY_ADDED_TO_WISHLIST = true
+                fabBtn.supportImageTintList =
+                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+                fabBtn.rippleColor =
+                    ContextCompat.getColor(requireContext(), R.color.grey_400)
+
+            }
+        }
 
     }
 
@@ -639,19 +826,142 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     }
 
     override fun onItemClick(position: Int, url: String) {
-        val action = ProductFragmentDirections.actionProductFragmentToProductImageFragment(url)
-        findNavController().navigate(action)
+//        val action = ProductFragmentDirections.actionProductFragmentToProductImageFragment(url)
+//        findNavController().navigate(action)
+
+        val productImageFragment = ProductImageFragment()
+        val args = Bundle()
+        args.putStringArrayList("image_list",productImgList)
+
+        productImageFragment.arguments = args
+
+
+        val fragmentManager =
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                add(R.id.fragment_container,productImageFragment)
+
+                addToBackStack("imageView")
+            }
+
     }
 
     private fun getRecommendedProduct(){
         //todo= generates from converting product name to array and query the array
 
+        val searchList: ArrayList<SearchModel> = ArrayList()
+        searchList.clear()
+
+        val filterTask:Query
+        if (lastResult == null){
+            filterTask = firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", recommendedList)
+                .orderBy("price_selling",Query.Direction.ASCENDING)
+
+        }
+        else{
+            filterTask = firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", recommendedList)
+                .orderBy("price_selling",Query.Direction.ASCENDING)
+                .startAfter(lastResult)
+
+        }
+
+        filterTask.limit(5L).get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+
+            if (allDocumentSnapshot.isNotEmpty()){
+
+                isRecyclerEnd = allDocumentSnapshot.size < 5 // limit is 5
+
+                for (documentSnapshot in allDocumentSnapshot) {
+                    val productId = documentSnapshot.id
+                    val productName = documentSnapshot.getString("book_title").toString()
+
+                    val url: String =
+                        documentSnapshot.getString("product_thumbnail").toString().trim()
+                    val stockQty: Long = documentSnapshot.getLong("in_stock_quantity")!!.toLong()
+                    val avgRating = documentSnapshot.getString("rating_avg")!!
+                    val totalRatings: Long = documentSnapshot.getLong("rating_total")!!
+
+                    val priceOriginal = documentSnapshot.getLong("price_original")!!.toLong()
+                    val priceSelling = documentSnapshot.getLong("price_selling")!!.toLong()
+
+                    val printedYear = documentSnapshot.getLong("book_printed_ON")!!
+                    val bookCondition = documentSnapshot.getString("book_condition").toString()
+                    val bookType = documentSnapshot.getString("book_type")!!
+
+                    searchList.add(
+                        SearchModel(productId, productName, url, priceOriginal, priceSelling,
+                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                    )
+                }
+
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+
+            }else{
+                isRecyclerEnd = true
+
+            }
+
+            allSearchList.addAll(searchList)
+
+            if (allSearchList.isEmpty()){
+                binding.lay7.container.visibility = gone
+
+            }else{
+                binding.lay7.container.visibility =visible
+
+                recommendedProductAdapter.list = allSearchList
+
+                if (lastResult == null ){
+
+                    recommendedProductAdapter.notifyItemRangeInserted(0,searchList.size)
+                }else{
+                    recommendedProductAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
+                }
+
+
+
+            }
+            loadingDialog.dismiss()
+            binding.progressBar2.visibility = gone
+
+//            newlist = allSearchList.distinctBy { it.productId } as ArrayList<SearchModel>
+
+        }.addOnFailureListener {
+            Log.e("get search query 0", "${it.message}")
+            loadingDialog.dismiss()
+            binding.progressBar2.visibility = gone
+        }
+
     }
 
-    private fun getSimilarProduct(){
-        //todo= generates from user search result
+    private suspend fun creatNotification(){
+
+        val notificationMap: MutableMap<String, Any> = HashMap()
+
+        for ( i in 0..21) {
+
+            notificationMap["date"] = FieldValue.serverTimestamp()
+            notificationMap["description"] = "($i number) Welcome to Books Online"
+            notificationMap["image"] = getString(R.string.welcome_image)
+            notificationMap["order_id"] = ""
+            notificationMap["seen"] = false
+
+            firebaseFirestore.collection("USERS")
+                .document(user!!.uid)
+                .collection("USER_DATA")
+                .document("MY_NOTIFICATION")
+                .collection("NOTIFICATION")
+                .add(notificationMap)
+                .addOnSuccessListener { }.await()
+        }
 
     }
+
+
+
 
 
 }

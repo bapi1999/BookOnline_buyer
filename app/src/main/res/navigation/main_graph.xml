@@ -10,20 +10,12 @@
         android:name="com.sbdevs.bookonline.fragments.HomeFragment"
 
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_myCartFragment"
-            app:destination="@id/myCartFragment" />
+
         <action
             android:id="@+id/action_homeFragment_to_notificationFragment"
             app:destination="@id/notificationFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/myCartFragment"
-        android:name="com.sbdevs.bookonline.fragments.MyCartFragment"
 
-        tools:layout="@layout/fragment_my_cart" >
-
-    </fragment>
     <fragment
         android:id="@+id/myOrderFragment"
         android:name="com.sbdevs.bookonline.fragments.MyOrderFragment"
@@ -57,9 +49,6 @@
         <action
             android:id="@+id/action_myAccountFragment_to_myOrderFragment"
             app:destination="@id/myOrderFragment" />
-        <action
-            android:id="@+id/action_myAccountFragment_to_myCartFragment"
-            app:destination="@id/myCartFragment" />
         <action
             android:id="@+id/action_myAccountFragment_to_updatePasswordFragment"
             app:destination="@id/updatePasswordFragment" />

@@ -35,7 +35,6 @@ class RateNowFragment : Fragment() {
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
     private val firebaseAuth = Firebase.auth
-    private val args:RateNowFragmentArgs by navArgs()
 
     private var ALL_READY_REVIEWED = false
 
@@ -59,7 +58,7 @@ class RateNowFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRateNowBinding.inflate(inflater, container, false)
-        productId = args.productId
+        productId = arguments?.getString("productId").toString()
 
         loadingDialog = Dialog(context!!)
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)

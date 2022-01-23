@@ -15,7 +15,7 @@ import com.sbdevs.bookonline.othercalss.FireStoreData
 import java.util.*
 
 
-class ProductReviewAdapter(var list: List<ProductReviewModel>) :
+class ProductReviewAdapter(var list: MutableList<ProductReviewModel>) :
     RecyclerView.Adapter<ProductReviewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -12,20 +12,20 @@
         android:layout_height="match_parent">
 
 
-
-
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primaryColor"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:contentInsetStart="0dp"
 
-            app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar" >
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar">
+
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
@@ -48,11 +48,13 @@
                     app:tint="@color/white" />
 
 
-                <include android:id="@+id/lay_cart"
-                    layout="@layout/le_cart_badge"/>
+                <include
+                    android:id="@+id/lay_cart"
+                    layout="@layout/le_cart_badge" />
 
-                <include android:id="@+id/lay_notify"
-                    layout="@layout/le_notification_badge"/>
+                <include
+                    android:id="@+id/lay_notify"
+                    layout="@layout/le_notification_badge" />
             </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
@@ -78,6 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:headerLayout="@layout/ar_nav_header_layout"
+
         app:menu="@menu/drawerm_menu"
         android:layout_gravity="start"/>
 

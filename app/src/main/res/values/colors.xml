@@ -55,6 +55,8 @@
 
 
     <color name="splash">#FF0000</color>
+    <color name="notificationBg">#D7EBFB</color>
+
 
     <color name="light_black">#272727</color>
 </resources>

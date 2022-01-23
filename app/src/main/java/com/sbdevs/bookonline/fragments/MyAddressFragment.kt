@@ -1,31 +1,21 @@
 package com.sbdevs.bookonline.fragments
 
-import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.AddAddressActivity
 import com.sbdevs.bookonline.adapters.MyAddressAddapter
 import com.sbdevs.bookonline.databinding.FragmentMyAddressBinding
-import com.sbdevs.bookonline.databinding.FragmentMyCartBinding
+
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
 
 
 class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
@@ -37,7 +27,7 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
     var list:ArrayList<MutableMap<String,Any>> = ArrayList()
     lateinit var addressAddapter: MyAddressAddapter
     var selectNo:Long = 0
-
+    var addressMap:MutableMap<String,Any> = HashMap()
     private var loadingDialog = LoadingDialog()
 
 
@@ -127,6 +117,7 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
 
         addressAddapter.selectNo = position.toLong()
         addressAddapter.notifyDataSetChanged()
+
         val addressMap:MutableMap<String,Any> = HashMap<String,Any>()
         addressMap["select_No"] = position
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")

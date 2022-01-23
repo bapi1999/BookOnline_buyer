@@ -38,6 +38,8 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var orderID:String
     private lateinit var sellerID:String
 
+    private var isEligibleForRating= false
+
     private val loadingDialog = LoadingDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +86,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 
         val orderRef = firebaseFirestore.collection("USERS").document(sellerID)
             .collection("SELLER_DATA")
-            .document("5_ALL_ORDERS").collection("ORDER")
+            .document("SELLER_DATA").collection("ORDERS")
             .document(orderID)
 
         orderRef.addSnapshotListener {value,error->
@@ -99,10 +101,14 @@ class OrderDetailsActivity : AppCompatActivity() {
                 val orderedQty = it.getLong("ordered_Qty")!!
                 val status = it.get("status").toString()
 
+                val isCanceled = it.getBoolean("is_order_canceled")!!
+
 
                 val productIdDB = it.get("productId").toString()
                 val tracKingId = it.get("tracKingId").toString()
-                val orderTime = it.getTimestamp("orderTime")!!.toDate()
+
+                val orderTime = it.getTimestamp("Time_ordered")!!.toDate()
+
                 val buyerId = it.get("buyerId").toString()
                 val address:MutableMap<String,Any> = it.get("address") as MutableMap<String,Any>
 

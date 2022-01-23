@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="1dp"
     android:elevation="5dp">
 
     <TextView
@@ -28,7 +27,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="1dp"
         android:orientation="horizontal"
-        tools:listitem="@layout/le_promoted_item_lay"
+        tools:listitem="@layout/le_promoted_item"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -8,8 +8,9 @@
 
     <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
 
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -152,6 +153,11 @@
                     layout="@layout/ar_order_details_lay_1" />
 
                 <include
+                    android:id="@+id/lay_rating"
+                    layout="@layout/ar_rate_now_lay" />
+
+
+                <include
                     android:id="@+id/lay2"
                     layout="@layout/ar_address_detail_lay" />
 
@@ -176,49 +182,40 @@
 
 
     <LinearLayout
-        android:id="@+id/cancel_order_btn"
+        android:id="@+id/linearLayout10"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:background="@color/red_600"
-        android:elevation="8dp"
-
-        android:orientation="horizontal"
-        android:visibility="visible"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
+
+        <Button
+            android:id="@+id/cancel_order_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/red_500"
             android:text="Cancel Order"
-
             android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/return_order_btn"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:background="@color/amber_900"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:textSize="15sp"
+            android:visibility="visible"
+            app:cornerRadius="30dp" />
+
+        <Button
+            android:id="@+id/return_order_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/amber_900"
             android:text="Return Order"
-
             android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+
+            android:textSize="15sp"
+            android:visibility="gone"
+            app:cornerRadius="30dp" />
     </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

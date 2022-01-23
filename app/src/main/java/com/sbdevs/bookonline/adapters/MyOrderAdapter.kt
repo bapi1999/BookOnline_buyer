@@ -13,6 +13,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.OrderDetailsActivity
+import com.sbdevs.bookonline.othercalss.FireStoreData
 
 class MyOrderAdapter(var list:ArrayList<MutableMap<String,Any>>):
     RecyclerView.Adapter<MyOrderAdapter.ViewHolder>() {
@@ -41,7 +42,7 @@ class MyOrderAdapter(var list:ArrayList<MutableMap<String,Any>>):
         private val productPriceTxt:TextView = itemView.findViewById(R.id.price_txt)
         private val productQuantityTxt:TextView = itemView.findViewById(R.id.product_quantity)
         private val productStatusTxt:TextView = itemView.findViewById(R.id.status_txt)
-
+        private val orderTimeText:TextView = itemView.findViewById(R.id.textView67)
 
         fun bind(group:MutableMap<String,Any>){
             val docName =  group["orderID"].toString()
@@ -56,12 +57,12 @@ class MyOrderAdapter(var list:ArrayList<MutableMap<String,Any>>):
 
             firebaseFirestore.collection("USERS").document(sellerId)
                 .collection("SELLER_DATA")
-                .document("5_ALL_ORDERS").collection("ORDER")
+                .document("SELLER_DATA").collection("ORDERS")
                 .document(docName).get().addOnSuccessListener {
                     var totalAmount = 0
                     val productThumbnail= it.get("productThumbnail").toString()
                     val title=it.get("productTitle").toString()
-
+                    val orderTime = it.getTimestamp("Time_ordered")!!.toDate()
                     val price = it.get("price").toString()
                     val orderedQty = it.getLong("ordered_Qty")!!
                     val status = it.get("status").toString()
@@ -72,9 +73,10 @@ class MyOrderAdapter(var list:ArrayList<MutableMap<String,Any>>):
                         .placeholder(R.drawable.as_square_placeholder)
                         .into(productImage)
                     productNameTxt.text = title
-                    productPriceTxt.text = "Rs. $totalAmount"
-                    productQuantityTxt.text ="Qty- $orderedQty"
+                    productPriceTxt.text = "$totalAmount"
+                    productQuantityTxt.text ="$orderedQty"
                     productStatusTxt.text = status
+                    orderTimeText.text= FireStoreData().msToTimeAgo(itemView.context,orderTime)
 
 
                 }.addOnFailureListener {

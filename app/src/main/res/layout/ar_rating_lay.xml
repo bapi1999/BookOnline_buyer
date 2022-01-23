@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="2dp"
     android:background="@color/white"
     android:elevation="3dp">
 
@@ -13,9 +13,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Ratings"
         android:textSize="17sp"
-        app:layout_constraintBottom_toBottomOf="@+id/rate_now_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,14 +23,25 @@
         android:id="@+id/rate_now_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:backgroundTint="@color/successGreen"
         android:text="Rate Now"
-        android:textSize="14sp"
         android:textAllCaps="false"
+        android:textSize="14sp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider9"
+        android:layout_width="430dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -90,6 +101,16 @@
             android:textSize="12sp" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="12dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout9"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout9"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout9" />
 
     <LinearLayout
         android:id="@+id/rating_bar_containter"
@@ -256,7 +277,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:text="12"
+            android:text="0"
             android:textSize="12sp" />
 
         <TextView
@@ -265,7 +286,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:text="3"
+            android:text="0"
             android:textSize="12sp" />
 
         <TextView
@@ -274,7 +295,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:text="90"
+            android:text="0"
             android:textSize="12sp" />
 
         <TextView
@@ -283,7 +304,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:text="1"
+            android:text="0"
             android:textSize="12sp" />
 
         <TextView
@@ -346,27 +367,6 @@
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider28" />
-
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="12dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout9"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout9"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout9" />
-
-    <View
-        android:id="@+id/divider9"
-        android:layout_width="430dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="4dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rate_now_btn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

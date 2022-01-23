@@ -43,6 +43,7 @@ private const val PRODUCT_HORIZONTAL:Int = 2
 private const val STRIP_LAYOUT:Int = 3
 private const val PROMOTED_LAYOUT:Int = 4
 private const val BIG_ADS_LINK:Int = 5
+private const val PRODUCT_GRID:Int = 6
 
 class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -54,6 +55,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
             3L -> STRIP_LAYOUT
             4L -> PROMOTED_LAYOUT
             5L-> BIG_ADS_LINK
+            6L-> PRODUCT_GRID
 
             else -> -1
         }
@@ -62,25 +64,39 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        if (viewType == SLIDER){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.le_slider_layout, parent, false)
-            return SliderViewHolder(view)
-        }else if (viewType == TOP_CATEGORY){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.le_top_category_layout, parent, false)
-            return CategoryViewHolder(view)
-        } else if(viewType == PRODUCT_HORIZONTAL) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_horizontal_layout, parent, false)
-            return HorizontalViewHolder(view)
-        }
-        else if (viewType == STRIP_LAYOUT){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.le_strip_layout, parent, false)
-            return StripViewHolder(view)
-        } else if (viewType == PROMOTED_LAYOUT) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.le_promoted_layout, parent, false)
-            return PromotedViewHolder(view)
-        }else  {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.le_big_ads_layout, parent, false)
-            return BigAdsLinkViewHolder(view)
+        when (viewType) {
+            SLIDER -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_slider_layout, parent, false)
+                return SliderViewHolder(view)
+            }
+            TOP_CATEGORY -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_top_category_layout, parent, false)
+                return CategoryViewHolder(view)
+            }
+            PRODUCT_HORIZONTAL -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_horizontal_layout, parent, false)
+                return HorizontalViewHolder(view)
+            }
+            STRIP_LAYOUT -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_strip_layout, parent, false)
+                return StripViewHolder(view)
+            }
+            PROMOTED_LAYOUT -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_promoted_layout, parent, false)
+                return PromotedViewHolder(view)
+            }
+            BIG_ADS_LINK -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_big_ads_layout, parent, false)
+                return BigAdsLinkViewHolder(view)
+            }
+            PRODUCT_GRID -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_grid_layout, parent, false)
+                return GridViewHolder(view)
+            }
+            else->{
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.le_loading_progress_dialog, parent, false)
+                return NillViewHolder(view)
+            }
         }
 
 
@@ -95,6 +111,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
             STRIP_LAYOUT ->(holder as StripViewHolder).bind(homeModelList[position])
             PROMOTED_LAYOUT->(holder as PromotedViewHolder).bind(homeModelList[position])
             BIG_ADS_LINK->(holder as BigAdsLinkViewHolder).bind(homeModelList[position])
+            PRODUCT_GRID->(holder as BigAdsLinkViewHolder).bind(homeModelList[position])
         }
     }
 
@@ -167,7 +184,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
     class CategoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         private val categoryRecycler:RecyclerView = itemView.findViewById(R.id.topCategoryRecycler)
         private val firebaseFirestore = Firebase.firestore
-        private var categoryList = ArrayList<String>()
+        private var categoryList: ArrayList<MutableMap<String,String>> = ArrayList()
         private lateinit var categoryAdapter: TopCategoryAdapter
         fun bind(homeModel: HomeModel){
 
@@ -180,25 +197,27 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
 
         }
+
+
+
         fun getfireBsedata(uiId:String) = CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO){
                 firebaseFirestore.collection("UI_TOP_4_CATEGORY").document(uiId)
                     .get().addOnSuccessListener{
-                        categoryList = it.get("categories") as ArrayList<String>
-                        categoryAdapter.notifyDataSetChanged()
+                        categoryList = it.get("categories") as ArrayList<MutableMap<String,String>>
+
+
 
                         categoryAdapter = TopCategoryAdapter(categoryList)
                         categoryRecycler.adapter = categoryAdapter
+                        categoryAdapter.notifyDataSetChanged()
+
 
                     }.addOnFailureListener {
                         Log.e("CategoryViewModel","${it.message}")
                     }
             }
-            withContext(Dispatchers.Main){
 
-                categoryAdapter = TopCategoryAdapter(categoryList)
-                categoryRecycler.adapter = categoryAdapter
-            }
         }
     }
 
@@ -242,6 +261,50 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
         }
     }
+
+
+
+    class GridViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+        private val productRecycler:RecyclerView = itemView.findViewById(R.id.product_grid_recycler)
+        private val batchHeader:TextView = itemView.findViewById(R.id.batch_header)
+        //private val batchBackground:LinearLayout = itemView.findViewById(R.id.batch_background)
+        private var productIdList= ArrayList<String>()
+        private lateinit var adapter1: HorizontalAdapter
+        fun bind(homeModel: HomeModel){
+
+            val uiId:String = homeModel.UI_VIEW_ID.trim()
+            getFirebaeData(uiId)
+
+            val pos:String = adapterPosition.toString()
+
+
+
+
+        }
+        private fun getFirebaeData(uiId:String ) = CoroutineScope(Dispatchers.IO).launch {
+
+            val firebaseFirestore = Firebase.firestore.collection("UI_PRODUCT_HORIZONTAL").document(uiId)
+            firebaseFirestore.get().addOnSuccessListener {
+                val header = it.getString("layout_title")
+                val bgColor = it.getString("bg_color")?.trim()
+                productIdList = it.get("products") as ArrayList<String>
+                batchHeader.text = header
+                //batchBackground.setBackgroundColor(parseColor(bgColor))
+
+                productRecycler.layoutManager = LinearLayoutManager(itemView.context,LinearLayoutManager.HORIZONTAL ,false)
+                adapter1 = HorizontalAdapter(productIdList)
+                productRecycler.adapter = adapter1
+
+                adapter1.notifyDataSetChanged()
+
+            }.addOnFailureListener {
+                Log.e("HorizontalViewModel","${it.message}")
+            }
+
+        }
+    }
+
+
 
     class StripViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         private var stripImage:ImageView = itemView.findViewById(R.id.strip_image)
@@ -335,6 +398,12 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
 
 
         }
+    }
+
+    class NillViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+
+        private val firebaseFirestore = Firebase.firestore
+
     }
 
 }

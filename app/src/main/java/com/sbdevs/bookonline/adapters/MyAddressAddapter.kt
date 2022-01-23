@@ -10,7 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.AddAddressActivity
+import com.sbdevs.bookonline.activities.EditAddressActivity
+import com.sbdevs.bookonline.models.AddressModel
 import java.io.Serializable
 
 class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo:Long,val listner:MyonItemClickListener) :
@@ -19,6 +20,7 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
 
     interface MyonItemClickListener{
         fun onItemClick(position: Int)
+
     }
 
     override fun onCreateViewHolder(
@@ -31,7 +33,7 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
     }
 
     override fun onBindViewHolder(holder: MyAddressAddapter.ViewHolder, position: Int) {
-        holder.bind(list[position],selectNo)
+        holder.bind(list[position],selectNo,list)
     }
 
 
@@ -44,28 +46,36 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
         val nameTxt:TextView = itemView.findViewById(R.id.buyer_name)
         val addressTxt:TextView = itemView.findViewById(R.id.buyer_address)
         val townAndPincodeTxt:TextView = itemView.findViewById(R.id.buyer_TownAndPin)
-        val stateTxt:TextView = itemView.findViewById(R.id.buyer_state)
-        val addressTypeTxt:TextView = itemView.findViewById(R.id.buyer_address_type)
-        val phoneTxt:TextView = itemView.findViewById(R.id.buyer_phone)
+        private val stateTxt:TextView = itemView.findViewById(R.id.buyer_state)
+        private val addressTypeTxt:TextView = itemView.findViewById(R.id.buyer_address_type)
+        private val phoneTxt:TextView = itemView.findViewById(R.id.buyer_phone)
+        private val checked:ImageView = itemView.findViewById(R.id.radioBtn)
+        private val editBtn:Button = itemView.findViewById(R.id.edit_address_btn)
 
-        val checked:ImageView = itemView.findViewById(R.id.radioBtn)
 
-        val editBtn:Button = itemView.findViewById(R.id.edit_address_btn)
-        fun bind(group:MutableMap<String,Any>,selectNo1:Long){
 
+        fun bind(group:MutableMap<String,Any>,selectNo1:Long,adList:ArrayList<MutableMap<String,Any>>){
+
+            var newAdrsList:ArrayList<AddressModel> = ArrayList()
+            newAdrsList = adList as ArrayList<AddressModel>
 
             checked.setOnClickListener {
                 listner.onItemClick(adapterPosition)
             }
 
             editBtn.setOnClickListener {
-                val intent = Intent(itemView.context,AddAddressActivity::class.java)
-                intent.putExtra("from",2)
+
+                val intent = Intent(itemView.context,EditAddressActivity::class.java)
 
                 intent.putExtra("editMap",group as Serializable)
+                intent.putExtra("position",adapterPosition)
+                intent.putParcelableArrayListExtra("AddressList",newAdrsList)// address as parcelable
+
 
                 itemView.context.startActivity(intent)
+
             }
+
 
             val position = adapterPosition.toLong()
             if (position == selectNo1){
@@ -73,6 +83,8 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
             }else{
                 Glide.with(itemView.context).load(R.drawable.ic_baseline_check_box_outline_blank_24).into(checked)
             }
+
+
             val buyerName:String = group["name"].toString()
             val buyerAddress1:String = group["address1"].toString()
             val buyerAddress2:String = group["address2"].toString()

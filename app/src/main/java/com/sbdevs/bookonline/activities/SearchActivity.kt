@@ -41,7 +41,7 @@ class SearchActivity : AppCompatActivity(),SearchQueryAdapter.MyonItemClickListe
         setSupportActionBar(toolbar)
 
         lifecycleScope.launch(Dispatchers.IO){
-            getProductnameList()
+            getProductNameList()
             delay(500)
         }
 
@@ -98,7 +98,7 @@ class SearchActivity : AppCompatActivity(),SearchQueryAdapter.MyonItemClickListe
         return super.onOptionsItemSelected(item)
     }
 
-    fun getProductnameList(){
+    private fun getProductNameList(){
         firebaseFirestore.collection("PRODUCT_FILTER").document("FILTER_1").get().addOnSuccessListener {
             searchList  = it.get("LIST1") as ArrayList<String>
             searchQueryAdapter.setData(searchList)

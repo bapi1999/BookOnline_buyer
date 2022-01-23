@@ -136,5 +136,19 @@
             app:drawableStartCompat="@drawable/ic_arrow_back_24" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textView25"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:drawableStart="@drawable/ic_outline_info_24"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="8dp"
+        android:drawablePadding="7dp"
+        android:text="Your order will be delivered after the seller accepted those orders.sellers can cancel orders  until shipping is done "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/continue_to_shop" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

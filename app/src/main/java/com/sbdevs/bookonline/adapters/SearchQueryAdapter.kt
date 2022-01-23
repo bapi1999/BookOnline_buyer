@@ -1,16 +1,12 @@
 package com.sbdevs.bookonline.adapters
 
-import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.SearchActivity
 import com.sbdevs.bookonline.activities.SearchFilterActivity
 import java.util.*
 import kotlin.collections.ArrayList
@@ -38,7 +34,7 @@ class SearchQueryAdapter( val listner:MyonItemClickListener,val listType:Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_search_query_item_lay, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_search_query_item, parent, false)
         return ViewHolder(view)
     }
 

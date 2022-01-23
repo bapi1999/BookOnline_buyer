@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.ActivityProductBinding
+import com.sbdevs.bookonline.fragments.ProductFragment
 
 class ProductActivity : AppCompatActivity() {
     private lateinit var binding:ActivityProductBinding
@@ -17,10 +18,15 @@ class ProductActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.product_nav_host) as NavHostFragment
-        navController = navHostFragment.navController
+        val extras = intent.getStringExtra("productId").toString()
 
+        val args = Bundle()
+        args.putString("productId",extras)
 
-        navController.setGraph(R.navigation.product_nav_graph, intent.extras)
+        val productFragment = ProductFragment()
+        productFragment.arguments = args
+
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,productFragment).commit()
+
     }
 }

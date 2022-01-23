@@ -21,13 +21,16 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.CartActivity
 import com.sbdevs.bookonline.activities.MyAddressActivity
 import com.sbdevs.bookonline.activities.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentMyAccountBinding
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
@@ -39,7 +42,7 @@ class MyAccountFragment : Fragment() {
     val firebaseAuth = Firebase.auth
     private val user = firebaseAuth.currentUser
     lateinit var userImage:CircleImageView
-    //private lateinit var navController: NavController
+
     var profilePicture:String = ""
     var buyerName:String =""
     var mobileNumber = ""
@@ -63,8 +66,6 @@ class MyAccountFragment : Fragment() {
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
                 getMyAccount()
-                delay(1000)
-                loadingDialog.dismiss()
             }
 
         }else{
@@ -73,41 +74,6 @@ class MyAccountFragment : Fragment() {
             loadingDialog.dismiss()
 
         }
-
-
-        binding.lay3.myAddressLay.setOnClickListener {
-            val intent = Intent(context,MyAddressActivity::class.java)
-            intent.putExtra("from",1)
-            //1 = from MyAccountFragment 2 = OrderDetailsFRagment
-            startActivity(intent)
-        }
-
-
-
-
-        binding.lay3.myWishlistLay.setOnClickListener{
-            val action = MyAccountFragmentDirections.actionMyAccountFragmentToMyWishlistFragment()
-            findNavController().navigate(action)
-        }
-
-
-        binding.lay3.myCartLay.setOnClickListener{
-            val action = MyAccountFragmentDirections.actionMyAccountFragmentToMyCartFragment()
-            findNavController().navigate(action)
-        }
-
-
-
-        binding.lay3.myOrderLay.setOnClickListener{
-
-        }
-
-        binding.lay3.updatePasswordLay.setOnClickListener {
-            val action = MyAccountFragmentDirections.actionMyAccountFragmentToUpdatePasswordFragment()
-            findNavController().navigate(action)
-        }
-
-
 
         return binding.root
     }
@@ -128,6 +94,34 @@ class MyAccountFragment : Fragment() {
         }
 
 
+        binding.lay3.myAddressLay.setOnClickListener {
+            val intent = Intent(context,MyAddressActivity::class.java)
+            intent.putExtra("from",1)
+            //1 = from MyAccountFragment 2 = OrderDetailsFRagment
+            startActivity(intent)
+        }
+
+        binding.lay3.myWishlistLay.setOnClickListener{
+            val action = MyAccountFragmentDirections.actionMyAccountFragmentToMyWishlistFragment()
+            findNavController().navigate(action)
+        }
+
+        binding.lay3.myCartLay.setOnClickListener{
+            val cartIntent = Intent(requireContext(),CartActivity::class.java)
+            startActivity(cartIntent)
+        }
+
+        binding.lay3.myOrderLay.setOnClickListener{
+            val action = MyAccountFragmentDirections.actionMyAccountFragmentToMyOrderFragment()
+            findNavController().navigate(action)
+        }
+
+        binding.lay3.updatePasswordLay.setOnClickListener {
+            val action = MyAccountFragmentDirections.actionMyAccountFragmentToUpdatePasswordFragment()
+            findNavController().navigate(action)
+        }
+
+
 
 
         binding.logout.setOnClickListener {
@@ -139,11 +133,19 @@ class MyAccountFragment : Fragment() {
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
                     firebaseAuth.signOut()
+                    ///SharedDataClass.dbCartList.clear()
                 }
                 withContext(Dispatchers.Main){
+
+                    SharedDataClass.dbCartList.clear()
+                    SharedDataClass.cartNumber = 0
                     Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
-                    val action = MyAccountFragmentDirections.actionMyAccountFragmentToHomeFragment()
-                    findNavController().navigate(action)
+
+                    val registerActivityIntent = Intent(requireContext(),RegisterActivity::class.java)
+                    startActivity(registerActivityIntent)
+
+
+                    activity?.finish()
                 }
             }
         }
@@ -153,6 +155,8 @@ class MyAccountFragment : Fragment() {
 
     }
 
+
+
     fun goToEditdFragment(){
         val action = MyAccountFragmentDirections.actionMyAccountFragmentToEditAccountFragment(profilePicture,buyerName,mobileNumber)
         findNavController().navigate(action)
@@ -161,7 +165,7 @@ class MyAccountFragment : Fragment() {
 
 
 
-    private fun getMyAccount(){
+    private suspend fun getMyAccount(){
         val lay1 = binding.lay1
         val userRef = firebaseFirestore.collection("USERS").document(user!!.uid).get()
 
@@ -193,9 +197,11 @@ class MyAccountFragment : Fragment() {
                     binding.lay1.textView57.visibility = View.VISIBLE
                 }
 
+            loadingDialog.dismiss()
             }.addOnFailureListener {
            Log.e("User","${it.message}")
-        }
+            loadingDialog.dismiss()
+        }.await()
     }
 
 }

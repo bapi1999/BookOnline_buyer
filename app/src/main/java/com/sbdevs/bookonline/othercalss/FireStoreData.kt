@@ -25,28 +25,11 @@ class FireStoreData {
     private lateinit var searchAdapter: SearchQueryAdapter //= SearchQueryAdapter(searchList,0,1)
 
 
-//    var list:ArrayList<MutableMap<String, Any>> = ArrayList()
-
-    fun getFirebaseCartList(context:Context,list:ArrayList<MutableMap<String, Any>>){
-
-        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
-            .collection("USER_DATA").document("MY_CART")
-            .get().addOnCompleteListener {
-                if (it.isSuccessful){
-                    val x = it.result?.get("cart_list")
-                    if (x ==null){
-                        Toast.makeText(context,"Failed", Toast.LENGTH_SHORT).show()
-                    }else{
-//                        list = x
-                    }
-                }
-            }
-
-    }
 
     @Suppress("UNCHECKED_CAST")
     fun getProductnameList(recyclerView:RecyclerView){
-        firebaseFirestore.collection("PRODUCT_FILTER").document("FILTER_1").get().addOnSuccessListener {
+        firebaseFirestore.collection("PRODUCT_FILTER")
+            .document("FILTER_1").get().addOnSuccessListener {
 
             searchList  = it.get("LIST1") as ArrayList<String>
 //            searchAdapter.list =searchList
@@ -59,26 +42,26 @@ class FireStoreData {
 
 
 
-    fun durationFromNow(startDate: Date): String {
-        var different: Long = System.currentTimeMillis() - startDate.time
-        val secondsInMilli: Long = 1000
-        val minutesInMilli = secondsInMilli * 60
-        val hoursInMilli = minutesInMilli * 60
-        val daysInMilli = hoursInMilli * 24
-        val elapsedDays = different / daysInMilli
-        different %= daysInMilli
-        val elapsedHours = different / hoursInMilli
-        different %= hoursInMilli
-        val elapsedMinutes = different / minutesInMilli
-        different %= minutesInMilli
-        val elapsedSeconds = different / secondsInMilli
-        var output = ""
-        if (elapsedDays > 0) output += elapsedDays.toString() + "days "
-        if (elapsedDays > 0 || elapsedHours > 0) output += "$elapsedHours hours "
-        if (elapsedHours > 0 || elapsedMinutes > 0) output += "$elapsedMinutes minutes "
-        if (elapsedMinutes > 0 || elapsedSeconds > 0) output += "$elapsedSeconds seconds"
-        return output
-    }
+//    fun durationFromNow(startDate: Date): String {
+//        var different: Long = System.currentTimeMillis() - startDate.time
+//        val secondsInMilli: Long = 1000
+//        val minutesInMilli = secondsInMilli * 60
+//        val hoursInMilli = minutesInMilli * 60
+//        val daysInMilli = hoursInMilli * 24
+//        val elapsedDays = different / daysInMilli
+//        different %= daysInMilli
+//        val elapsedHours = different / hoursInMilli
+//        different %= hoursInMilli
+//        val elapsedMinutes = different / minutesInMilli
+//        different %= minutesInMilli
+//        val elapsedSeconds = different / secondsInMilli
+//        var output = ""
+//        if (elapsedDays > 0) output += elapsedDays.toString() + "days "
+//        if (elapsedDays > 0 || elapsedHours > 0) output += "$elapsedHours hours "
+//        if (elapsedHours > 0 || elapsedMinutes > 0) output += "$elapsedMinutes minutes "
+//        if (elapsedMinutes > 0 || elapsedSeconds > 0) output += "$elapsedSeconds seconds"
+//        return output
+//    }
 
 
 

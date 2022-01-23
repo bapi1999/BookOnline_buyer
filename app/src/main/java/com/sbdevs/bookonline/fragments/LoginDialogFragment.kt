@@ -16,10 +16,12 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
+import com.sbdevs.bookonline.activities.ProductActivity
 import com.sbdevs.bookonline.activities.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
 import com.sbdevs.bookonline.databinding.FragmentLoginDialogBinding
 import com.sbdevs.bookonline.fragments.register.LoginFragmentDirections
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -33,13 +35,14 @@ class LoginDialogFragment : DialogFragment() {
     lateinit var email: TextInputLayout
     lateinit var pass: TextInputLayout
     lateinit var errorTxt: TextView
+    lateinit var newDummyText:TextView
 
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLoginDialogBinding.inflate(inflater, container, false)
 
 
@@ -47,6 +50,7 @@ class LoginDialogFragment : DialogFragment() {
         errorTxt.visibility =View.GONE
         email = binding.emailInput
         pass = binding.passwordInput
+        newDummyText = binding.textView31
 
         binding.signupText.setOnClickListener {
             val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
@@ -60,6 +64,7 @@ class LoginDialogFragment : DialogFragment() {
 
         binding.cancelButton.setOnClickListener {
             dismiss()
+//            activity?.recreate()
         }
 
 
@@ -69,8 +74,11 @@ class LoginDialogFragment : DialogFragment() {
             checkAllDetails()
         }
 
+        newDummyText.text = activity.toString()
+
         return binding.root
     }
+
 
     private fun checkMail(): Boolean {
         val emailInput: String = email.editText?.text.toString().trim()
@@ -81,7 +89,7 @@ class LoginDialogFragment : DialogFragment() {
         } else {
             if(emailInput.matches(emailPattern.toRegex())){
                 email.isErrorEnabled = false
-                email.error = null
+                ///email.error = null
                 true
             }else{
                 email.isErrorEnabled = true
@@ -104,7 +112,7 @@ class LoginDialogFragment : DialogFragment() {
                 false
             }else{
                 pass.isErrorEnabled = false
-                pass.error = null
+                //pass.error = null
                 true
             }
 
@@ -122,8 +130,24 @@ class LoginDialogFragment : DialogFragment() {
                     firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
                     withContext(Dispatchers.Main){
                         Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(context,MainActivity::class.java)
-                        startActivity(intent)
+                        if (SharedDataClass.currentACtivity == 1){
+                            val intent = Intent(requireContext(),MainActivity::class.java)
+                            startActivity(intent)
+                        }else{
+                            val productid = SharedDataClass.product_id
+                            val intent = Intent(requireContext(),ProductActivity::class.java)
+                            intent.putExtra("productId",productid)
+                            startActivity(intent)
+                            SharedDataClass.newLogin = true
+
+                            val v = SharedDataClass
+                            v.getCartListForOptionMenu()
+                            dismiss()
+
+                        }
+
+
+
 
                         activity?.finish()
                     }

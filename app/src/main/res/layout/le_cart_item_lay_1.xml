@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
     android:background="@color/white"
-    android:elevation="2dp"
-    android:layout_marginBottom="5dp">
+    android:elevation="2dp">
 
     <ImageView
         android:id="@+id/product_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/as_square_placeholder" />
@@ -34,33 +34,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/variant"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="vol4,old printed, almost new"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/product_image"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_name" />
-
 
     <LinearLayout
         android:id="@+id/linearLayout23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/variant">
+        app:layout_constraintTop_toBottomOf="@+id/product_name">
 
         <ImageView
             android:layout_width="17dp"
@@ -181,9 +165,9 @@
         <View
             android:id="@+id/divider13"
             android:layout_width="1dp"
+            android:layout_height="match_parent"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="8dp"
-            android:layout_height="match_parent"
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
@@ -198,10 +182,10 @@
                 android:id="@+id/textView38"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="6dp"
                 android:drawablePadding="4dp"
                 android:padding="5dp"
-                android:layout_gravity="center"
                 android:text="@string/remove"
                 android:textColor="@color/red_700"
                 android:textSize="14sp"
@@ -218,10 +202,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:visibility="invisible"
         android:background="?android:attr/listDivider"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/quantity_container" />
+        app:layout_constraintTop_toBottomOf="@+id/product_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,10 +1,8 @@
 package com.sbdevs.bookonline.activities
 
 import android.app.Dialog
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -16,13 +14,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.databinding.ActivityAddAddressBinding
-import com.sbdevs.bookonline.fragments.MyAddressFragment
+import com.sbdevs.bookonline.databinding.ActivityEditAddressBinding
+import com.sbdevs.bookonline.models.AddressModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
-class AddAddressActivity : AppCompatActivity() {
-    lateinit var binding:ActivityAddAddressBinding
+class EditAddressActivity : AppCompatActivity() {
+    lateinit var binding:ActivityEditAddressBinding
 
     private val firebaseFirestore = Firebase.firestore
     private val firebaseAuth =FirebaseAuth.getInstance()
@@ -38,6 +36,7 @@ class AddAddressActivity : AppCompatActivity() {
     lateinit var autoCompleteState:AutoCompleteTextView
 
     lateinit var loadingDialog : Dialog
+    private var positionInt = 0
 
     var list:ArrayList<MutableMap<String,Any>> = ArrayList()
 //    lateinit var buyerName:TextInputLayout
@@ -58,7 +57,7 @@ class AddAddressActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddAddressBinding.inflate(layoutInflater)
+        binding = ActivityEditAddressBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         loadingDialog = Dialog(this)
@@ -89,44 +88,38 @@ class AddAddressActivity : AppCompatActivity() {
         autoCompleteState = binding.lay1.autoCompleteState
 
 
+        positionInt = intent.getIntExtra("position",0)
+        val addressList = intent.getParcelableArrayListExtra<AddressModel>("AddressList")
 
-        val from= intent.getIntExtra("from",0)
-        // todo:  1=> Add new address / 2=> Edit address
-        if (from == 1){
-//            Toast.makeText(this,"New address", Toast.LENGTH_SHORT).show()
-        }else if(from == 2){
-            Toast.makeText(this,"edit address", Toast.LENGTH_SHORT).show()
-            val intent = intent.getSerializableExtra("editMap")
-            val group:MutableMap<String,Any> = intent as MutableMap<String, Any>
+        val addressIntent = intent.getSerializableExtra("editMap")
+        val group:MutableMap<String,Any> = addressIntent as MutableMap<String, Any>
 
-            val buyerNameString:String = group["name"].toString()
-            val buyerAddress1String:String = group["address1"].toString()
-            val buyerAddress2String:String = group["address2"].toString()
-            val buyerAddressTypeString:String = group["address_type"].toString()
+        val buyerNameString:String = group["name"].toString()
+        val buyerAddress1String:String = group["address1"].toString()
+        val buyerAddress2String:String = group["address2"].toString()
+        val buyerAddressTypeString:String = group["address_type"].toString()
 
 
-            val buyerTownString:String = group["city_vill"].toString()
-            val buyerPinCodeString:String = group["pincode"].toString()
+        val buyerTownString:String = group["city_vill"].toString()
+        val buyerPinCodeString:String = group["pincode"].toString()
 
-            val buyerStateString:String = group["state"].toString()
-            val buyerPhoneString:String = group["phone"].toString()
-            buyerName.editText!!.setText(buyerNameString)
+        val buyerStateString:String = group["state"].toString()
+        val buyerPhoneString:String = group["phone"].toString()
 
-        }else{
-            Toast.makeText(this,"baal", Toast.LENGTH_SHORT).show()
-        }
+        buyerName.editText!!.setText(buyerNameString)
+        buyerAddress1.editText!!.setText(buyerAddress1String)
+        buyerAddress2.editText!!.setText(buyerAddress2String)
+        buyerTown.editText!!.setText(buyerTownString)
+        buyerAddressType.editText!!.setText(buyerAddressTypeString)
+        buyerState.editText!!.setText(buyerStateString)
+        buyerPhone.editText!!.setText(buyerPhoneString)
+        buyerPincode.editText!!.setText(buyerPinCodeString)
 
-        binding.cancelButton.setOnClickListener {
-            finish()
-        }
 
         binding.addNewAddress.setOnClickListener {
             loadingDialog.show()
             checkAllDetails()
         }
-
-
-
 
     }
 
@@ -256,15 +249,18 @@ class AddAddressActivity : AppCompatActivity() {
     }
 
 
-    fun getAddressList()  = CoroutineScope(Dispatchers.IO).launch{
+    private fun getAddressList()  = CoroutineScope(Dispatchers.IO).launch{
         firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid).collection("USER_DATA")
-            .document("MY_ADDRESSES").get().addOnCompleteListener {
-                if (it.isSuccessful){
-                    val x = it.result?.get("address_list")
-                    if (x != null){
-                        list = x as ArrayList<MutableMap<String, Any>>
-                    }
+            .document("MY_ADDRESSES").get().addOnSuccessListener{
+
+
+                val x = it.get("address_list")
+                if (x != null){
+                    list = x as ArrayList<MutableMap<String, Any>>
                 }
+
+            }.addOnFailureListener {
+
             }.await()
     }
 
@@ -287,20 +283,22 @@ class AddAddressActivity : AppCompatActivity() {
                     valueMap["state"] = autoCompleteState.text.toString()
                     valueMap["city_vill"] =buyerTown.editText?.text.toString()
 
-                    list.add(valueMap)
-                    val addressMap:MutableMap<String,Any> = HashMap<String,Any>()
+                    list[positionInt] = valueMap
+
+                    val addressMap:MutableMap<String,Any> = HashMap()
+
                     addressMap["address_list"] = list
                     firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
                         .collection("USER_DATA").document("MY_ADDRESSES")
-                        .update(addressMap).addOnCompleteListener {
+                        .update(addressMap).addOnSuccessListener {
                             loadingDialog.dismiss()
                             finish()
-                        }
+                        }.await()
 
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
 
-                        Toast.makeText(this@AddAddressActivity,e.message,Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@EditAddressActivity,e.message,Toast.LENGTH_LONG).show()
                     }
                 }
             }

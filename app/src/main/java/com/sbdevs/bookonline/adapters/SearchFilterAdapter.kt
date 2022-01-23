@@ -18,7 +18,7 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_search_filter_item_lay, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_search_filter_item, parent, false)
         return ViewHolder(view)
     }
 

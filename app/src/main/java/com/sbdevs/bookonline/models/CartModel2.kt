@@ -1,10 +1,15 @@
 package com.sbdevs.bookonline.models
 
 data class CartModel2(
-    val productId:String = "",
-    val stockQuantity:Long = 0L,
-    val orderQtyinty:Long = 0L,
-    val state:Int = -1
-//state: 0= already stock out 1= less than OrderQty so Stock out 2 = greater than orderQty
+    val book_title:String="",
+    val product_thumbnail:String ="",
+    val price_original:Long = 0L,
+    val price_selling:Long =0L,
+    val in_stock_quantity:Long = 0L,
+    val rating_avg:String = "",
+    val rating_total:Long = 0L,
+    val book_condition:String = "",
+    val book_type:String = "",
+    val book_printed_ON:Long = 0L
 
 )

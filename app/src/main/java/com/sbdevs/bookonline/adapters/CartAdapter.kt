@@ -16,9 +16,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
+import com.sbdevs.bookonline.models.CartModel
 
 
-class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnItemClickListener) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+class CartAdapter(var list:ArrayList<CartModel>,val listener: MyOnItemClickListener) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
 
     interface MyOnItemClickListener{
@@ -57,7 +58,6 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
         private val percentOff: TextView = itemView.findViewById(R.id.percent_off)
         private val quantitiesTxt:TextView = itemView.findViewById(R.id.quantity)
         private val outofstockIcon:ImageView = itemView.findViewById(R.id.outofstock_icon)
-        private val variantTxt:TextView = itemView.findViewById(R.id.variant)
         private val viewBtn:AppCompatButton = itemView.findViewById(R.id.view_details)
         private val removeBtn:LinearLayout = itemView.findViewById(R.id.remove_btn)
         private val quantityContainer:LinearLayout = itemView.findViewById(R.id.quantity_container)
@@ -65,11 +65,13 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
 
 
 
-        fun bind(group:MutableMap<String,Any>){
-            val productId:String = group["product"] as String
-            val quantity:Long = group["quantity"] as Long
+        fun bind(item:CartModel){
+            val productId:String = item.productId
+            val quantity:Long = item.orderQuantity
 
             quantitiesTxt.text = quantity.toString()
+
+
             removeBtn.setOnClickListener {
                 listener.onItemClick(adapterPosition)
 
@@ -85,6 +87,44 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
                 itemView.context.startActivity(productIntent)
             }
 
+            val priceOriginal = item.priceOriginal
+            val priceSelling = item.priceSelling
+            val stock = item.stockQty
+
+
+            productName.text = item.title
+
+            Glide.with(itemView.context).load(item.url).placeholder(R.drawable.as_square_placeholder).into(productImage);
+
+            if (priceOriginal == 0L){
+                val price = priceSelling.toInt()*quantity.toInt()
+                productPrice.text = price.toString()
+                productRealPrice.visibility = View.GONE
+                percentOff.visibility = View.GONE
+
+            }else{
+
+                val price = priceSelling.toInt()*quantity.toInt()
+                val realPrice = priceOriginal.toInt()*quantity.toInt()
+
+                val percent:Int = (100* (realPrice - price)) / ( realPrice )
+
+                productPrice.text = price.toString()
+                productRealPrice.text = realPrice.toString()
+                percentOff.text = "${percent}% off"
+
+            }
+            if (stock == 0L){
+                outofstockIcon.visibility = View.VISIBLE
+            }else{
+                outofstockIcon.visibility = View.GONE
+            }
+
+
+
+        }
+
+        fun getCartProductdata(productId:String,quantity:Int){
             firebaseFirestore.collection("PRODUCTS").document(productId)
                 .get().addOnSuccessListener {
                     var categoryString = ""
@@ -124,10 +164,6 @@ class CartAdapter(var list:ArrayList<MutableMap<String,Any>>,val listener: MyOnI
                         outofstockIcon.visibility = View.GONE
                     }
 
-                    for (catrgorys in categoryList) {
-                        categoryString += "$catrgorys,  "
-                    }
-                    variantTxt.text = categoryString
 
                 }.addOnFailureListener {
                     Log.e("CartAdapter","${it.message}")

@@ -52,6 +52,13 @@ class SignUpFragment : Fragment() {
             findNavController().navigate(action)
         }
 
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.signupLay.signupBtn.setOnClickListener {
             checkAllDetails()
         }
@@ -59,9 +66,9 @@ class SignUpFragment : Fragment() {
         binding.signupLay.skipBtn.setOnClickListener{
             val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
             startActivity(mainActivityIntent)
+            activity?.finish()
         }
 
-        return binding.root
     }
 
     private fun checkMail(): Boolean {
@@ -155,14 +162,11 @@ class SignUpFragment : Fragment() {
                 try {
                     firebaseAuth.createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
 
-                    withContext(Dispatchers.IO){
-                        createPaths()
-                    }
+                    createPaths()
+
 
                     withContext(Dispatchers.Main){
-                        Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(context, MainActivity::class.java)
-                        startActivity(intent)
+
                     }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
@@ -174,7 +178,7 @@ class SignUpFragment : Fragment() {
 
         }
     }
-    private fun createPaths(){
+    private suspend fun createPaths(){
 
         val listSizeMap: MutableMap<String, Any> = HashMap()
         listSizeMap["listSize"] = 0L
@@ -188,14 +192,8 @@ class SignUpFragment : Fragment() {
 
 
         val myNotificationMap: MutableMap<String, Any> = HashMap()
-        myNotificationMap["new_notification"] = 1
+        myNotificationMap["new_notification"] = FieldValue.serverTimestamp()
 
-        val notificationMap:MutableMap<String,Any> = HashMap()
-        notificationMap["date"] = FieldValue.serverTimestamp()
-        notificationMap["title"] ="Welcome to Books Online"
-        notificationMap["description"] ="Welcome to Books Online"
-        notificationMap["image"] = getString(R.string.welcome_image).toString()
-        notificationMap["order_id"] = ""
 
         val userMap: MutableMap<String, Any> = HashMap()
 
@@ -221,20 +219,35 @@ class SignUpFragment : Fragment() {
                 docRef.document("MY_ADDRESSES").set(addressMap).await()
                 docRef.document("MY_CART").set(listSizeMap).await()
 
-                docRef.document("MY_NOTIFICATION").set(notificationMap).await()
+                docRef.document("MY_NOTIFICATION").set(myNotificationMap).await()
 
                 docRef.document("MY_ORDERS").set(listSizeMap).await()
                 docRef.document("MY_WISHLIST").set(listSizeMap).await()
 
                 docRef.document("THINGS_I_BOUGHT").set(itemsMap).await()
 
+
+                val notificationMap:MutableMap<String,Any> = HashMap()
+                notificationMap["date"] = FieldValue.serverTimestamp()
+                notificationMap["description"] ="Welcome to Books Online"
+                notificationMap["image"] = getString(R.string.welcome_image)
+                notificationMap["order_id"] = ""
+                notificationMap["seen"] = false
+
+
                 docRef.document("MY_NOTIFICATION")
-                    .collection("")
+                    .collection("NOTIFICATION").add(notificationMap)
+                    .addOnSuccessListener {  }.await()
 
 
                 withContext(Dispatchers.Main){
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+
+                    Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
+
                     activity?.finish()
-                    Toast.makeText(context,"activity finish",Toast.LENGTH_LONG).show()
+
                 }
 
 

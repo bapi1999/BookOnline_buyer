@@ -18,7 +18,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
 
 
     interface MyonItemClickListener{
-        fun onItemClick(position: Int)
+        fun onItemClick(position: Int,productId: String)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishlistAdapter.ViewHolder {
@@ -37,6 +37,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val productImage : ImageView = itemView.findViewById(R.id.product_image)
+        private val outOfStockIcon : ImageView = itemView.findViewById(R.id.outofstock_icon)
         private val productName:TextView = itemView.findViewById(R.id.product_name)
         private val productPrice:TextView = itemView.findViewById(R.id.product_price)
         private val productRealPrice:TextView = itemView.findViewById(R.id.product_real_price)
@@ -55,44 +56,52 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
                 itemView.context.startActivity(productIntent)
             }
             removeBtn.setOnClickListener {
-                listner.onItemClick(adapterPosition)
+                listner.onItemClick(adapterPosition,productId)
             }
 
             firebaseFirestore.collection("PRODUCTS").document(productId)
-                .get().addOnCompleteListener {
-                    if (it.isSuccessful){
-                        val url:String = it.result!!.getString("product_thumbnail")!!
-                        val title:String = it.result!!.getString("book_title")!!
-                        val ratingTotal = it.result!!.getLong("rating_total")!!.toString()
+                .get().addOnSuccessListener {
 
-                        val priceOriginal = it.result!!.getLong("price_original")!!.toLong()
-                        val priceSelling = it.result!!.getLong("price_selling")!!.toLong()
-                        miniRatingTxt.text = it.result!!.getString("rating_avg")!!
-                        ratingTotalTxt.text = "( $ratingTotal ratings )"
+                    val url:String = it.getString("product_thumbnail")!!
+                    val title:String = it.getString("book_title")!!
+                    val ratingTotal = it.getLong("rating_total")!!.toString()
+                    val stockQty = it.getLong("in_stock_quantity")!!
+                    val priceOriginal = it.getLong("price_original")!!.toLong()
+                    val priceSelling = it.getLong("price_selling")!!.toLong()
+                    val avgRating = it.getString("rating_avg").toString()
+                    val bookType = it.getString("book_type")!!
 
-                        if (priceOriginal == 0L){
-                            productPrice.text = priceSelling.toString()
-                            priceOff.text = "Buy Now"
-                            productRealPrice.visibility = View.GONE
+                    miniRatingTxt.text = avgRating
 
-                        }else{
-                            val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
+                    ratingTotalTxt.text = "( $ratingTotal ratings )"
 
-                            productPrice.text = priceSelling.toString()
-                            productRealPrice.text = priceOriginal.toString()
-                            priceOff.text = "${percent}% off"
+                    if (priceOriginal == 0L){
+                        productPrice.text = priceSelling.toString()
+                        priceOff.text = "Buy Now"
+                        productRealPrice.visibility = View.GONE
 
-                        }
-                        productName.text = title
-                        bookSateTxt.text = it.result?.getString("book_state")!!
+                    }else{
+                        val percent:Int = (100* (priceOriginal.toInt() - priceSelling.toInt())) / ( priceOriginal.toInt() )
 
-                        Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
-
-
-
-
+                        productPrice.text = priceSelling.toString()
+                        productRealPrice.text = priceOriginal.toString()
+                        priceOff.text = "${percent}% off"
 
                     }
+                    productName.text = title
+                    bookSateTxt.text = bookType
+
+                    if (stockQty == 0L){
+                        outOfStockIcon.visibility = View.VISIBLE
+                    }else{
+                        outOfStockIcon.visibility = View.GONE
+                    }
+
+                    Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
+
+
+                }.addOnFailureListener {
+
                 }
         }
 

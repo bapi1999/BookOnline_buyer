@@ -62,7 +62,7 @@ class AddAddressFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAddAddressBinding.inflate(inflater,container,false)
 
 
@@ -79,8 +79,6 @@ class AddAddressFragment : Fragment() {
             getAddressList()
         }
 
-
-
         buyerName = binding.lay1.buyerName
         buyerPhone = binding.lay1.buyerPhone
         buyerPincode = binding.lay1.buyerPincode
@@ -93,22 +91,6 @@ class AddAddressFragment : Fragment() {
         autoCompleteType = binding.lay1.autoCompleteType
         autoCompleteState = binding.lay1.autoCompleteState
 
-
-
-//        val from= intent.getIntExtra("from",0)
-//        // todo:  1=> Add new address / 2=> Edit address
-//        if (from == 1){
-//            Toast.makeText(this,"New address", Toast.LENGTH_SHORT).show()
-//        }else if(from == 2){
-//            Toast.makeText(this,"edit address", Toast.LENGTH_SHORT).show()
-//
-//        }else{
-//            Toast.makeText(this,"baal", Toast.LENGTH_SHORT).show()
-//        }
-
-        binding.cancelButton.setOnClickListener {
-            popUpToBack()
-        }
 
         binding.addNewAddress.setOnClickListener {
             loadingDialog.show()
@@ -284,8 +266,6 @@ class AddAddressFragment : Fragment() {
                         .collection("USER_DATA").document("MY_ADDRESSES")
                         .update(addressMap).addOnCompleteListener {
                             loadingDialog.dismiss()
-//                            finish()
-                            popUpToBack()
                         }
 
                 }catch (e:Exception){
@@ -297,11 +277,6 @@ class AddAddressFragment : Fragment() {
             }
 
         }
-    }
-
-    fun popUpToBack(){
-        val action = AddAddressFragmentDirections.actionAddAddressFragmentToMyAddressFragment()
-        findNavController().navigate(action)
     }
 
 }

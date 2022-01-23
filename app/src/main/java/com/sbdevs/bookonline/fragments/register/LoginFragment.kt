@@ -19,6 +19,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -51,26 +52,30 @@ class LoginFragment : Fragment() {
         }
 
 
-        binding.loginLay.forgotPassword.setOnClickListener {
-            val action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment()
-            findNavController().navigate(action1)
-        }
 
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.loginLay.loginBtn.setOnClickListener {
             checkAllDetails()
         }
 
-        binding.loginLay.skipBtn.setOnClickListener{
-            val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
-            startActivity(mainActivityIntent)
+        binding.loginLay.forgotPassword.setOnClickListener {
+            val action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment()
+            findNavController().navigate(action1)
         }
 
+        binding.loginLay.skipBtn.setOnClickListener{
 
+            val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
+            startActivity(mainActivityIntent)
 
+            activity?.finish()
+        }
 
-        return binding.root
     }
 
     private fun checkMail(): Boolean {
@@ -125,6 +130,9 @@ class LoginFragment : Fragment() {
                         Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
                         val intent = Intent(context,MainActivity::class.java)
                         startActivity(intent)
+
+//                        val v = SharedDataClass
+//                        v.getCartListForOptionMenu()
 
                         activity?.finish()
                     }

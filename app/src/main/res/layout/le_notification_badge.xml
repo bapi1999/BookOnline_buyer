@@ -17,6 +17,7 @@
         android:layout_height="20dp"
         android:text="0"
         android:textSize="11sp"
+        android:visibility="gone"
         android:background="@drawable/cart_badge_icon"
         android:layout_gravity="center"
         android:gravity="center"

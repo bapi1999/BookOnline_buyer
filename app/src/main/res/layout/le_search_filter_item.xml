@@ -195,8 +195,8 @@
         app:layout_constraintStart_toStartOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="@+id/product_image"
         app:srcCompat="@drawable/as_out_of_stock"
-        android:visibility="gone"
-        android:padding="10dp"/>
+        android:visibility="visible"
+        android:padding="15dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

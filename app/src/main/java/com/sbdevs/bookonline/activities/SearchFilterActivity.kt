@@ -61,7 +61,7 @@ class SearchFilterActivity : AppCompatActivity() {
     var lowerLimit = 0L
     var upperLimit = 1000L
     private var searchCode = 0
-    private lateinit var recyclerView:RecyclerView
+    private lateinit var searchRecycler:RecyclerView
 
     private val visible = View.VISIBLE
     private val gone = View.GONE
@@ -81,11 +81,11 @@ class SearchFilterActivity : AppCompatActivity() {
         dialog.setContentView(view)
         dialogFunction(dialog)
 
-        recyclerView = binding.searchRecycler
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        searchRecycler = binding.searchRecycler
+        searchRecycler.layoutManager = LinearLayoutManager(this)
 
         val query = intent.getStringExtra("query")
-//        binding.queryText.text  = query.toString()
+        binding.queryText.text  = query.toString()
 
 
         var queryList: List<String> = query?.lowercase()?.split(" ")!!
@@ -95,7 +95,7 @@ class SearchFilterActivity : AppCompatActivity() {
         queryEqualCount0()
 
         searchFilterAdapter = SearchFilterAdapter(allSearchList)
-        recyclerView.adapter = searchFilterAdapter
+        searchRecycler.adapter = searchFilterAdapter
 
 
         binding.cancelQueryBtn.setOnClickListener {
@@ -110,7 +110,7 @@ class SearchFilterActivity : AppCompatActivity() {
         super.onStart()
 
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        searchRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener(){
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -122,6 +122,7 @@ class SearchFilterActivity : AppCompatActivity() {
                     if (isReachLast){
                         Log.w("Query item","Last item is reached already")
                         binding.progressBar2.visibility = View.GONE
+                        Log.e("last query", "${lastResult.toString()}")
 
                     }else{
                         binding.progressBar2.visibility = View.VISIBLE
@@ -453,14 +454,13 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
                     val productName = documentSnapshot.getString("book_title").toString()
 
-                    val url: String =
-                        documentSnapshot.getString("product_thumbnail").toString().trim()
+                    val url: String = documentSnapshot.getString("product_thumbnail").toString().trim()
                     val stockQty: Long = documentSnapshot.getLong("in_stock_quantity")!!.toLong()
                     val avgRating = documentSnapshot.getString("rating_avg")!!
                     val totalRatings: Long = documentSnapshot.getLong("rating_total")!!
@@ -476,9 +476,15 @@ class SearchFilterActivity : AppCompatActivity() {
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
 
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- old method =================================================================
+//                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+//                lastResult = lastR
+//                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- old methods =================================================================
+
+
+                isReachLast = allDocumentSnapshot.size < 10 // limit is 10
+
 
             }else{
                 isReachLast = true
@@ -487,11 +493,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -502,12 +508,21 @@ class SearchFilterActivity : AppCompatActivity() {
                 }else{
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
-                binding.queryText.text = "union ${allSearchList.size}"
+//                binding.queryText.text = "union ${allSearchList.size}"
+
                 loadingDialog.dismiss()
+
+//Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
+
+
+
                 binding.progressBar2.visibility = View.GONE
             }
-
-//            newlist = allSearchList.distinctBy { it.productId } as ArrayList<SearchModel>
 
         }.addOnFailureListener {
             Log.e("get search query 0", "${it.message}")
@@ -560,7 +575,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
@@ -583,9 +598,8 @@ class SearchFilterActivity : AppCompatActivity() {
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
 
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
+
 
             }else{
                 isReachLast = true
@@ -594,11 +608,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -610,6 +624,13 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
                 loadingDialog.dismiss()
+
+                //Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
                 binding.progressBar2.visibility = View.GONE
             }
 
@@ -669,7 +690,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+                 // limit is 10
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
@@ -692,9 +713,8 @@ class SearchFilterActivity : AppCompatActivity() {
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
 
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                isReachLast = allDocumentSnapshot.size <= 10
+
 
             }else{
                 isReachLast = true
@@ -703,11 +723,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -719,10 +739,16 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
                 loadingDialog.dismiss()
+
+                //Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
                 binding.progressBar2.visibility = View.GONE
             }
 
-//            newlist = allSearchList.distinctBy { it.productId } as ArrayList<SearchModel>
 
         }.addOnFailureListener {
             Log.e("get search query 2", "${it.message}")
@@ -782,7 +808,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
@@ -804,10 +830,7 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchList.add(SearchModel(productId, productName, url, priceOriginal, priceSelling,
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
-
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
 
             }else{
                 isReachLast = true
@@ -816,11 +839,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -832,6 +855,13 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
                 loadingDialog.dismiss()
+
+                //Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
                 binding.progressBar2.visibility = View.GONE
             }
 
@@ -898,7 +928,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
@@ -920,10 +950,7 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchList.add(SearchModel(productId, productName, url, priceOriginal, priceSelling,
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
-
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
 
             }else{
                 isReachLast = true
@@ -932,11 +959,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -948,6 +975,13 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
                 loadingDialog.dismiss()
+
+                //Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
                 binding.progressBar2.visibility = View.GONE
             }
 
@@ -1019,7 +1053,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
@@ -1041,10 +1075,8 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchList.add(SearchModel(productId, productName, url, priceOriginal, priceSelling,
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
+                isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
 
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
 
             }else{
                 isReachLast = true
@@ -1053,11 +1085,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -1069,6 +1101,12 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
                 loadingDialog.dismiss()
+                //Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
                 binding.progressBar2.visibility = View.GONE
             }
 
@@ -1143,7 +1181,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size != 10 // limit is 10
+
 
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
@@ -1165,10 +1203,8 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchList.add(SearchModel(productId, productName, url, priceOriginal, priceSelling,
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
                 }
+                isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
 
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
 
             }else{
                 isReachLast = true
@@ -1177,11 +1213,11 @@ class SearchFilterActivity : AppCompatActivity() {
             allSearchList.addAll(searchList)
 
             if (allSearchList.isEmpty()){
-                binding.searchRecycler.visibility = gone
+                searchRecycler.visibility = gone
                 binding.progressBar2.visibility = gone
                 binding.noResultFoundText.visibility = visible
             }else{
-                binding.searchRecycler.visibility = visible
+                searchRecycler.visibility = visible
                 binding.progressBar2.visibility = visible
                 binding.noResultFoundText.visibility = gone
 
@@ -1193,6 +1229,12 @@ class SearchFilterActivity : AppCompatActivity() {
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
                 loadingDialog.dismiss()
+                //Todo- new approach =================================================================
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+//Todo- new approach =================================================================
+
                 binding.progressBar2.visibility = View.GONE
             }
 

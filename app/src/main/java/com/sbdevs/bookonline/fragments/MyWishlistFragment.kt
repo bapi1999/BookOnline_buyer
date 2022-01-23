@@ -18,6 +18,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.WishlistAdapter
 import com.sbdevs.bookonline.databinding.FragmentMyWishlistBinding
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentMyWishlistBinding.inflate(inflater, container, false)
 
@@ -106,9 +107,10 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
 
     }
 
-    override fun onItemClick(position: Int) {
-        list.removeAt(position)
+    override fun onItemClick(position: Int, productId: String) {
+        list.remove(productId)
         wishlistAdapter.notifyItemRemoved(position)
+        SharedDataClass.dbWishList.remove(productId)
         val cartmap: MutableMap<String, Any> = HashMap()
         cartmap["wish_list"] = list
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
