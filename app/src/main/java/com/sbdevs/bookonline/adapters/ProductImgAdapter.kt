@@ -49,7 +49,7 @@ class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOn
 
         fun bind(url:String) {
             itemView.setOnClickListener {
-                listener.onItemClick(adapterPosition,url)
+                listener.onItemClick(absoluteAdapterPosition,url)
             }
             Glide.with(itemView.context).load(url)
                 .apply(RequestOptions().placeholder(R.drawable.as_square_placeholder))

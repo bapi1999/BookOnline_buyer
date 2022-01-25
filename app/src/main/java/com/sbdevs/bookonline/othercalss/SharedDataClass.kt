@@ -81,30 +81,12 @@ class SharedDataClass {
 
         }
 
-//        fun getCartList() {
-//
-//            firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-//                .document("MY_CART").get().addOnSuccessListener {
-//
-//                    val x = it.get("cart_list")
-//
-//                    if (x != null) {
-//                        dbCartList = x as ArrayList<MutableMap<String, Any>>
-//
-//                    } else {
-//                        Log.w("CartList", "Cart list not found")
-//                    }
-//
-//                }.addOnFailureListener {
-//                    Log.e("CartList", "${it.message}",it.cause)
-//                }
-//
-//        }
 
 
 
         fun getHomePageData(progressBar:ProgressBar,dialog: LoadingDialog){
-
+            var homeElementList: MutableList<HomeModel> = ArrayList()
+            homeElementList.clear()
             if(isReachLast){
                 progressBar.visibility = View.GONE
             }else{
@@ -125,11 +107,9 @@ class SharedDataClass {
 
                         if (allDocumentSnapshot.isNotEmpty()){
 
+                            homeElementList = it.toObjects(HomeModel::class.java)
+
                             isReachLast = allDocumentSnapshot.size < 5 // limit is 5
-                            val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                            lastResult = lastR
-                            lastIndex = lastR.getLong("index")!!
-                            //times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
 
                         }
                         else{
@@ -137,36 +117,34 @@ class SharedDataClass {
                         }
 
 
-
-
-                        val homeElementList = it.toObjects(HomeModel::class.java)
-
                         uiViewLIst.addAll(homeElementList)
 
 
                         if (uiViewLIst.isEmpty()){
-//                       searchRecycler.visibility = gone
-//                       binding.progressBar2.visibility = gone
-//                       binding.noResultFoundText.visibility = visible
+
                             Log.e("Home List", " empty list")
                         }else{
-//                       searchRecycler.visibility = visible
-//                       binding.progressBar2.visibility = visible
-//                       binding.noResultFoundText.visibility = gone
+
 
                             homeAdapter.homeModelList =uiViewLIst
-//                       homeAdapter.notifyDataSetChanged()
 
 
-                            if (counter1 ==0 ){
-                                homeAdapter.notifyItemRangeInserted(0, uiViewLIst.size)
+                            if (lastResult == null ){
+                                homeAdapter.notifyItemRangeInserted(0, homeElementList.size)
                             }else{
                                 homeAdapter.notifyItemRangeInserted(uiViewLIst.size-1,homeElementList.size)
                             }
 
-                            //recyclerView.adapter = homeAdapter
+
+                            val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                            lastResult = lastR
+                            lastIndex = lastR.getLong("index")!!
+
                             progressBar.visibility = View.GONE
-                            counter1 = 1
+                            //counter1 = 1
+
+
+
                         }
                         dialog.dismiss()
 

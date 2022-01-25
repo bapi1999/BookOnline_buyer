@@ -18,15 +18,12 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.sbdevs.bookonline.adapters.uiadapter.HorizontalAdapter
 
 
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.adapters.uiadapter.PromotedAdapter
-import com.sbdevs.bookonline.adapters.uiadapter.SliderAdapter
-import com.sbdevs.bookonline.adapters.uiadapter.TopCategoryAdapter
+import com.sbdevs.bookonline.adapters.uiadapter.*
 import com.sbdevs.bookonline.models.uidataclass.SliderModel
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
@@ -111,7 +108,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
             STRIP_LAYOUT ->(holder as StripViewHolder).bind(homeModelList[position])
             PROMOTED_LAYOUT->(holder as PromotedViewHolder).bind(homeModelList[position])
             BIG_ADS_LINK->(holder as BigAdsLinkViewHolder).bind(homeModelList[position])
-            PRODUCT_GRID->(holder as BigAdsLinkViewHolder).bind(homeModelList[position])
+            PRODUCT_GRID->(holder as GridViewHolder).bind(homeModelList[position])
         }
     }
 
@@ -269,14 +266,11 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
         private val batchHeader:TextView = itemView.findViewById(R.id.batch_header)
         //private val batchBackground:LinearLayout = itemView.findViewById(R.id.batch_background)
         private var productIdList= ArrayList<String>()
-        private lateinit var adapter1: HorizontalAdapter
+        private lateinit var adapter1: ProductGridAdapter
         fun bind(homeModel: HomeModel){
 
             val uiId:String = homeModel.UI_VIEW_ID.trim()
             getFirebaeData(uiId)
-
-            val pos:String = adapterPosition.toString()
-
 
 
 
@@ -291,8 +285,8 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
                 batchHeader.text = header
                 //batchBackground.setBackgroundColor(parseColor(bgColor))
 
-                productRecycler.layoutManager = LinearLayoutManager(itemView.context,LinearLayoutManager.HORIZONTAL ,false)
-                adapter1 = HorizontalAdapter(productIdList)
+                productRecycler.layoutManager = GridLayoutManager(itemView.context,2)
+                adapter1 = ProductGridAdapter(productIdList)
                 productRecycler.adapter = adapter1
 
                 adapter1.notifyDataSetChanged()

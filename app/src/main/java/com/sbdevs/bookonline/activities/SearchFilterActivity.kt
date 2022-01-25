@@ -98,7 +98,7 @@ class SearchFilterActivity : AppCompatActivity() {
         searchRecycler.adapter = searchFilterAdapter
 
 
-        binding.cancelQueryBtn.setOnClickListener {
+        binding.queryText.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
             startActivity(intent)
         }
@@ -510,7 +510,7 @@ class SearchFilterActivity : AppCompatActivity() {
                 }
 //                binding.queryText.text = "union ${allSearchList.size}"
 
-                loadingDialog.dismiss()
+
 
 //Todo- new approach =================================================================
                 val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
@@ -524,6 +524,8 @@ class SearchFilterActivity : AppCompatActivity() {
                 binding.progressBar2.visibility = View.GONE
             }
 
+
+            loadingDialog.dismiss()
         }.addOnFailureListener {
             Log.e("get search query 0", "${it.message}")
             loadingDialog.dismiss()
@@ -623,7 +625,7 @@ class SearchFilterActivity : AppCompatActivity() {
                 }else{
                     searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
                 }
-                loadingDialog.dismiss()
+
 
                 //Todo- new approach =================================================================
                 val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
@@ -635,7 +637,7 @@ class SearchFilterActivity : AppCompatActivity() {
             }
 
 //            newlist = allSearchList.distinctBy { it.productId } as ArrayList<SearchModel>
-
+            loadingDialog.dismiss()
         }.addOnFailureListener {
             Log.e("get search query 1", "${it.message}")
             loadingDialog.dismiss()
@@ -749,7 +751,7 @@ class SearchFilterActivity : AppCompatActivity() {
                 binding.progressBar2.visibility = View.GONE
             }
 
-
+            loadingDialog.dismiss()
         }.addOnFailureListener {
             Log.e("get search query 2", "${it.message}")
             loadingDialog.dismiss()

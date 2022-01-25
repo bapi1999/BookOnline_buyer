@@ -56,7 +56,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
                 itemView.context.startActivity(productIntent)
             }
             removeBtn.setOnClickListener {
-                listner.onItemClick(adapterPosition,productId)
+                listner.onItemClick(absoluteAdapterPosition,productId)
             }
 
             firebaseFirestore.collection("PRODUCTS").document(productId)

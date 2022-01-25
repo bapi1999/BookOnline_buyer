@@ -73,12 +73,12 @@ class CartAdapter(var list:ArrayList<CartModel>,val listener: MyOnItemClickListe
 
 
             removeBtn.setOnClickListener {
-                listener.onItemClick(adapterPosition)
+                listener.onItemClick(absoluteAdapterPosition)
 
             }
 
             quantityContainer.setOnClickListener {
-                listener.onQuantityChange(adapterPosition,quantitiesTxt)
+                listener.onQuantityChange(absoluteAdapterPosition,quantitiesTxt)
             }
 
             viewBtn.setOnClickListener {

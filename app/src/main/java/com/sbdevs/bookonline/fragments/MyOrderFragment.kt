@@ -178,17 +178,15 @@ class MyOrderFragment : Fragment() {
 
         val kh: ArrayList<MutableMap<String,Any>> = ArrayList()
 
-        if (divCount == 0){
-            if (extra > 0){
-                for (i in lowerPoint until (lowerPoint+extra)){
-                    kh.add(orderList[i])
-                }
-
-                paginateOrderList.addAll(kh)
-                adapter.list = paginateOrderList
-                adapter.notifyItemRangeInserted(lowerPoint,extra)
-
+        if (divCount == 0 && extra > 0){
+            for (i in lowerPoint until (lowerPoint+extra)){
+                kh.add(orderList[i])
             }
+
+            paginateOrderList.addAll(kh)
+            adapter.list = paginateOrderList
+            adapter.notifyItemRangeInserted(lowerPoint,extra)
+
 
 //            st += "method 1 ${orderList.size} => div= $divCount / mod= $extra / listsize = ${kh.size} \n"
 

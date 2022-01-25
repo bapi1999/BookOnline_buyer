@@ -60,7 +60,7 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
             newAdrsList = adList as ArrayList<AddressModel>
 
             checked.setOnClickListener {
-                listner.onItemClick(adapterPosition)
+                listner.onItemClick(absoluteAdapterPosition)
             }
 
             editBtn.setOnClickListener {
@@ -68,7 +68,7 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
                 val intent = Intent(itemView.context,EditAddressActivity::class.java)
 
                 intent.putExtra("editMap",group as Serializable)
-                intent.putExtra("position",adapterPosition)
+                intent.putExtra("position",absoluteAdapterPosition)
                 intent.putParcelableArrayListExtra("AddressList",newAdrsList)// address as parcelable
 
 

@@ -17,6 +17,9 @@
         android:theme="@style/Theme.BookOnline"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".activities.SearchActivity2"
+            android:exported="false" />
+        <activity
             android:name=".activities.WebViewActivity"
             android:exported="false" />
         <activity

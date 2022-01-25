@@ -1,33 +1,28 @@
 package com.sbdevs.bookonline.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Toast
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.firestore.ktx.firestore
+import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.ktx.Firebase
-import com.sbdevs.bookonline.adapters.SearchQueryAdapter
 import com.sbdevs.bookonline.databinding.ActivitySearchBinding
-
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
+import com.google.firebase.database.Query
+import com.google.firebase.database.ktx.database
+import com.sbdevs.bookonline.adapters.FireBaseAdapter1
+import com.sbdevs.bookonline.models.QueryModel1
 
-class SearchActivity : AppCompatActivity(),SearchQueryAdapter.MyonItemClickListener {
+
+class SearchActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySearchBinding
-    val firebaseFirestore = Firebase.firestore
-    private var searchList:ArrayList<String> = ArrayList()
-//    private var allSearchList:ArrayList<String> = ArrayList()
-//    var newlist:ArrayList<String> = ArrayList()
-    private lateinit var searchQueryAdapter: SearchQueryAdapter
+
+    lateinit var adapter1:FireBaseAdapter1
+    private lateinit var searchRecycler:RecyclerView
 
 
 
@@ -40,27 +35,9 @@ class SearchActivity : AppCompatActivity(),SearchQueryAdapter.MyonItemClickListe
         val toolbar:Toolbar = binding.toolbar2
         setSupportActionBar(toolbar)
 
-        lifecycleScope.launch(Dispatchers.IO){
-            getProductNameList()
-            delay(500)
-        }
-
-
-
-
-
-
-
-
-
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-//                searchList.clear()
 
-//                val tags: List<String> = query?.lowercase()?.split(" ")!!
-//                for (tag:String in tags){
-//                    getSearchData(tag)
-//                }
                 val intent = Intent(this@SearchActivity,SearchFilterActivity::class.java)
                 intent.putExtra("query",query)
                 startActivity(intent)
@@ -70,22 +47,59 @@ class SearchActivity : AppCompatActivity(),SearchQueryAdapter.MyonItemClickListe
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchQueryAdapter.filter.filter(newText!!.lowercase())
-
+                if (newText != null) {
+                    searchText(newText)
+                }else{
+                    productNames()
+                }
                 return false
             }
         })
 
-        val recyclerView = binding.searchRecycler
-        recyclerView.layoutManager = LinearLayoutManager(this)
-//        FireStoreData().getProductnameList(recyclerView)
 
-        searchQueryAdapter = SearchQueryAdapter(this,1)
-        recyclerView.adapter = searchQueryAdapter
 
+        val query: Query = Firebase.database
+            .reference
+            .child("for_test")
+            .limitToLast(20)
+
+
+        val options: FirebaseRecyclerOptions<QueryModel1> = FirebaseRecyclerOptions.Builder<QueryModel1>()
+            .setQuery(query, QueryModel1::class.java)
+            .build()
+
+
+        adapter1 = FireBaseAdapter1(options)
+
+
+        searchRecycler = binding.searchRecycler
+        searchRecycler.setHasFixedSize(true)
+        searchRecycler.layoutManager = LinearLayoutManager(this)
+
+
+        searchRecycler.adapter = adapter1
 
 
     }
+
+    private fun productNames(){
+        val query: Query = Firebase.database
+            .reference
+            .child("for_test")
+            .limitToLast(20)
+
+
+        val options: FirebaseRecyclerOptions<QueryModel1> = FirebaseRecyclerOptions.Builder<QueryModel1>()
+            .setQuery(query, QueryModel1::class.java)
+            .build()
+
+
+        adapter1 = FireBaseAdapter1(options)
+        adapter1.startListening()
+        adapter1.notifyDataSetChanged()
+        searchRecycler.adapter = adapter1
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return super.onCreateOptionsMenu(menu)
@@ -98,21 +112,35 @@ class SearchActivity : AppCompatActivity(),SearchQueryAdapter.MyonItemClickListe
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getProductNameList(){
-        firebaseFirestore.collection("PRODUCT_FILTER").document("FILTER_1").get().addOnSuccessListener {
-            searchList  = it.get("LIST1") as ArrayList<String>
-            searchQueryAdapter.setData(searchList)
-            searchQueryAdapter.notifyDataSetChanged()
-
-        }
+    override fun onStart() {
+        super.onStart()
+        adapter1.startListening()
     }
 
-    override fun onItemClick1(position: Int) {
-        Toast.makeText(this,position.toString(),Toast.LENGTH_SHORT).show()
+    override fun onStop() {
+        super.onStop()
+        adapter1.stopListening()
     }
 
-    override fun onItemClick2(position: Int) {
-        //TODO("Not yet implemented")
+    private fun searchText(seractString:String){
+        val query: Query = Firebase.database
+            .reference
+            .child("for_products")
+            .orderByChild("name")
+            .startAt(seractString)
+            .limitToLast(20)
+
+
+        val options: FirebaseRecyclerOptions<QueryModel1> = FirebaseRecyclerOptions.Builder<QueryModel1>()
+            .setQuery(query, QueryModel1::class.java)
+            .build()
+
+        adapter1 = FireBaseAdapter1(options)
+        adapter1.startListening()
+        adapter1.notifyDataSetChanged()
+        searchRecycler.adapter = adapter1
+
     }
+
 
 }

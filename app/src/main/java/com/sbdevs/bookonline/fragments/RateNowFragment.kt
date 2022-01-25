@@ -34,7 +34,7 @@ class RateNowFragment : Fragment() {
     private var _binding:FragmentRateNowBinding? = null
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = Firebase.auth
+    private val user = Firebase.auth.currentUser
 
     private var ALL_READY_REVIEWED = false
 
@@ -77,13 +77,9 @@ class RateNowFragment : Fragment() {
 
                 getUsername()
 
-                getMyBoughtProducts(productId)
 
             }
-            withContext(Dispatchers.Main){
-                delay(1000)
-                loadingDialog.dismiss()
-            }
+
         }
 
 
@@ -92,7 +88,7 @@ class RateNowFragment : Fragment() {
 
         ratingBar.onRatingBarChangeListener =
         RatingBar.OnRatingBarChangeListener { ratingBar, fl, b ->
-            //
+            //Toast.makeText(this," rating${ratingBar.rating.toLong()}",Toast.LENGTH_SHORT).show()
         }
 
         return binding.root
@@ -110,12 +106,9 @@ class RateNowFragment : Fragment() {
                 if (ratingBar.rating != 0F){
                     lifecycleScope.launch{
                         withContext(Dispatchers.IO){
+
                             updateProductReting()
-                            delay(200)
-                        }
-                        withContext(Dispatchers.IO){
-                            creatingRatingDocToProduct()
-                            uploadMyRatingToFireBase()
+                            creatingProductRatingDoc()
                         }
                         withContext(Dispatchers.Main){
                             loadingDialog.dismiss()
@@ -134,47 +127,17 @@ class RateNowFragment : Fragment() {
 
 
 
-    private fun getMyBoughtProducts(productId:String){
-        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
-            .collection("USER_DATA").document("THINGS_I_BOUGHT").get()
-            .addOnSuccessListener {
-                val x = it.get("my_bought_items")
-                var productList:ArrayList<String> = ArrayList()
-                if (x!=null){
-                    productList = x as ArrayList<String>
-                    for (i in productList){
-                        if(productId == i){
-                            ALL_READY_REVIEWED = true
-                        }
-                    }
-                }else{
-                    Toast.makeText(context,"blank list",Toast.LENGTH_LONG).show()
-                }
-            }
-    }
-
-    private fun uploadMyRatingToFireBase(){
-        val reviewMap:MutableMap<String,Any> = HashMap()
-        reviewMap["product_id"] = productId
-        reviewMap["rating_id"] = firebaseAuth.currentUser!!.uid
-        reviewMap["time"] = FieldValue.serverTimestamp()
-        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
-            .collection("USER_DATA").document("THINGS_I_BOUGHT")
-            .collection("MY_REVIEWS").add(reviewMap)
-    }
-
-
-    private fun creatingRatingDocToProduct(){
+    private fun creatingProductRatingDoc(){
         val ratingMap:MutableMap<String,Any> = HashMap()
         ratingMap["buyer_name"] = buyerName
         ratingMap["rating"] = ratingBar.rating.toLong()
         ratingMap["review_Date"] = FieldValue.serverTimestamp()
-        ratingMap["buyer_ID"] = firebaseAuth.currentUser!!.uid
+        ratingMap["buyer_ID"] = user!!.uid
         ratingMap["review"]= reviewInput.editText?.text.toString()
 
         firebaseFirestore.collection("PRODUCTS")
             .document(productId).collection("PRODUCT_REVIEW")
-            .document(firebaseAuth.currentUser!!.uid.toString())
+            .document(user!!.uid)
             .set(ratingMap)
     }
 
@@ -249,7 +212,7 @@ class RateNowFragment : Fragment() {
     }
 
     private fun getUsername(){
-        firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid)
+        firebaseFirestore.collection("USERS").document(user!!.uid)
             .addSnapshotListener { value,error ->
                 error?.let {
                     Toast.makeText(context,"Failed to load name",Toast.LENGTH_LONG).show()

@@ -1,16 +1,11 @@
 package com.sbdevs.bookonline.othercalss
 
 import android.content.Context
-import android.view.View
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.adapters.SearchQueryAdapter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -20,26 +15,6 @@ class FireStoreData {
 
     public val firebaseFirestore = Firebase.firestore
     val firebaseAuth = Firebase.auth
-
-    private var searchList:ArrayList<String> = ArrayList()
-    private lateinit var searchAdapter: SearchQueryAdapter //= SearchQueryAdapter(searchList,0,1)
-
-
-
-    @Suppress("UNCHECKED_CAST")
-    fun getProductnameList(recyclerView:RecyclerView){
-        firebaseFirestore.collection("PRODUCT_FILTER")
-            .document("FILTER_1").get().addOnSuccessListener {
-
-            searchList  = it.get("LIST1") as ArrayList<String>
-//            searchAdapter.list =searchList
-            searchAdapter.notifyDataSetChanged()
-            //searchAdapter = SearchQueryAdapter(searchList)
-            recyclerView.adapter = searchAdapter
-        }
-    }
-
-
 
 
 //    fun durationFromNow(startDate: Date): String {

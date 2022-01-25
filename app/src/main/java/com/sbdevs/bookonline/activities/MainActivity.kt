@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.searchBtn.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
+            val intent = Intent(this, SearchActivity2::class.java)
             startActivity(intent)
         }
 
