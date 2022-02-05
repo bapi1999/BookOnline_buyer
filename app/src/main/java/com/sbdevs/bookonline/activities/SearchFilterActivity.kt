@@ -159,10 +159,6 @@ class SearchFilterActivity : AppCompatActivity() {
 
             }
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-            }
 
         })
 
@@ -261,15 +257,15 @@ class SearchFilterActivity : AppCompatActivity() {
 
         }
 
-        priceRaneSlider.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: RangeSlider) {
-                // Responds to when slider's touch event is being started
-            }
-
-            override fun onStopTrackingTouch(slider: RangeSlider) {
-                // Responds to when slider's touch event is being stopped
-            }
-        })
+//        priceRaneSlider.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener {
+//            override fun onStartTrackingTouch(slider: RangeSlider) {
+//                // Responds to when slider's touch event is being started
+//            }
+//
+//            override fun onStopTrackingTouch(slider: RangeSlider) {
+//                // Responds to when slider's touch event is being stopped
+//            }
+//        })
 
         priceRaneSlider.addOnChangeListener { rangeSlider, value, fromUser ->
             lowerLimit = rangeSlider.values[0].toLong()

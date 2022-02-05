@@ -25,9 +25,9 @@
             android:layout_height="match_parent"
             android:hint="Enter Quantity"
             android:inputType="number"
-            android:textSize="17sp"
             android:textColor="@color/grey_900"
-            />
+            android:textSize="17sp"
+            tools:ignore="TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
@@ -58,7 +58,8 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_shopping_cart_24" />
+                android:src="@drawable/ic_shopping_cart_24"
+                tools:ignore="ImageContrastCheck" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -66,7 +67,8 @@
                 android:text="Add to cart"
                 android:textColor="@color/white"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="TextContrastCheck" />
         </LinearLayout>
 
 

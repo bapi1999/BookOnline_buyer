@@ -21,38 +21,35 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/no_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/red_600"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="No saved address found, Adda nw address before continue"
-                    android:textColor="@color/white"
-                    android:textSize="17sp"
-
-                    />
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/address_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:orientation="vertical"
-                android:visibility="visible"
                 android:gravity="end">
 
-                <include
-                    android:id="@+id/mini_address"
-                    layout="@layout/ar_address_detail_lay" />
+                <LinearLayout
+                    android:id="@+id/address_lay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:orientation="vertical">
+                    <include
+                        android:id="@+id/mini_address"
+                        layout="@layout/ar_address_detail_lay" />
+                </LinearLayout>
+
+
+
+                <TextView
+                    android:id="@+id/address_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:background="@color/red_600"
+                    android:visibility="gone"
+                    android:text="@string/no_address_error"/>
 
                 <Button
                     android:id="@+id/changeoradd_address_Btn"

@@ -76,6 +76,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var totalPrice: Int = 0
     private var discount = 0
     private var totalAmount = 0
+    var deliveryCharge = 0L
 
 
     private var productImgList: ArrayList<String> = ArrayList()
@@ -182,7 +183,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
                 }else{
 
-                    Toast.makeText(requireContext(),"Bottom reached",Toast.LENGTH_LONG).show()
+//                    Toast.makeText(requireContext(),"Bottom reached",Toast.LENGTH_LONG).show()
                     isScrollEnd = true
                     binding.lay7.container.visibility= visible
                     binding.progressBar2.visibility = visible
@@ -202,8 +203,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        Toast.makeText(requireContext(),"On ViewCreated",Toast.LENGTH_SHORT).show()
-
 
         binding.searchBtn.setOnClickListener {
             val intent = Intent(requireContext(), SearchActivity::class.java)
@@ -236,7 +235,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     if (isRecyclerEnd){
                         Log.w("Query item","Last item is reached already")
 
-                        Toast.makeText(requireContext()," already reached End",Toast.LENGTH_LONG).show()
+//                        Toast.makeText(requireContext()," already reached End",Toast.LENGTH_LONG).show()
                     }else{
 
                         Log.e("last query", "${lastResult.toString()}")
@@ -257,9 +256,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     override fun onStart() {
 
         super.onStart()
-        //Toast.makeText(requireContext(),"On Start",Toast.LENGTH_SHORT).show()
-
-
         val cartNum = SharedDataClass.dbCartList
         if(user != null){
             if (cartNum.size == 0){
@@ -297,11 +293,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     fabBtn.rippleColor =
                         ContextCompat.getColor(requireContext(), R.color.grey_400)
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Removed from position $wishListIndex ",
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(requireContext(), "Removed from position $wishListIndex ", Toast.LENGTH_SHORT).show()
 
                     wishList.remove(productId)
                     SharedDataClass.dbWishList.remove(productId)
@@ -324,7 +316,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
 
         addToCartBtn.setOnClickListener { it1 ->
-
 
             if (user == null) {
                 loginDialog.show(childFragmentManager, "custom login dialog")
@@ -372,116 +363,43 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         buyNowBtn.setOnClickListener {
 
             val quantityString = enterQuantityInput.editText!!.text.toString().trim()
+            var qty:Long
             if (user != null){
 
                 if (quantityString.isEmpty()){
-                    val newSendingList: ArrayList<CartModel> = ArrayList()
-                    newSendingList.add(
-                        CartModel(
-                            productId,
-                            sendingList[0].sellerId,
-                            sendingList[0].url,
-                            sendingList[0].title,
-                            sendingList[0].priceOriginal,
-                            sendingList[0].priceSelling,
-                            sendingList[0].stockQty,
-                            1
-                        )
-                    )
-
-
-                    val intentProceedOrderActivity =
-                        Intent(requireContext(), ProceedOrderActivity::class.java);
-                    intentProceedOrderActivity.putExtra("From_To", 2);
-                    //todo: 1=> MyCart / 2=> BuyNow
-
-
-                    intentProceedOrderActivity.putParcelableArrayListExtra(
-                        "productList", newSendingList)
-                    intentProceedOrderActivity.putExtra("total_price", (totalPrice *1))
-                    intentProceedOrderActivity.putExtra("total_discount", (discount *1))
-                    intentProceedOrderActivity.putExtra("total_amount", (totalAmount *1))
-                    startActivity(intentProceedOrderActivity)
+                    qty = 1L
+                    sendingList[0].orderQuantity = qty
                 }else{
-
                     if (!checkIsQuantityEntered(dbStockQty)) {
                         return@setOnClickListener
-
                     }
                     else {
-                        val qty =quantityString.toLong()
-                        val newSendingList: ArrayList<CartModel> = ArrayList()
-                        newSendingList.add(
-                            CartModel(
-                                productId,
-                                sendingList[0].sellerId,
-                                sendingList[0].url,
-                                sendingList[0].title,
-                                sendingList[0].priceOriginal,
-                                sendingList[0].priceSelling,
-                                sendingList[0].stockQty,
-                                qty
-                            )
-                        )
-
-
-                        val intentProceedOrderActivity =
-                            Intent(requireContext(), ProceedOrderActivity::class.java);
-                        intentProceedOrderActivity.putExtra("From_To", 2);
-                        //todo: 1=> MyCart / 2=> BuyNow
-
-
-                        intentProceedOrderActivity.putParcelableArrayListExtra(
-                            "productList", newSendingList)
-                        intentProceedOrderActivity.putExtra("total_price", (totalPrice * qty.toInt()))
-                        intentProceedOrderActivity.putExtra("total_discount", (discount * qty.toInt()))
-                        intentProceedOrderActivity.putExtra("total_amount", (totalAmount * qty.toInt()))
-                        startActivity(intentProceedOrderActivity)
-
+                        qty =quantityString.toLong()
+                        sendingList[0].orderQuantity = qty
                     }
+
                 }
 
+                val intentProceedOrderActivity = Intent(requireContext(), ProceedOrderActivity::class.java);
+                intentProceedOrderActivity.putExtra("From_To", 2);
+                //todo: 1=> MyCart / 2=> BuyNow
+                intentProceedOrderActivity.putParcelableArrayListExtra("productList", sendingList)
+                intentProceedOrderActivity.putExtra("total_price", (totalPrice * qty.toInt()))
+                intentProceedOrderActivity.putExtra("total_discount", (discount * qty.toInt()))
+                intentProceedOrderActivity.putExtra("total_amount", ((totalAmount * qty)+(sendingList[0].deliveryCharge)).toInt())
+                startActivity(intentProceedOrderActivity)
 
             }else{
                 loginDialog.show(childFragmentManager, "custom login dialog")
             }
 
 
-
         }
 
 
-        binding.layRating.rateNowBtn.setOnClickListener {
 
-
-//            lifecycleScope.launch (Dispatchers.IO){
-//                creatNotification()
-//            }
-
-            if (user !=null){
-
-                val rateNowFragment = RateNowFragment()
-                rateNowFragment.arguments = args
-
-                parentFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    add(R.id.fragment_container,rateNowFragment)
-                    addToBackStack("rate_now")
-                }
-
-            }else{
-                loginDialog.show(childFragmentManager, "custom login dialog")
-            }
-
-
-
-        }
 
         binding.layRating.viewAllButton.setOnClickListener {
-//            val action =
-//                ProductFragmentDirections.actionProductFragmentToAllRatingFragment(productId)
-//            findNavController().navigate(action)
-
 
             val allRatingArgs = Bundle()
             allRatingArgs.putString("productId",productId)
@@ -504,21 +422,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
     override fun onResume() {
         super.onResume()
-//        Toast.makeText(requireContext(),"On Resume",Toast.LENGTH_SHORT).show()
-
         SharedDataClass.currentACtivity = 2
         SharedDataClass.product_id = productId
 
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        Toast.makeText(requireContext(),"On Pause",Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-//        Toast.makeText(requireContext(),"On Destroy",Toast.LENGTH_SHORT).show()
     }
 
 
@@ -567,6 +473,12 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
                     dbStockQty = stock.toInt()
 
+                    val deliveryCharge1 = if (priceSelling>=500){
+                        0L
+                    }else{
+                        40L
+                    }
+
                     sendingList.add(
                         CartModel(
                             productId,
@@ -575,14 +487,17 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                             productName,
                             priceOriginal,
                             priceSelling,
+                            deliveryCharge1,
                             stock,
                             1
                         )
                     )
 
 
-                    for (catrgorys in categoryList) {
-                        categoryString += "$catrgorys,  "
+
+
+                    for (category in categoryList) {
+                        categoryString += "$category,  "
                     }
 
                     for (tag in tagList) {
@@ -740,43 +655,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     }
 
 
-    private fun getWishList(){
-
-
-        firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_WISHLIST").get().addOnSuccessListener {
-
-                val x = it.get("wish_list")
-
-                if (x != null) {
-                    fbWishList = x as ArrayList<String>
-
-                    wishList.addAll(fbWishList)
-
-                    for ((index:Int, ids: String) in fbWishList.withIndex()) {
-
-                        if (ids.contains(productId)) {
-                            wishListIndex = index
-                            ALREADY_ADDED_TO_WISHLIST = true
-                            fabBtn.supportImageTintList =
-                                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
-                            fabBtn.rippleColor =
-                                ContextCompat.getColor(requireContext(), R.color.grey_400)
-
-                        }
-                    }
-
-                } else {
-                    Log.w("WishList", "No wish list found")
-                }
-
-
-            }.addOnFailureListener{
-                Log.e("WishList", "${it.message}",it.cause)
-            }
-
-    }
-
 
     private fun getWishList1(){
 
@@ -826,9 +704,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     }
 
     override fun onItemClick(position: Int, url: String) {
-//        val action = ProductFragmentDirections.actionProductFragmentToProductImageFragment(url)
-//        findNavController().navigate(action)
-
         val productImageFragment = ProductImageFragment()
         val args = Bundle()
         args.putStringArrayList("image_list",productImgList)
@@ -852,14 +727,12 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         val searchList: ArrayList<SearchModel> = ArrayList()
         searchList.clear()
 
-        val filterTask:Query
-        if (lastResult == null){
-            filterTask = firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", recommendedList)
+        val filterTask:Query = if (lastResult == null){
+            firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", recommendedList)
                 .orderBy("price_selling",Query.Direction.ASCENDING)
 
-        }
-        else{
-            filterTask = firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", recommendedList)
+        } else{
+            firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", recommendedList)
                 .orderBy("price_selling",Query.Direction.ASCENDING)
                 .startAfter(lastResult)
 
@@ -927,8 +800,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
             loadingDialog.dismiss()
             binding.progressBar2.visibility = gone
 
-//            newlist = allSearchList.distinctBy { it.productId } as ArrayList<SearchModel>
-
         }.addOnFailureListener {
             Log.e("get search query 0", "${it.message}")
             loadingDialog.dismiss()
@@ -936,30 +807,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         }
 
     }
-
-    private suspend fun creatNotification(){
-
-        val notificationMap: MutableMap<String, Any> = HashMap()
-
-        for ( i in 0..21) {
-
-            notificationMap["date"] = FieldValue.serverTimestamp()
-            notificationMap["description"] = "($i number) Welcome to Books Online"
-            notificationMap["image"] = getString(R.string.welcome_image)
-            notificationMap["order_id"] = ""
-            notificationMap["seen"] = false
-
-            firebaseFirestore.collection("USERS")
-                .document(user!!.uid)
-                .collection("USER_DATA")
-                .document("MY_NOTIFICATION")
-                .collection("NOTIFICATION")
-                .add(notificationMap)
-                .addOnSuccessListener { }.await()
-        }
-
-    }
-
 
 
 

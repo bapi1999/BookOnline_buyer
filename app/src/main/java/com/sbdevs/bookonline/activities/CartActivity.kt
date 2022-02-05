@@ -12,8 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,10 +27,8 @@ import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.models.CartModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
 
@@ -45,9 +41,11 @@ class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
 
     var sendingList:ArrayList<CartModel> = ArrayList()
 
-    var priceToPay: Int = 0
+    var netSellingPrice: Int = 0
     var discount = 0
-    var totalPrice = 0
+    var sellingPrice = 0
+    var deliveryCharge = 0L
+    var totalPriceToPay = 0
     lateinit var swipeRefresh: SwipeRefreshLayout
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: CartAdapter //= CartAdapter(cartList,sendingList,this)
@@ -115,11 +113,9 @@ class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
                 //todo: 1=> MyCart / 2=> BuyNow
 
                 intent.putParcelableArrayListExtra("productList",sendingList);
-                intent.putExtra("total_price",totalPrice)
-                intent.putExtra("total_discount",discount)
-                intent.putExtra("total_amount",priceToPay)
+                intent.putExtra("total_amount",totalPriceToPay)
 
-                if(totalPrice ==0 && priceToPay==0){
+                if(sellingPrice ==0 && netSellingPrice==0){
                     Toast.makeText(this,"Problem in fetching data",Toast.LENGTH_LONG).show()
                 }else{
                     startActivity(intent)
@@ -198,7 +194,13 @@ class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()
 
-                    sendingList.add(CartModel(productId,sellerId,url,title,priceOriginal,priceSelling,stockQuantity,qty))
+                    val deliveryCharge1 = if (priceSelling>=500){
+                        0L
+                    }else{
+                        40L
+                    }
+
+                    sendingList.add(CartModel(productId,sellerId,url,title,priceOriginal,priceSelling,deliveryCharge1,stockQuantity,qty))
 
 
                     if (stockQuantity == 0L){
@@ -312,14 +314,17 @@ class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
     }
 
     private fun setValueToTextView(){
-        binding.lay2.totalPrice.text = totalPrice.toString()
+        binding.lay2.totalSellingPrice.text = sellingPrice.toString()
         binding.lay2.totalDiscount.text = "-$discount"
 
-        binding.lay2.amountToPay.text = priceToPay.toString()
-        binding.totalAmount.text = priceToPay.toString()
+
         binding.lay2.totalItem.text = "( ${cartList.size} item)"
 
-        if (priceToPay >700){}
+        totalPriceToPay = (deliveryCharge+netSellingPrice).toInt()
+
+        binding.lay2.deliveryCharge.text = deliveryCharge.toString()
+        binding.lay2.amountToPay.text = totalPriceToPay.toString()
+        binding.totalAmount.text = totalPriceToPay.toString()
 
     }
 
@@ -330,9 +335,12 @@ class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
 
     private fun calculateThePrice(list: ArrayList<CartModel> ){
 
-        priceToPay = 0
+        netSellingPrice = 0
         discount = 0
-        totalPrice = 0
+        sellingPrice = 0
+
+        deliveryCharge = 0
+        totalPriceToPay = 0
 
         var counter = 0
         for ( group  in list){
@@ -341,16 +349,18 @@ class CartActivity : AppCompatActivity(),CartAdapter.MyOnItemClickListener {
             val priceSelling:Long = group.priceSelling
             val quantity:Long = group.orderQuantity
 
+            deliveryCharge += group.deliveryCharge
+
             discount += if (priceOriginal == 0L){
                 0
             }else{
                 (priceOriginal.toInt() - priceSelling.toInt())*quantity.toInt()
             }
 
-            priceToPay += priceSelling.toInt()*quantity.toInt()
+            netSellingPrice += priceSelling.toInt()*quantity.toInt()
 
 
-            totalPrice = priceToPay+discount
+            sellingPrice = netSellingPrice+discount
 
             if (counter == list.size - 1){
                 setValueToTextView()

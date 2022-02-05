@@ -1,6 +1,5 @@
 package com.sbdevs.bookonline.fragments
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -8,10 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.ktx.auth
@@ -37,19 +36,19 @@ class PaymentFragment : Fragment() {
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
-    var recivdList: ArrayList<CartModel> = ArrayList()
-    var dbOrderList: ArrayList<MutableMap<String, Any>> = ArrayList()
-    var newOrderList: ArrayList<MutableMap<String, Any>> = ArrayList()
+    var receivedList: ArrayList<CartModel> = ArrayList()
+    private var dbOrderList: ArrayList<String> = ArrayList()
+    private var newOrderList: ArrayList<String> = ArrayList()
     var selecter = 0
     private val loadingDialog = LoadingDialog()
     var warnings: Int = 0
 
-    // 0 = no warning  1= warning
     var orderedItem: Int = 0
+    var totalAmount:Int = 0
 
-    var boughtProductList: ArrayList<String> = ArrayList()
     private lateinit var payOnline: LinearLayout
     private lateinit var cashOnDelivery: LinearLayout
+    private lateinit var confirmBtn:Button
 
     private lateinit var address: MutableMap<String, Any>
 
@@ -62,18 +61,16 @@ class PaymentFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             getAllMyOrder()
-
         }
-
-
-
 
         payOnline = binding.linearLayout
         cashOnDelivery = binding.linearLayout22
-
+        confirmBtn = binding.confirmButton
+        confirmBtn.isEnabled = false
+        confirmBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_600)
 
         val intent = requireActivity().intent
-        val totalAmount = intent.getIntExtra("total_amount", 0)
+        totalAmount = intent.getIntExtra("total_amount", 0)
         binding.totalAmount.text = "$totalAmount/-"
 
         address = intent.getSerializableExtra("address") as MutableMap<String, Any>
@@ -87,15 +84,15 @@ class PaymentFragment : Fragment() {
         val buyerState: String = address["state"].toString()
         val buyerPhone: String = address["phone"].toString()
 
-        if (buyerName.equals(null) and buyerPhone.equals(null)) {
-            binding.confirmButton.isEnabled = false
-            binding.addressLay.visibility = View.GONE
-            binding.noAddress.visibility = View.VISIBLE
-        } else {
-            binding.confirmButton.isEnabled = true
-            binding.addressLay.visibility = View.VISIBLE
-            binding.noAddress.visibility = View.GONE
-        }
+//        if (buyerName.equals(null) and buyerPhone.equals(null)) {
+//            binding.confirmButton.isEnabled = false
+//            binding.addressLay.visibility = View.GONE
+//            binding.noAddress.visibility = View.VISIBLE
+//        } else {
+//            binding.confirmButton.isEnabled = true
+//            binding.addressLay.visibility = View.VISIBLE
+//            binding.noAddress.visibility = View.GONE
+//        }
 
         val addressBuilder = StringBuilder()
         addressBuilder.append(buyerAddress1).append(", ").append(buyerAddress2)
@@ -110,8 +107,7 @@ class PaymentFragment : Fragment() {
         binding.miniAddress.buyerState.text = buyerState
         binding.miniAddress.buyerPhone.text = buyerPhone
 
-        recivdList =
-            intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
+        receivedList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
 
 
 
@@ -120,16 +116,21 @@ class PaymentFragment : Fragment() {
 
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
         payOnline.setOnClickListener {
-            payOnline.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.amber_500)
-            cashOnDelivery.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.grey_400)
+            payOnline.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.amber_500)
+            cashOnDelivery.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_400)
             selecter = 1
+
+            confirmBtn.isEnabled = true
+            confirmBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.amber_600)
+
+
         }
 
         cashOnDelivery.setOnClickListener {
@@ -138,13 +139,16 @@ class PaymentFragment : Fragment() {
             cashOnDelivery.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.amber_500)
             selecter = 2
+
+            confirmBtn.isEnabled = true
+            confirmBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.amber_600)
         }
 
 
 
-        binding.confirmButton.setOnClickListener {
-
-            SharedDataClass.dbCartList.clear()
+        confirmBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager, "Show")
+            Toast.makeText(requireContext(),"clicked",Toast.LENGTH_SHORT).show()
 
             when (selecter) {
                 1 -> {
@@ -156,19 +160,14 @@ class PaymentFragment : Fragment() {
                     }
                 }
                 2 -> {
-                    loadingDialog.show(childFragmentManager, "Show")
+
                     lifecycleScope.launch(Dispatchers.IO) {
-                        checkAllOrderMethods(recivdList, address)
-
-                        delay(500)
+                        checkAllOrderMethods(receivedList, address)
                         updateOrderToBuyer()
-                        deleteProductFromCatr()
-                        delay(2700)
-
+                        deleteProductFromCart()
                         withContext(Dispatchers.Main) {
                             loadingDialog.dismiss()
-                            val action =
-                                PaymentFragmentDirections.actionPaymentFragmentToCongratulationFragment(
+                            val action = PaymentFragmentDirections.actionPaymentFragmentToCongratulationFragment(
                                     warnings,
                                     orderedItem
                                 )
@@ -181,6 +180,8 @@ class PaymentFragment : Fragment() {
                     Toast.makeText(context, "Select payment method", Toast.LENGTH_SHORT).show()
                 }
             }
+
+
         }
 
 
@@ -202,8 +203,6 @@ class PaymentFragment : Fragment() {
                     val docname: String = generateDocName()
                     val orderQuantity = item.orderQuantity
                     val itemSoldSoFar = it.getLong("number_of_item_sold")!!.toLong()
-                    val sellerOrderMap: MutableMap<String, Any> = HashMap()
-
                     when {
                         stockQty >= orderQuantity -> {
                             val newQty = stockQty - orderQuantity
@@ -212,7 +211,7 @@ class PaymentFragment : Fragment() {
                             // update product
                             updateProductStock(item.productId, newQty, itemSoldNow)
                             // create order
-                            createOrderToSeller(
+                            createOrders(
                                 item.url,
                                 item.title,
                                 item.productId,
@@ -220,21 +219,10 @@ class PaymentFragment : Fragment() {
                                 orderQuantity,
                                 docname,
                                 address,
-                                item.priceSelling
+                                item.priceSelling,
+                                item.deliveryCharge
                             )
-                            notifySeller(
-                                item.url,
-                                item.title,
-                                orderQuantity,
-                                docname,
-                                item.sellerId
-                            )
-                            //update MyOrder
-                            sellerOrderMap["orderID"] = docname
-                            sellerOrderMap["sellerId"] = item.sellerId
-                            newOrderList.add(sellerOrderMap)
-                            boughtProductList.add(item.productId)
-
+                            newOrderList.add(docname)
 
                         }
                         stockQty in 1L until orderQuantity -> {
@@ -242,10 +230,9 @@ class PaymentFragment : Fragment() {
                             val newQty = 0L
                             val itemSoldNow = itemSoldSoFar + stockQty
 
-                            // update product
                             updateProductStock(item.productId, newQty, itemSoldNow)
-                            // create order
-                            createOrderToSeller(
+
+                            createOrders(
                                 item.url,
                                 item.title,
                                 item.productId,
@@ -253,27 +240,23 @@ class PaymentFragment : Fragment() {
                                 stockQty,
                                 docname,
                                 address,
-                                item.priceSelling
+                                item.priceSelling,
+                                item.deliveryCharge
                             )
-                            notifySeller(item.url, item.title, stockQty, docname, item.sellerId)
-                            //update MyOrder
-                            sellerOrderMap["orderID"] = docname
-                            sellerOrderMap["sellerId"] = item.sellerId
-                            newOrderList.add(sellerOrderMap)
-                            boughtProductList.add(item.productId)
+
+
+                            newOrderList.add(docname)
 
                         }
                         stockQty == 0L -> {
-                            Toast.makeText(
-                                context,
-                                "Some Product just got out of stock now",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "Some Product just got out of stock now", Toast.LENGTH_SHORT).show()
                             warnings = 1
                             // Don't update product
                             // Don't create order
                         }
                     }
+                }.addOnFailureListener {
+                    Log.e("check all orders error","${it.message}")
                 }.await()
         }
     }
@@ -288,7 +271,7 @@ class PaymentFragment : Fragment() {
         firebaseFirestore.collection("PRODUCTS").document(productId).update(productMap)
     }
 
-    private fun createOrderToSeller(
+    private fun createOrders(
         thumbnail: String,
         title: String,
         productId: String,
@@ -296,17 +279,28 @@ class PaymentFragment : Fragment() {
         orderQty: Long,
         docName: String,
         address: MutableMap<String, Any>,
-        priceSelling: Long
-    ) = CoroutineScope(Dispatchers.IO).launch {
+        unitSellingPrice: Long,
+
+        shippingCharge:Long
+        ) = CoroutineScope(Dispatchers.IO).launch {
         val productMap: MutableMap<String, Any> = HashMap()
         productMap["productThumbnail"] = thumbnail
         productMap["productTitle"] = title
         productMap["productId"] = productId.trim()
-        productMap["price"] = priceSelling
-        productMap["buyerId"] = user!!.uid
+
+        productMap["PRICE_SELLING_UNIT"] = unitSellingPrice //UNIT PRICE = x
+        productMap["PRICE_SELLING_TOTAL"] = unitSellingPrice*orderQty // x * QTY  = y
+        productMap["PRICE_SHIPPING_CHARGE"] = shippingCharge// SHIPPING CHARGE  = z
+        productMap["PRICE_TOTAL"] = (unitSellingPrice*orderQty)+shippingCharge // total  = y+z
+
+        productMap["ID_Of_BUYER"] = user!!.uid
+        productMap["ID_Of_SELLER"] = sellerId
+        productMap["ID_Of_Tracking"] = "Not Available yet"
+        productMap["ID_Of_ORDER"] = generateOrderID()
+
         productMap["ordered_Qty"] = orderQty
-        productMap["tracKingId"] = "No Available yet"
-        productMap["status"] = "new" //0 for new
+        productMap["already_paid"]=false
+        productMap["status"] = "new"
         //todo- All status must be in lowercase
         productMap["is_order_canceled"] = false
         productMap["address"] = address
@@ -314,10 +308,12 @@ class PaymentFragment : Fragment() {
 
 
 
-        firebaseFirestore.collection("USERS").document(sellerId)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA").collection("ORDERS")
-            .document(docName).set(productMap).await()
+        firebaseFirestore.collection("ORDERS")
+            .document(docName).set(productMap).addOnSuccessListener {
+                notifySeller(thumbnail, title, orderQty, docName, sellerId)
+            }.addOnFailureListener {
+                Log.e("Create order error ","${it.message}")
+            }.await()
 
     }
 
@@ -345,8 +341,12 @@ class PaymentFragment : Fragment() {
                 val x = it.get("order_list")
 
                 if (x != null) {
-                    dbOrderList = x as ArrayList<MutableMap<String, Any>>
-                    newOrderList.addAll(dbOrderList)
+
+                    dbOrderList = x as ArrayList<String>
+                    if(dbOrderList.size != 0){
+                        newOrderList.addAll(dbOrderList)
+                    }
+
 
                 } else {
                     Log.d("MyOrder", "No order foung")
@@ -357,7 +357,9 @@ class PaymentFragment : Fragment() {
     }
 
 
-    private suspend fun deleteProductFromCatr() {
+    private suspend fun deleteProductFromCart() {
+
+        SharedDataClass.dbCartList.clear()
 
         val updates = hashMapOf<String, Any>(
             "cart_list" to FieldValue.delete()
@@ -375,11 +377,21 @@ class PaymentFragment : Fragment() {
     private fun generateDocName(): String {
 
         val timeString = LocalDateTime.now().toString()
-        val userString = user!!.uid.toString().substring(0, 5)
+        val userString = user!!.uid.substring(0, 10)
         val randomString: String = UUID.randomUUID().toString().substring(0, 5)
         val docBuilder: StringBuilder = StringBuilder()
         docBuilder.append(timeString).append(userString).append(randomString)
         val docName = docBuilder.toString().replace(".", "_").replace("-", "_").replace(":", "_")
+        return docName
+    }
+
+    private fun generateOrderID(): String {
+        val timeString = LocalDateTime.now().toString()
+        val userString = user!!.uid
+        val randomString: String = UUID.randomUUID().toString().substring(0, 2)
+        val docBuilder: StringBuilder = StringBuilder()
+        docBuilder.append(timeString).append(userString).append(randomString)
+        val docName = docBuilder.toString().replace(".", "").replace("-", "").replace(":", "")
         return docName
     }
 

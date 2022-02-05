@@ -8,6 +8,7 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
@@ -36,22 +37,29 @@ class ProceedOrderActivity : AppCompatActivity() {
 
 
     lateinit var recyclerView: RecyclerView
-    var recivdList:ArrayList<CartModel> = ArrayList()
+    var receivedList:ArrayList<CartModel> = ArrayList()
 
     lateinit var addressList:ArrayList<MutableMap<String, Any>>
 
-    var adapter: OrderSummaryAdapter = OrderSummaryAdapter(recivdList)
-
+    var adapter: OrderSummaryAdapter = OrderSummaryAdapter(receivedList)
     var addressMap:MutableMap<String,Any> = HashMap()
 
     var amountToPay1: Int = 0
     var amountToPay2: Int = 0
-    var discount1 = 0
-    var discount2 = 0
-    var totalPrice1= 0
-    var totalPrice2= 0
+
+    var discount = 0
+    var totalSellingPrice= 0
+    var netSellingPrice = 0
+    var deliveryCharge = 0L
+
+    lateinit var  priceTxt:TextView
+    lateinit var  discountTxt:TextView
+    lateinit var  deliverChargeTxt:TextView
+    lateinit var  amountTxt:TextView
 
     private val loadingDialog = LoadingDialog()
+    private var thereIsAddressError = false
+    private var thereIsPriceError = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,73 +73,32 @@ class ProceedOrderActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.isNestedScrollingEnabled = false
 
-        val priceTxt = binding.totalLay.totalPrice
-        val discountTxt = binding.totalLay.totalDiscount
-        val deliverCargeTxt = binding.totalLay.deliveryCharge
-        val amountTxt = binding.totalLay.amountToPay
+        priceTxt = binding.totalLay.totalSellingPrice
+        discountTxt = binding.totalLay.totalDiscount
+        deliverChargeTxt = binding.totalLay.deliveryCharge
+        amountTxt = binding.totalLay.amountToPay
         continueToPaymentBtn = binding.continueToPaymentBtn
 
         val fromTo = intent.getIntExtra("From_To", -1)
+        receivedList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
 
-        recivdList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
-
-        totalPrice1 = intent.getIntExtra("total_price",-1)
         amountToPay1 = intent.getIntExtra("total_amount",-1)
-        discount1 = intent.getIntExtra("total_discount",-1)
-
 
         lifecycleScope.launch(Dispatchers.IO){
-            withContext(Dispatchers.Main){
-
-            }
-            for ( group  in recivdList){
-
-                val priceOriginal:Long = group.priceOriginal
-                val priceSelling:Long = group.priceSelling
-                val quantity:Long = group.orderQuantity
-
-                if (priceOriginal == 0L){
-
-                    amountToPay2 += priceSelling.toInt()*quantity.toInt()
-
-                }else{
-                    discount2 += (priceOriginal.toInt() - priceSelling.toInt())*quantity.toInt()
-                    amountToPay2 += priceSelling.toInt()*quantity.toInt()
-
-                }
-                totalPrice2 = amountToPay2+discount2
-
-            }
+            calculateThePrice(receivedList)
             delay(500)
-
             withContext(Dispatchers.Main){
-                if (amountToPay1 ==amountToPay2){
-                    priceTxt.text = totalPrice2.toString()
-                    discountTxt.text = discount2.toString()
-                    amountTxt.text = amountToPay2.toString()
-                    continueToPaymentBtn.isEnabled = true
-                }else{
-                    Toast.makeText(this@ProceedOrderActivity,"Some problem in calculating the price", Toast.LENGTH_LONG).show()
-                    continueToPaymentBtn.isEnabled = false
-                    priceTxt.text = totalPrice2.toString()
-                    discountTxt.text = discount2.toString()
-                    amountTxt.text = amountToPay2.toString()
-                }
+                setValuesInTextView()
             }
-
             withContext(Dispatchers.IO){
                 getAddress()
             }
-
-
         }
 
 
-        adapter = OrderSummaryAdapter(recivdList)
+        adapter = OrderSummaryAdapter(receivedList)
         recyclerView.adapter = adapter
-
-        binding.totalLay.totalItem.text = "( ${recivdList.size} item)"
-
+        binding.totalLay.totalItem.text = "( ${receivedList.size} item)"
 
         binding.changeoraddAddressBtn.setOnClickListener {
             val intent = Intent(this, MyAddressActivity::class.java)
@@ -147,14 +114,27 @@ class ProceedOrderActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+
+
         continueToPaymentBtn.setOnClickListener {
-
             val intent = Intent(this, PaymentMethodActivity::class.java)
-            intent.putExtra("total_amount",amountToPay2)
-            intent.putParcelableArrayListExtra("productList",recivdList)
-            intent.putExtra("address",addressMap as Serializable)
 
-            startActivity(intent)
+            if (thereIsAddressError or thereIsPriceError){
+
+                continueToPaymentBtn.isEnabled = false
+                continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.grey_600)
+            }else{
+                continueToPaymentBtn.isEnabled = true
+                continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.purple_500)
+
+                intent.putExtra("total_amount",amountToPay2)
+                intent.putParcelableArrayListExtra("productList",receivedList)
+                intent.putExtra("address",addressMap as Serializable)
+                startActivity(intent)
+            }
+
+
+
 
         }
 
@@ -173,9 +153,8 @@ class ProceedOrderActivity : AppCompatActivity() {
                     Log.e("Get address","${it.message}")
 
                     binding.addressLay.visibility = View.GONE
-                    binding.noAddress.visibility = View.VISIBLE
-                    continueToPaymentBtn.isEnabled = false
-                    continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.red_600)
+                    binding.addressError.visibility = View.VISIBLE
+                    thereIsAddressError = true
                     continueToPaymentBtn.text = "No address found"
                     return@addSnapshotListener
                 }
@@ -217,31 +196,73 @@ class ProceedOrderActivity : AppCompatActivity() {
                             lay2.buyerPhone.text = buyerPhone
 
                             binding.addressLay.visibility = View.VISIBLE
-                            binding.noAddress.visibility = View.GONE
-                            continueToPaymentBtn.isEnabled = true
-                            continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.purple_500)
-                            continueToPaymentBtn.text = "Continue"
+                            binding.addressError.visibility = View.GONE
+                            thereIsAddressError = false
+
                         }else{
                             binding.addressLay.visibility = View.GONE
-                            binding.noAddress.visibility = View.VISIBLE
-                            continueToPaymentBtn.isEnabled = false
-                            continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.red_600)
-                            continueToPaymentBtn.text = "No address found"
+                            binding.addressError.visibility = View.VISIBLE
+                            thereIsAddressError = true
                         }
 
                     }else{
-
                         binding.addressLay.visibility = View.GONE
-                        binding.noAddress.visibility = View.VISIBLE
-                        continueToPaymentBtn.isEnabled = false
-                        continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.red_600)
-                        continueToPaymentBtn.text = "No address found"
+                        binding.addressError.visibility = View.VISIBLE
+                        thereIsAddressError = true
+
                     }
 
 
                 }
             }
 
+    }
+
+    private suspend fun calculateThePrice(list: ArrayList<CartModel> ){
+
+        netSellingPrice = 0
+        discount = 0
+        totalSellingPrice = 0
+
+        deliveryCharge = 0L
+        amountToPay2 = 0
+
+        for ( group  in list){
+
+            val priceOriginal:Long = group.priceOriginal
+            val priceSelling:Long = group.priceSelling
+            val quantity:Long = group.orderQuantity
+
+            deliveryCharge +=group.deliveryCharge
+
+            discount += if (priceOriginal == 0L){
+                0
+            }else{
+                (priceOriginal.toInt() - priceSelling.toInt())*quantity.toInt()
+            }
+
+            netSellingPrice += priceSelling.toInt()*quantity.toInt()
+
+            totalSellingPrice = netSellingPrice+discount
+
+
+        }
+
+        amountToPay2 = (deliveryCharge+netSellingPrice).toInt()
+
+    }
+
+    private suspend fun setValuesInTextView(){
+        thereIsPriceError = if (amountToPay1 ==amountToPay2){
+            false
+        }else{
+            Toast.makeText(this,"Some problem in calculating the price", Toast.LENGTH_LONG).show()
+            true
+        }
+        priceTxt.text = totalSellingPrice.toString()
+        discountTxt.text = discount.toString()
+        deliverChargeTxt.text = deliveryCharge.toString()
+        amountTxt.text = amountToPay2.toString()
     }
 
 }
