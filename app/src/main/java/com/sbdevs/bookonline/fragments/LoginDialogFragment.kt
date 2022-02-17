@@ -2,7 +2,6 @@ package com.sbdevs.bookonline.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,17 +9,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.activities.ProductActivity
-import com.sbdevs.bookonline.activities.RegisterActivity
-import com.sbdevs.bookonline.databinding.FragmentLoginBinding
+import com.sbdevs.bookonline.activities.user.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginDialogBinding
-import com.sbdevs.bookonline.fragments.register.LoginFragmentDirections
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,12 +48,12 @@ class LoginDialogFragment : DialogFragment() {
         newDummyText = binding.textView31
 
         binding.signupText.setOnClickListener {
-            val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
+            val registerIntent = Intent(requireContext(), RegisterActivity::class.java)
             startActivity(registerIntent)
         }
 
         binding.forgotPassword.setOnClickListener {
-            val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
+            val registerIntent = Intent(requireContext(), RegisterActivity::class.java)
             startActivity(registerIntent)
         }
 

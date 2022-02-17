@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.seller.products.AddProductDetailsFragment">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.BookOnline">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/Theme.BookOnline" >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="@color/white"
+                android:text="Add product"/>
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/read_instruction_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/read_instruction"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:drawableStart="@drawable/ic_outline_info_24"
+                android:drawableTint="@color/white"
+                android:gravity="center"
+                android:backgroundTint="@color/red_600"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"/>
+
+
+            <include android:id="@+id/lay1"
+                layout="@layout/sl_ar_add_product_lay_1" />
+
+            <include android:id="@+id/lay2"
+                layout="@layout/sl_ar_add_product_lay_2" />
+
+            <include android:id="@+id/lay3"
+                layout="@layout/sl_ar_add_product_lay_3" />
+
+            <include android:id="@+id/lay4"
+                layout="@layout/sl_ar_add_product_lay_4" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/publish_product_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Publish"
+                android:textSize="17dp"
+                android:layout_margin="16dp"
+                android:textColor="@color/white"
+                android:background="@drawable/s_shape_bg_1"
+                android:backgroundTint="@color/indigo_900"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buyer_address_type"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -9,8 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -30,9 +28,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import androidx.core.view.GravityCompat
-
-
-
+import com.sbdevs.bookonline.activities.seller.SellerDashboardActivity
+import com.sbdevs.bookonline.activities.seller.SellerRegisterActivity
+import com.sbdevs.bookonline.activities.user.CartActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -50,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timeStamp:Timestamp
     private val gone = View.GONE
     private val visible = View.VISIBLE
+    private var isSeller = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,10 +89,10 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
 
+            getUsername(userName)
 
-            getTimeStamp()
         }
-        getUsername(userName)
+
 
         notificationBadgeText = binding.layNotify.notificationBadgeCounter
         cartBadgeText = binding.layCart.cartBadgeCounter
@@ -122,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.myCartFragment ->{
 
-                    val cartIntent = Intent(this,CartActivity::class.java)
+                    val cartIntent = Intent(this, CartActivity::class.java)
                     startActivity(cartIntent)
                     closeDrawer()
                 }
@@ -155,6 +154,20 @@ class MainActivity : AppCompatActivity() {
                     closeDrawer()
                     //
                 }
+                R.id.sell_on_book ->{
+                    if (isSeller){
+                        val dashIntent = Intent(this,SellerDashboardActivity::class.java)
+                        startActivity(dashIntent)
+                    }else{
+                        val registerIntent = Intent(this,SellerRegisterActivity::class.java)
+                        startActivity(registerIntent)
+                    }
+
+                    closeDrawer()
+                    //
+                }
+
+
 
             }
             true
@@ -173,8 +186,6 @@ class MainActivity : AppCompatActivity() {
             SharedDataClass.newLogin = false
         }
 
-
-
         binding.searchBtn.setOnClickListener {
             val intent = Intent(this, SearchActivity2::class.java)
             startActivity(intent)
@@ -186,7 +197,7 @@ class MainActivity : AppCompatActivity() {
 //                navController.navigateUp() // to clear previous navigation history
 //                navController.navigate(R.id.myCartFragment)
 
-                val cartIntent = Intent(this,CartActivity::class.java)
+                val cartIntent = Intent(this, CartActivity::class.java)
                 startActivity(cartIntent)
 
             }else{
@@ -206,8 +217,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -223,29 +234,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
-
-
         SharedDataClass.currentACtivity = 1
         SharedDataClass.product_id = ""
 
     }
-
-    override fun onPause() {
-        super.onPause()
-        //Toast.makeText(this,"OnPause",Toast.LENGTH_SHORT).show()
-
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //Toast.makeText(this,"OnDestroy",Toast.LENGTH_SHORT).show()
-
-    }
-
-
 
 
     override fun onSupportNavigateUp(): Boolean {
@@ -253,35 +245,33 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private suspend fun getTimeStamp(){
-
-        if (user != null){
-            firebaseFirestore.collection("USERS")
-                .document(user!!.uid)
-                .collection("USER_DATA")
-                .document("MY_NOTIFICATION")
-                .get().addOnSuccessListener {
-
-                    //val timeStamp1 = it.getTimestamp("new_notification")!!
-                    val timeStamp1:Timestamp = (it.get("new_notification") as Timestamp?)!!
-
-                    getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
-                }.addOnFailureListener {
-                    Log.e("get Notification time","${it.message}")
-                }.await()
-        }
-
-
-    }
+//    private suspend fun getTimeStamp(){
+//
+//        if (user != null){
+//            firebaseFirestore.collection("USERS")
+//                .document(user!!.uid)
+//                .collection("USER_DATA")
+//                .document("MY_NOTIFICATION")
+//                .get().addOnSuccessListener {
+//
+//                    //val timeStamp1 = it.getTimestamp("new_notification")!!
+//                    val timeStamp1:Timestamp = (it.get("new_notification") as Timestamp?)!!
+//
+//                    getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
+//                }.addOnFailureListener {
+//                    Log.e("get Notification time","${it.message}")
+//                }.await()
+//        }
+//
+//
+//    }
 
     private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
 
         if (user != null) {
             val ref = firebaseFirestore.collection("USERS")
                 .document(user!!.uid)
-                .collection("USER_DATA")
-                .document("MY_NOTIFICATION")
-                .collection("NOTIFICATION")
+                .collection("NOTIFICATIONS")
                 .whereGreaterThan("date",timeStamp1)
 
             ref.addSnapshotListener { value, error ->
@@ -316,8 +306,6 @@ class MainActivity : AppCompatActivity() {
         if (user!= null){
             val ref = firebaseFirestore.collection("USERS")
                 .document(user!!.uid)
-                .collection("USER_DATA")
-                .document("MY_NOTIFICATION")
 
             val notiMAp: MutableMap<String, Any> = HashMap()
             notiMAp["new_notification"] = FieldValue.serverTimestamp()
@@ -333,6 +321,12 @@ class MainActivity : AppCompatActivity() {
                 .get().addOnSuccessListener {
                     val email = it.getString("email").toString()
                     val name = it.getString("name").toString()
+                    isSeller = it.getBoolean("Is_seller")!!
+
+                    val timeStamp1:Timestamp = (it.get("new_notification") as Timestamp?)!!
+
+                    getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
+
                     if (name == "") {
                         textView.text = email
                     } else {

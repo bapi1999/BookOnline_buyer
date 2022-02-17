@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/paymentFragment"
-        android:name="com.sbdevs.bookonline.fragments.PaymentFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.PaymentFragment"
         android:label="fragment_payment"
         tools:layout="@layout/fragment_payment" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/congratulationFragment"
-        android:name="com.sbdevs.bookonline.fragments.CongratulationFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.CongratulationFragment"
         android:label="fragment_congratulation"
         tools:layout="@layout/fragment_congratulation" >
         <argument

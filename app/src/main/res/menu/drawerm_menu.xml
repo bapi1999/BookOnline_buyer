@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-<!--    <group>-->
+    <group android:id="@+id/group">
 
 <!--        <item-->
 <!--            android:id="@+id/categoryFragment"-->
@@ -14,10 +14,15 @@
 <!--            android:icon="@drawable/i_discount"-->
 <!--            android:iconTint="@color/gray_700"-->
 <!--            android:title="Offer Zone" />-->
-<!--    </group>-->
+
+        <item
+            android:id="@+id/sell_on_book"
+            android:icon="@drawable/i_sell"
+            android:title="Sell on BooksOnline" />
+    </group>
 
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/group1">
         <item
             android:id="@+id/homeFragment"
             android:icon="@drawable/ic_home_24"
@@ -48,7 +53,7 @@
 
 
     </group>
-    <group>
+    <group android:id="@+id/group2">
 
         <item
             android:id="@+id/termCondition"
@@ -66,10 +71,7 @@
             android:id="@+id/help"
             android:icon="@drawable/ic_help_24"
             android:title="Help" />
-        <item
-            android:id="@+id/sell_on_book"
-            android:icon="@drawable/i_sell"
-            android:title="Sell on BookOnline" />
+
     </group>
 
 </menu>

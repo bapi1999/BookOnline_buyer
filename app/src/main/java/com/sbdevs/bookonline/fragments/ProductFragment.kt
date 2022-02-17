@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -20,29 +19,27 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.CartActivity
-import com.sbdevs.bookonline.activities.ProceedOrderActivity
+import com.sbdevs.bookonline.activities.user.CartActivity
+import com.sbdevs.bookonline.activities.user.ProceedOrderActivity
 import com.sbdevs.bookonline.activities.SearchActivity
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import com.sbdevs.bookonline.adapters.ProductReviewAdapter
 import com.sbdevs.bookonline.adapters.RecommendedProductAdapter
 import com.sbdevs.bookonline.databinding.FragmentProductBinding
-import com.sbdevs.bookonline.models.CartModel
+import com.sbdevs.bookonline.fragments.user.AllReviewFragment
+import com.sbdevs.bookonline.models.user.CartModel
 import com.sbdevs.bookonline.models.ProductReviewModel
 import com.sbdevs.bookonline.models.uidataclass.SearchModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.parcelize.Parcelize
 
 
 class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
@@ -212,7 +209,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         binding.layCart.cartBadgeContainerLay.setOnClickListener {
             if (user != null) {
 
-                val cartIntent = Intent(requireContext(),CartActivity::class.java)
+                val cartIntent = Intent(requireContext(), CartActivity::class.java)
                 startActivity(cartIntent)
 
 
@@ -407,7 +404,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
             allRatingArgs.putString("avgRating",avgRating)
             allRatingArgs.putStringArrayList("ratingCount",ratingNum)
 
-            val allRatingFragment = AllRatingFragment()
+            val allRatingFragment = AllReviewFragment()
             allRatingFragment.arguments = allRatingArgs
 
             parentFragmentManager.commit {

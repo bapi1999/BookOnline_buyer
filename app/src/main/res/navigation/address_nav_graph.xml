@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/myAddressFragment"
-        android:name="com.sbdevs.bookonline.fragments.MyAddressFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.MyAddressFragment"
         android:label="fragment_my_address"
         tools:layout="@layout/fragment_my_address" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/addAddressFragment"
-        android:name="com.sbdevs.bookonline.fragments.AddAddressFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.AddAddressFragment"
         android:label="fragment_add_address"
         tools:layout="@layout/fragment_add_address" >
 

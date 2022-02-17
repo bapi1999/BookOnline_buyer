@@ -27,7 +27,12 @@
 
             <include
                 android:id="@+id/lay_1"
-                layout="@layout/ar_myaccount_1_lay" />
+                layout="@layout/sl_ar_myaccount_1_lay" />
+
+            <include
+
+                layout="@layout/sl_ar_myaccount_2_lay" />
+
 
             <include
                 android:id="@+id/lay_2"

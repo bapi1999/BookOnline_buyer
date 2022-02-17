@@ -30,6 +30,7 @@ class SignUpFragment : Fragment() {
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
     val firebaseAuth = Firebase.auth
+    val user = firebaseAuth.currentUser
 
     lateinit var email: TextInputLayout
     lateinit var phone:TextInputLayout
@@ -161,13 +162,8 @@ class SignUpFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO){
                 try {
                     firebaseAuth.createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
-
                     createPaths()
 
-
-                    withContext(Dispatchers.Main){
-
-                    }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         errorTxt.visibility = View.VISIBLE
@@ -186,72 +182,42 @@ class SignUpFragment : Fragment() {
         val addressMap: MutableMap<String, Any> = HashMap()
         addressMap["select_No"] = 0L
 
-        val itemsMap: MutableMap<String, Any> = HashMap()
-        itemsMap["info1"] = "rating Id is userId of the buyer, as 1 user can review once"
-        itemsMap["info2"] = "Brought item id is product id"
-
-
-        val myNotificationMap: MutableMap<String, Any> = HashMap()
-        myNotificationMap["new_notification"] = FieldValue.serverTimestamp()
-
+        val dummyMap: MutableMap<String, Any> = HashMap()
+        dummyMap["DUMMY"] = "dummy"
 
         val userMap: MutableMap<String, Any> = HashMap()
-
         userMap["name"] = ""
         userMap["email"] = email.editText?.text.toString().trim()
         userMap["Is_user"] = true
         userMap["Is_seller"] = false
-        userMap["Last seen"] = FieldValue.serverTimestamp()
+        userMap["signup_date"] = FieldValue.serverTimestamp()
         userMap["mobile_No"] = phone.editText?.text.toString().trim()
         userMap["profile"] = ""
-        userMap["Both_Seller_User"] = false
+        userMap["new_notification"] = FieldValue.serverTimestamp()
 
         lifecycleScope.launch{
-            if (firebaseAuth.currentUser!=null){
-                val currentUser = firebaseAuth.currentUser!!.uid
+            if (user!=null){
+                val currentUser = user.uid
 
-                firebaseFirestore.collection("USERS").document(currentUser).set(userMap).await()
+                val docRef = firebaseFirestore.collection("USERS").document(currentUser)
 
+                docRef.set(userMap).await()
+                docRef.collection("NOTIFICATIONS").document("DUMMY").set(dummyMap).await()
 
-                val docRef = firebaseFirestore.collection("USERS")
-                    .document(currentUser).collection("USER_DATA")
+                val userRef =  docRef.collection("USER_DATA")
 
-                docRef.document("MY_ADDRESSES").set(addressMap).await()
-                docRef.document("MY_CART").set(listSizeMap).await()
-
-                docRef.document("MY_NOTIFICATION").set(myNotificationMap).await()
-
-                docRef.document("MY_ORDERS").set(listSizeMap).await()
-                docRef.document("MY_WISHLIST").set(listSizeMap).await()
-
-                docRef.document("THINGS_I_BOUGHT").set(itemsMap).await()
-
-
-                val notificationMap:MutableMap<String,Any> = HashMap()
-                notificationMap["date"] = FieldValue.serverTimestamp()
-                notificationMap["description"] ="Welcome to Books Online"
-                notificationMap["image"] = getString(R.string.welcome_image)
-                notificationMap["order_id"] = ""
-                notificationMap["seen"] = false
-
-
-                docRef.document("MY_NOTIFICATION")
-                    .collection("NOTIFICATION").add(notificationMap)
-                    .addOnSuccessListener {  }.await()
-
+                userRef.document("MY_ADDRESSES").set(addressMap).await()
+                userRef.document("MY_CART").set(listSizeMap).await()
+                userRef.document("MY_ORDERS").set(listSizeMap).await()
+                userRef.document("MY_WISHLIST").set(listSizeMap).await()
 
                 withContext(Dispatchers.Main){
                     val intent = Intent(context, MainActivity::class.java)
                     startActivity(intent)
-
                     Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
 
                     activity?.finish()
-
                 }
-
-
-//                docRef.document("MY_CART").set(listSizeMap).await()
 
             }
 

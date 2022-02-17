@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/seller_register_nav_graph"
+    app:startDestination="@id/sellerRegisterFragment">
+
+    <fragment
+        android:id="@+id/addBusinessDetailsFragment"
+        android:name="com.sbdevs.bookonline.fragments.seller.AddBusinessDetailsFragment"
+        android:label="fragment_add_business_details"
+        tools:layout="@layout/fragment_add_business_details" >
+        <action
+            android:id="@+id/action_addBusinessDetailsFragment_to_addBankDetailsFragment2"
+            app:destination="@id/addBankDetailsFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/addBankDetailsFragment2"
+        android:name="com.sbdevs.bookonline.fragments.seller.AddBankDetailsFragment"
+        android:label="fragment_add_bank_details"
+        tools:layout="@layout/fragment_add_bank_details" />
+    <fragment
+        android:id="@+id/sellerRegisterFragment"
+        android:name="com.sbdevs.bookonline.fragments.seller.SellerRegisterFragment"
+        android:label="fragment_seller_register"
+        tools:layout="@layout/fragment_seller_register" >
+        <action
+            android:id="@+id/action_sellerRegisterFragment_to_addBusinessDetailsFragment"
+            app:destination="@id/addBusinessDetailsFragment" />
+    </fragment>
+</navigation>

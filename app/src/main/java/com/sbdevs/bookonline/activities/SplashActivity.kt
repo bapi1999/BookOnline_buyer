@@ -8,20 +8,13 @@ import android.widget.Toast
 import android.content.Intent
 import android.content.pm.ActivityInfo
 
-import androidx.annotation.NonNull
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.auth.FirebaseAuth
 
-import com.google.firebase.firestore.FieldValue
-
-import com.google.firebase.firestore.FirebaseFirestore
-
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.sbdevs.bookonline.activities.user.RegisterActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 

@@ -33,9 +33,9 @@
     </fragment>
     <fragment
         android:id="@+id/allRatingFragment"
-        android:name="com.sbdevs.bookonline.fragments.AllRatingFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.AllReviewFragment"
         android:label="fragment_all_rating"
-        tools:layout="@layout/fragment_all_rating" >
+        tools:layout="@layout/fragment_all_review" >
         <argument
             android:name="product_Id"
             app:argType="string" />

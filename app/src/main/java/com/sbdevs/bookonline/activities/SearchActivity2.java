@@ -13,7 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sbdevs.bookonline.R;
 import com.sbdevs.bookonline.adapters.FirebaseAdapter2;
-import com.sbdevs.bookonline.models.QueryModel2;
+import com.sbdevs.bookonline.models.user.QueryModel2;
 
 public class SearchActivity2 extends AppCompatActivity {
     SearchView searchView;

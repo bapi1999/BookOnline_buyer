@@ -1,7 +1,5 @@
 package com.sbdevs.bookonline.fragments
 
-import android.app.Dialog
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,11 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 
@@ -21,14 +16,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.activities.CartActivity
-import com.sbdevs.bookonline.activities.MyAddressActivity
-import com.sbdevs.bookonline.activities.RegisterActivity
+import com.sbdevs.bookonline.activities.user.CartActivity
+import com.sbdevs.bookonline.activities.user.MyAddressActivity
+import com.sbdevs.bookonline.activities.user.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentMyAccountBinding
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -89,13 +83,13 @@ class MyAccountFragment : Fragment() {
            goToEditdFragment()
         }
         binding.notLoginLay.loginOrSignupBtn.setOnClickListener {
-            val registerIntent = Intent(requireContext(),RegisterActivity::class.java)
+            val registerIntent = Intent(requireContext(), RegisterActivity::class.java)
             startActivity(registerIntent)
         }
 
 
         binding.lay3.myAddressLay.setOnClickListener {
-            val intent = Intent(context,MyAddressActivity::class.java)
+            val intent = Intent(context, MyAddressActivity::class.java)
             intent.putExtra("from",1)
             //1 = from MyAccountFragment 2 = OrderDetailsFRagment
             startActivity(intent)
@@ -107,7 +101,7 @@ class MyAccountFragment : Fragment() {
         }
 
         binding.lay3.myCartLay.setOnClickListener{
-            val cartIntent = Intent(requireContext(),CartActivity::class.java)
+            val cartIntent = Intent(requireContext(), CartActivity::class.java)
             startActivity(cartIntent)
         }
 
@@ -141,7 +135,7 @@ class MyAccountFragment : Fragment() {
                     SharedDataClass.cartNumber = 0
                     Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
 
-                    val registerActivityIntent = Intent(requireContext(),RegisterActivity::class.java)
+                    val registerActivityIntent = Intent(requireContext(), RegisterActivity::class.java)
                     startActivity(registerActivityIntent)
 
 
@@ -191,11 +185,12 @@ class MyAccountFragment : Fragment() {
                 lay1.userPhone.text = mobile
 
                 if (profile!=""){
-                    binding.lay1.textView57.visibility = View.GONE
+                    //binding.lay1.textView57.visibility = View.GONE
                     Glide.with(requireContext()).load(profile).placeholder(R.drawable.as_user_placeholder).into(userImage)
-                }else{
-                    binding.lay1.textView57.visibility = View.VISIBLE
                 }
+            //else{
+//                    binding.lay1.textView57.visibility = View.VISIBLE
+//                }
 
             loadingDialog.dismiss()
             }.addOnFailureListener {

@@ -18,12 +18,12 @@
 
     <fragment
         android:id="@+id/myOrderFragment"
-        android:name="com.sbdevs.bookonline.fragments.MyOrderFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.MyOrderFragment"
         android:label="My Order"
         tools:layout="@layout/fragment_my_order" />
     <fragment
         android:id="@+id/myWishlistFragment"
-        android:name="com.sbdevs.bookonline.fragments.MyWishlistFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.MyWishlistFragment"
 
         tools:layout="@layout/fragment_my_wishlist" />
     <fragment
@@ -80,7 +80,7 @@
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.sbdevs.bookonline.fragments.CategoryFragment"
+        android:name="com.sbdevs.bookonline.fragments.user.CategoryFragment"
         android:label="fragment_category"
         tools:layout="@layout/fragment_category" />
     <fragment
