@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:id="@+id/group1">
-        <item
-            android:id="@+id/allProductsFragment"
-            android:icon="@drawable/ic_round_widgets_24"
-            android:title="All products" />
+<!--        <item-->
+<!--            android:id="@+id/allProductsFragment"-->
+<!--            android:icon="@drawable/ic_round_widgets_24"-->
+<!--            android:title="All products" />-->
 
         <item
             android:id="@+id/allProductsFragment"

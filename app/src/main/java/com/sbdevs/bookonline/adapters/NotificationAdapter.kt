@@ -92,14 +92,12 @@ class NotificationAdapter(var list:List<NotificationModel>): RecyclerView.Adapte
         }
 
 
-        fun updateViewStatusInNotification(notificationID:String){
+        private fun updateViewStatusInNotification(notificationID:String){
 
             val updateMap:MutableMap<String,Any> = HashMap()
             updateMap["seen"] = true
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("USER_DATA")
-                .document("MY_NOTIFICATION")
-                .collection("NOTIFICATION")
+                .collection("NOTIFICATIONS")
                 .document(notificationID)
                 .update(updateMap)
 

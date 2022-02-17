@@ -2,6 +2,7 @@ package com.sbdevs.bookonline.fragments.register
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,9 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
 import com.sbdevs.bookonline.databinding.FragmentSignUpBinding
+import com.sbdevs.bookonline.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -30,7 +33,9 @@ class SignUpFragment : Fragment() {
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
     val firebaseAuth = Firebase.auth
-    val user = firebaseAuth.currentUser
+
+    // do not use this
+    //val user = firebaseAuth.currentUser
 
     lateinit var email: TextInputLayout
     lateinit var phone:TextInputLayout
@@ -38,9 +43,10 @@ class SignUpFragment : Fragment() {
     lateinit var confirmPass:TextInputLayout
     lateinit var errorTxt: TextView
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+        savedInstanceState: Bundle?): View {
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
         email = binding.signupLay.emailInput
@@ -61,6 +67,7 @@ class SignUpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.signupLay.signupBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"show")
             checkAllDetails()
         }
 
@@ -157,20 +164,21 @@ class SignUpFragment : Fragment() {
     private fun checkAllDetails() {
         if (!checkMail() or !checkPhome() or !checkPassword() or !checkConfirmPassword()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
             return
         } else {
-            lifecycleScope.launch(Dispatchers.IO){
-                try {
-                    firebaseAuth.createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
-                    createPaths()
-
-                }catch (e:Exception){
-                    withContext(Dispatchers.Main){
-                        errorTxt.visibility = View.VISIBLE
-                        Toast.makeText(context,e.message, Toast.LENGTH_LONG).show()
+            firebaseAuth
+                .createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
+                .addOnSuccessListener {
+                    lifecycleScope.launch(Dispatchers.IO){
+                        createPaths()
                     }
                 }
-            }
+                .addOnFailureListener {
+                    Log.e("login user","${it.message}")
+                }
+
+
 
         }
     }
@@ -195,34 +203,37 @@ class SignUpFragment : Fragment() {
         userMap["profile"] = ""
         userMap["new_notification"] = FieldValue.serverTimestamp()
 
-        lifecycleScope.launch{
-            if (user!=null){
-                val currentUser = user.uid
+        if (firebaseAuth.currentUser!=null){
+            val currentUser = firebaseAuth.currentUser!!.uid
 
-                val docRef = firebaseFirestore.collection("USERS").document(currentUser)
+            val docRef = firebaseFirestore.collection("USERS").document(currentUser)
+            docRef.set(userMap)
+                .addOnFailureListener {
+                    Log.e("Create user","${it.message}")
+                }.await()
 
-                docRef.set(userMap).await()
-                docRef.collection("NOTIFICATIONS").document("DUMMY").set(dummyMap).await()
-
-                val userRef =  docRef.collection("USER_DATA")
-
-                userRef.document("MY_ADDRESSES").set(addressMap).await()
-                userRef.document("MY_CART").set(listSizeMap).await()
-                userRef.document("MY_ORDERS").set(listSizeMap).await()
-                userRef.document("MY_WISHLIST").set(listSizeMap).await()
-
-                withContext(Dispatchers.Main){
-                    val intent = Intent(context, MainActivity::class.java)
-                    startActivity(intent)
-                    Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-
-                    activity?.finish()
+            docRef.collection("NOTIFICATIONS").document("DUMMY").set(dummyMap)
+                .addOnFailureListener {
+                    Log.e("Create Notifications","${it.message}")
                 }
+                .await()
 
+            val userRef =  docRef.collection("USER_DATA")
+
+            userRef.document("MY_ADDRESSES").set(addressMap).await()
+            userRef.document("MY_CART").set(listSizeMap).await()
+            userRef.document("MY_ORDERS").set(listSizeMap).await()
+            userRef.document("MY_WISHLIST").set(listSizeMap).await()
+
+            withContext(Dispatchers.Main){
+                val intent = Intent(context, MainActivity::class.java)
+                startActivity(intent)
+                Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
+                loadingDialog.dismiss()
+                activity?.finish()
             }
 
         }
-
 
 
     }

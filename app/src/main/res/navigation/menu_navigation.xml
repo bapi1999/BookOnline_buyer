@@ -56,17 +56,17 @@
         android:name="com.sbdevs.bookonline.fragments.seller.WithdrawalFragment"
         android:label="fragment_withdrawal"
         tools:layout="@layout/fragment_withdrawal" />
-    <fragment
-        android:id="@+id/myAccountFragment2"
-        android:name="com.sbdevs.bookonline.fragments.MyAccountFragment"
-        android:label="fragment_my_account"
-        tools:layout="@layout/fragment_my_account" >
-        <action
-            android:id="@+id/action_myAccountFragment2_to_addBankDetailsFragment"
-            app:destination="@id/addBankDetailsFragment" />
-        <action
-            android:id="@+id/action_myAccountFragment2_to_addBusinessDetailsFragment2"
-            app:destination="@id/addBusinessDetailsFragment2" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/myAccountFragment2"-->
+<!--        android:name="com.sbdevs.bookonline.fragments.MyAccountFragment"-->
+<!--        android:label="fragment_my_account"-->
+<!--        tools:layout="@layout/fragment_my_account" >-->
+<!--        <action-->
+<!--            android:id="@+id/action_myAccountFragment2_to_addBankDetailsFragment"-->
+<!--            app:destination="@id/addBankDetailsFragment" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_myAccountFragment2_to_addBusinessDetailsFragment2"-->
+<!--            app:destination="@id/addBusinessDetailsFragment2" />-->
+<!--    </fragment>-->
 
 </navigation>

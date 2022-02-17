@@ -154,18 +154,18 @@ class MainActivity : AppCompatActivity() {
                     closeDrawer()
                     //
                 }
-                R.id.sell_on_book ->{
-                    if (isSeller){
-                        val dashIntent = Intent(this,SellerDashboardActivity::class.java)
-                        startActivity(dashIntent)
-                    }else{
-                        val registerIntent = Intent(this,SellerRegisterActivity::class.java)
-                        startActivity(registerIntent)
-                    }
-
-                    closeDrawer()
-                    //
-                }
+//                R.id.sell_on_book ->{
+//                    if (isSeller){
+//                        val dashIntent = Intent(this,SellerDashboardActivity::class.java)
+//                        startActivity(dashIntent)
+//                    }else{
+//                        val registerIntent = Intent(this,SellerRegisterActivity::class.java)
+//                        startActivity(registerIntent)
+//                    }
+//
+//                    closeDrawer()
+//                    //
+//                }
 
 
 

@@ -33,7 +33,7 @@ class SellerRegisterFragment : Fragment() {
     private lateinit var returnPolicyBox:CheckBox
 
     private val firebaseFirestore = Firebase.firestore
-    private val user = Firebase.auth.currentUser
+    private val firebaseAuth = Firebase.auth
     private val loadingDialog = LoadingDialog()
 
 
@@ -128,34 +128,29 @@ class SellerRegisterFragment : Fragment() {
         val dummyMap: MutableMap<String, Any> = HashMap()
         dummyMap["DUMMY"] = "dummy"
 
-        if (user!=null){
-            val currentUser = user.uid
+        val currentUser = firebaseAuth.currentUser!!.uid
 
-            firebaseFirestore.collection("USERS").document(currentUser).update(userMap).await()
+        firebaseFirestore.collection("USERS").document(currentUser).update(userMap).await()
 
-            val docRef = firebaseFirestore.collection("USERS")
-                .document(currentUser).collection("SELLER_DATA")
+        val docRef = firebaseFirestore.collection("USERS")
+            .document(currentUser).collection("SELLER_DATA")
 
-            docRef.document("BANK_DETAILS").set(bankDetailsMap).await()
-            docRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
-            docRef.document("MY_EARNING").set(earningMap).await()
+        docRef.document("BANK_DETAILS").set(bankDetailsMap).await()
+        docRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
+        docRef.document("MY_EARNING").set(earningMap).await()
 
-            val sellerRef = docRef.document("SELLER_DATA")
+        val sellerRef = docRef.document("SELLER_DATA")
 
-            sellerRef.set(sellerDataMap).await()
-            sellerRef.collection("EARNINGS").document("DUMMY").set(dummyMap).await()
+        sellerRef.set(sellerDataMap).await()
+        sellerRef.collection("EARNINGS").document("DUMMY").set(dummyMap).await()
 
-            withContext(Dispatchers.Main){
-                Toast.makeText(context, "Successfully Registered", Toast.LENGTH_SHORT).show()
+        withContext(Dispatchers.Main){
+            Toast.makeText(context, "Successfully Registered", Toast.LENGTH_SHORT).show()
 
-                val action = SellerRegisterFragmentDirections.actionSellerRegisterFragmentToAddBusinessDetailsFragment()
-                findNavController().navigate(action)
-                loadingDialog.dismiss()
-            }
+            val action = SellerRegisterFragmentDirections.actionSellerRegisterFragmentToAddBusinessDetailsFragment()
+            findNavController().navigate(action)
+            loadingDialog.dismiss()
         }
-
-
-
 
 
     }

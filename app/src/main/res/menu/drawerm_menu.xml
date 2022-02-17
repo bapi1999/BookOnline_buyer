@@ -15,10 +15,10 @@
 <!--            android:iconTint="@color/gray_700"-->
 <!--            android:title="Offer Zone" />-->
 
-        <item
-            android:id="@+id/sell_on_book"
-            android:icon="@drawable/i_sell"
-            android:title="Sell on BooksOnline" />
+<!--        <item-->
+<!--            android:id="@+id/sell_on_book"-->
+<!--            android:icon="@drawable/i_sell"-->
+<!--            android:title="Sell on BooksOnline" />-->
     </group>
 
 
