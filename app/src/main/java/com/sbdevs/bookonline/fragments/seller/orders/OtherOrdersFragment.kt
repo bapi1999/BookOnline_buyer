@@ -61,29 +61,6 @@ class OtherOrdersFragment : Fragment(), SellerOrderAdapter.OrderItemClickListene
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             getOrdersByTags(statusString,orderByString)
 
-//            firebaseFirestore
-//                .collection("ORDERS")
-//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
-//                .whereEqualTo("status","shipped")
-//                .orderBy("Time_shipped", Query.Direction.DESCENDING).get().addOnSuccessListener {
-//                }
-//            firebaseFirestore
-//                .collection("ORDERS")
-//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
-//                .whereEqualTo("status","delivered")
-//                .orderBy("Time_delivered", Query.Direction.DESCENDING).get().addOnSuccessListener {
-//                }
-//            firebaseFirestore
-//                .collection("ORDERS")
-//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
-//                .whereEqualTo("status","returned")
-//                .orderBy("Time_returned", Query.Direction.DESCENDING).get().addOnSuccessListener {
-//                }
-//            firebaseFirestore
-//                .collection("ORDERS")
-//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
-//                .whereEqualTo("is_order_canceled",true)
-//                .orderBy("Time_canceled", Query.Direction.DESCENDING).get().addOnSuccessListener {  }
         }
 
         recyclerView = binding.orderRecycler

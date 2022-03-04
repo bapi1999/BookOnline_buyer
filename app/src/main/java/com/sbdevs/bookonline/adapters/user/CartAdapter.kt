@@ -106,7 +106,6 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
 
                 val price = priceSelling.toInt()*quantity.toInt()
                 val realPrice = priceOriginal.toInt()*quantity.toInt()
-
                 val percent:Int = (100* (realPrice - price)) / ( realPrice )
 
                 productPrice.text = price.toString()
@@ -120,55 +119,8 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
                 outofstockIcon.visibility = View.GONE
             }
 
-
-
         }
 
-        fun getCartProductdata(productId:String,quantity:Int){
-            firebaseFirestore.collection("PRODUCTS").document(productId)
-                .get().addOnSuccessListener {
-                    var categoryString = ""
-                    val url = it.get("product_thumbnail").toString().trim()
-                    val title:String = it.getString("book_title")!!
-                    val stock = it.getLong("in_stock_quantity")!!
-                    val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
-
-                    val priceOriginal = it.getLong("price_original")!!.toLong()
-                    val priceSelling = it.getLong("price_selling")!!.toLong()
-
-                    productName.text = title
-
-                    Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
-
-                    if (priceOriginal == 0L){
-                        val price = priceSelling.toInt()*quantity.toInt()
-                        productPrice.text = price.toString()
-                        productRealPrice.visibility = View.GONE
-                        percentOff.visibility = View.GONE
-
-                    }else{
-
-                        val price = priceSelling.toInt()*quantity.toInt()
-                        val realPrice = priceOriginal.toInt()*quantity.toInt()
-
-                        val percent:Int = (100* (realPrice - price)) / ( realPrice )
-
-                        productPrice.text = price.toString()
-                        productRealPrice.text = realPrice.toString()
-                        percentOff.text = "${percent}% off"
-
-                    }
-                    if (stock == 0L){
-                        outofstockIcon.visibility = View.VISIBLE
-                    }else{
-                        outofstockIcon.visibility = View.GONE
-                    }
-
-
-                }.addOnFailureListener {
-                    Log.e("CartAdapter","${it.message}")
-                }
-        }
     }
 
 }

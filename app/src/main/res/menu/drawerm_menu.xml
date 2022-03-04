@@ -26,31 +26,46 @@
         <item
             android:id="@+id/homeFragment"
             android:icon="@drawable/ic_home_24"
-            android:title="My Home" />
+            android:title="Home" />
 
         <item
             android:id="@+id/myWishlistFragment"
             android:icon="@drawable/ic_favorite_24"
-            android:title="My Wishlist" />
+            android:title="Wishlist" />
         <item
             android:id="@+id/myCartFragment"
             android:icon="@drawable/ic_twotone_shopping_cart_24"
-            android:title="My Cart" />
+            android:title="Cart" />
+
+        <item
+            android:id="@+id/myOrderFragment"
+            android:icon="@drawable/i_deliverd"
+            android:title="Orders" />
         <item
             android:id="@+id/myAccountFragment"
             android:icon="@drawable/ic_account_circle_24"
             android:title="My Account" />
 
-        <item
-            android:id="@+id/myOrderFragment"
-            android:icon="@drawable/i_deliverd"
-            android:title="My Orders" />
 
         <item
             android:id="@+id/notificationFragment"
             android:icon="@drawable/ic_notifications_none_32"
             android:title="Notification" />
 
+
+    </group>
+
+    <group>
+
+        <item
+            android:id="@+id/donate_menu"
+            android:icon="@drawable/ic_baseline_toys_24"
+            android:title="Donate" />
+
+        <item
+            android:id="@+id/my_donations"
+            android:icon="@drawable/ic_baseline_how_to_vote_24"
+            android:title="My Donations" />
 
     </group>
     <group android:id="@+id/group2">
@@ -71,6 +86,7 @@
             android:id="@+id/help"
             android:icon="@drawable/ic_help_24"
             android:title="Help" />
+
 
     </group>
 

@@ -60,9 +60,6 @@ class PaymentFragment : Fragment() {
     ): View {
         _binding = FragmentPaymentBinding.inflate(inflater, container, false)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            getAllMyOrder()
-        }
 
         payOnline = binding.linearLayout
         cashOnDelivery = binding.linearLayout22
@@ -164,7 +161,7 @@ class PaymentFragment : Fragment() {
 
                     lifecycleScope.launch(Dispatchers.IO) {
                         checkAllOrderMethods(receivedList, address)
-                        updateOrderToBuyer()
+                        //updateOrderToBuyer()
                         deleteProductFromCart()
                         withContext(Dispatchers.Main) {
                             loadingDialog.dismiss()
@@ -181,11 +178,7 @@ class PaymentFragment : Fragment() {
                     Toast.makeText(context, "Select payment method", Toast.LENGTH_SHORT).show()
                 }
             }
-
-
         }
-
-
 
     }
 
@@ -204,6 +197,7 @@ class PaymentFragment : Fragment() {
                     val docname: String = generateDocName()
                     val orderQuantity = item.orderQuantity
                     val itemSoldSoFar = it.getLong("number_of_item_sold")!!.toLong()
+                    val productReturnAvailable = it.getBoolean("product_return_available")!!
                     when {
                         stockQty >= orderQuantity -> {
                             val newQty = stockQty - orderQuantity
@@ -221,9 +215,9 @@ class PaymentFragment : Fragment() {
                                 docname,
                                 address,
                                 item.priceSelling,
-                                item.deliveryCharge
+                                item.deliveryCharge,
+                                productReturnAvailable
                             )
-                            newOrderList.add(docname)
 
                         }
                         stockQty in 1L until orderQuantity -> {
@@ -242,11 +236,9 @@ class PaymentFragment : Fragment() {
                                 docname,
                                 address,
                                 item.priceSelling,
-                                item.deliveryCharge
+                                item.deliveryCharge,
+                                productReturnAvailable
                             )
-
-
-                            newOrderList.add(docname)
 
                         }
                         stockQty == 0L -> {
@@ -281,8 +273,8 @@ class PaymentFragment : Fragment() {
         docName: String,
         address: MutableMap<String, Any>,
         unitSellingPrice: Long,
-
-        shippingCharge:Long
+        shippingCharge:Long,
+        productReturnAvailable:Boolean
         ) = CoroutineScope(Dispatchers.IO).launch {
         val productMap: MutableMap<String, Any> = HashMap()
         productMap["productThumbnail"] = thumbnail
@@ -307,6 +299,17 @@ class PaymentFragment : Fragment() {
         productMap["address"] = address
         productMap["Time_ordered"] = FieldValue.serverTimestamp()
 
+        if (productReturnAvailable){
+            productMap["Time_period"] = 7L
+        }else{
+            productMap["Time_period"] = 0L
+        }
+
+        //security fault. use firebase function for better security
+        //   |
+        //   V
+        productMap["eligible_for_credit"] = false
+        productMap["already_credited"] = false
 
 
         firebaseFirestore.collection("ORDERS")
@@ -318,44 +321,6 @@ class PaymentFragment : Fragment() {
 
     }
 
-    private suspend fun updateOrderToBuyer() {
-
-        val updateOrderMap: MutableMap<String, Any> = HashMap()
-        updateOrderMap["order_list"] = newOrderList
-
-        firebaseFirestore.collection("USERS").document(user!!.uid)
-            .collection("USER_DATA")
-            .document("MY_ORDERS")
-            .update(updateOrderMap)
-            .addOnSuccessListener {
-                Log.i("update Buyer ordrlist", "success")
-            }.addOnFailureListener {
-                Log.e("update Buyer ordrlist", "failed: ${it.message}")
-            }.await()
-
-    }
-
-
-    private suspend fun getAllMyOrder() {
-        firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_ORDERS").get().addOnSuccessListener {
-                val x = it.get("order_list")
-
-                if (x != null) {
-
-                    dbOrderList = x as ArrayList<String>
-                    if(dbOrderList.size != 0){
-                        newOrderList.addAll(dbOrderList)
-                    }
-
-
-                } else {
-                    Log.d("MyOrder", "No order foung")
-                }
-            }.addOnFailureListener {
-                Toast.makeText(context, it.message.toString(), Toast.LENGTH_SHORT).show()
-            }.await()
-    }
 
 
     private suspend fun deleteProductFromCart() {

@@ -1,4 +1,4 @@
-package com.sbdevs.bookonline.models.user;
+package com.sbdevs.bookonline.models.java;
 
 public class QueryModel2 {
     String name ;

@@ -31,23 +31,22 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class OrderDetailsActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityOrderDetailsBinding
+    private lateinit var binding: ActivityOrderDetailsBinding
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
-    private lateinit var productImage:ImageView
+    private lateinit var productImage: ImageView
 
-    private lateinit var productId:String
+    private lateinit var productId: String
 
-    private lateinit var orderID:String
-    private lateinit var sellerID:String
-    private lateinit var  productName: String
-    private lateinit var imageUrl:String
+    private lateinit var orderID: String
+    private var sellerID:String = ""
+
+    private lateinit var productName: String
+    private lateinit var imageUrl: String
     val gone = View.GONE
     val visible = View.VISIBLE
-    private var isEligibleForRating= false
-
-
+    private var isEligibleForRating = false
 
 
     //Rating lay out ================================
@@ -56,14 +55,14 @@ class OrderDetailsActivity : AppCompatActivity() {
     lateinit var ratingBar: RatingBar
     lateinit var reviewInput: TextInputLayout
 
-    var rating5:Long = 0
-    var rating4:Long  = 0
-    var rating3:Long  = 0
-    var rating2 :Long = 0
-    var rating1:Long  = 0
-    var totalRatingsNumber= 0L
+    var rating5: Long = 0
+    var rating4: Long = 0
+    var rating3: Long = 0
+    var rating2: Long = 0
+    var rating1: Long = 0
+    var totalRatingsNumber = 0L
 
-    private lateinit var buyerName:String
+    private lateinit var buyerName: String
     //Rating lay out ================================
 
 
@@ -75,13 +74,12 @@ class OrderDetailsActivity : AppCompatActivity() {
         binding = ActivityOrderDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         orderID = intent.getStringExtra("orderID")!!
-        sellerID = intent.getStringExtra("sellerID")!!
 
-        loadingDialog.show(supportFragmentManager,"show")
+        loadingDialog.show(supportFragmentManager, "show")
 
         lifecycleScope.launch(Dispatchers.IO) {
-            getMyOrder(orderID,sellerID)
-            getUsername()
+            getMyOrder(orderID)
+
 
         }
 
@@ -94,12 +92,9 @@ class OrderDetailsActivity : AppCompatActivity() {
 
         ratingBar.onRatingBarChangeListener =
             RatingBar.OnRatingBarChangeListener { ratingBar, fl, b ->
-                Toast.makeText(this," rating${ratingBar.rating.toLong()}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, " rating${ratingBar.rating.toLong()}", Toast.LENGTH_SHORT)
+                    .show()
             }
-
-
-
-
 
 
     }
@@ -109,255 +104,264 @@ class OrderDetailsActivity : AppCompatActivity() {
 
         binding.cancelOrderBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                cancelOrder(orderID,sellerID)
+                cancelOrder(orderID, sellerID)
             }
 
         }
         binding.returnOrderBtn.setOnClickListener {
-            returnOrder(orderID,sellerID)
+            returnOrder(orderID, sellerID)
         }
 
         binding.lay1.viewDetails.setOnClickListener {
             val productIntent = Intent(this, ProductActivity::class.java)
-            productIntent.putExtra("productId",productId)
+            productIntent.putExtra("productId", productId)
             startActivity(productIntent)
         }
 
 
         binding.layRating.submitBtn.setOnClickListener {
-            loadingDialog.show(supportFragmentManager,"show")
+            loadingDialog.show(supportFragmentManager, "show")
             checkAllDetails()
         }
 
 
     }
 
-    private suspend fun getMyOrder(orderID:String, sellerID:String) {
+    private suspend fun getMyOrder(orderID: String) {
 
         val lay1 = binding.lay1
         val lay2 = binding.lay2
 
 
-        val orderRef = firebaseFirestore.collection("USERS").document(sellerID)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA").collection("ORDERS")
-            .document(orderID)
+        val orderRef = firebaseFirestore.collection("ORDERS").document(orderID)
 
-        orderRef.get().addOnSuccessListener{
+        orderRef.get()
+            .addOnSuccessListener {
 
-            if(it.exists()){
-                val productThumbnail= it.get("productThumbnail").toString().trim()
-                imageUrl = productThumbnail
-                val title=it.get("productTitle").toString()
-                productName = title
-                val price = it.get("price").toString()
-                val orderedQty = it.getLong("ordered_Qty")!!
-                val status = it.get("status").toString()
+                if (it.exists()) {
+                    val productThumbnail = it.get("productThumbnail").toString().trim()
+                    imageUrl = productThumbnail
+                    val title = it.get("productTitle").toString()
+                    productName = title
 
-                val productIdDB = it.get("productId").toString()
-                val tracKingId = it.get("tracKingId").toString()
-                val orderTime = it.getTimestamp("Time_ordered")!!.toDate()
+                    val pricePerUnit = it.get("PRICE_SELLING_UNIT").toString()
+//                    val price = it.get("price").toString()
+                    val shippingCharge = it.get("PRICE_SHIPPING_CHARGE").toString()
+                    val priceTotal = it.get("PRICE_TOTAL").toString()
 
-                val isOrderCanceled = it.getBoolean("is_order_canceled")!!
-                val orderCanceledBy = it.get("order_canceled_by").toString()
-                val acceptedTime= it.getTimestamp("Time_accepted")
-                val packedTime= it.getTimestamp("Time_packed")
-                val shippedTime= it.getTimestamp("Time_shipped")
-                val deliveredTime= it.getTimestamp("Time_delivered")
-                val returnedTime= it.getTimestamp("Time_returned")
-                val canceledTime= it.getTimestamp("Time_canceled")
+                    val orderedQty = it.getLong("ordered_Qty")!!
+                    val status = it.get("status").toString()
 
-                val buyerId = it.get("buyerId").toString()
-                val address:MutableMap<String,Any> = it.get("address") as MutableMap<String,Any>
-                val daysAgo = FireStoreData().msToTimeAgo(this@OrderDetailsActivity,orderTime)
+                    val productIdDB = it.get("productId").toString()
+                    val tracKingId = it.get("ID_Of_Tracking").toString()
+                    sellerID = it.get("ID_Of_SELLER").toString()
 
-                productId = productIdDB
+                    val isOrderCanceled = it.getBoolean("is_order_canceled")!!
+                    val orderCanceledBy = it.get("order_canceled_by").toString()
+                    val cancellationReason = it.get("cancellation_reason").toString()
 
-                getProductReting(productId)
-                isReviewed(productId)
+                    val orderTime = it.getTimestamp("Time_ordered")!!.toDate()
+                    val acceptedTime = it.getTimestamp("Time_accepted")
+                    val packedTime = it.getTimestamp("Time_packed")
+                    val shippedTime = it.getTimestamp("Time_shipped")
+                    val deliveredTime = it.getTimestamp("Time_delivered")
+                    val returnedTime = it.getTimestamp("Time_returned")
+                    val canceledTime = it.getTimestamp("Time_canceled")
+                    val returnPeriod = it.getLong("Time_period")!!.toLong()
+                    val address: MutableMap<String, Any> = it.get("address") as MutableMap<String, Any>
 
+                    val daysAgo = FireStoreData().msToTimeAgo(this@OrderDetailsActivity, orderTime)
 
-                when(status){
-                    "new" ->{
-                        binding.cancelOrderBtn.isEnabled = true
-                        binding.cancelOrderBtn.visibility = View.VISIBLE
-                        binding.returnOrderBtn.visibility = View.GONE
-
-                        orderNew(orderTime)
+                    productId = productIdDB
 
 
+
+
+                    when (status) {
+                        "new" -> {
+                            binding.cancelOrderBtn.isEnabled = true
+                            binding.cancelOrderBtn.visibility = visible
+                            binding.returnOrderBtn.visibility = gone
+                            binding.orderRatingContainer.visibility = gone
+                            orderNew(orderTime)
+
+
+                        }
+
+                        "accepted" -> {
+                            binding.cancelOrderBtn.isEnabled = true
+                            binding.cancelOrderBtn.visibility = visible
+                            binding.returnOrderBtn.visibility = gone
+                            binding.orderRatingContainer.visibility = gone
+                            val acceptT = acceptedTime!!.toDate()
+
+                            orderNew(orderTime)
+                            orderAccepted(acceptT)
+
+                        }
+                        "shipped" -> {
+                            binding.cancelOrderBtn.visibility = gone
+                            binding.returnOrderBtn.visibility = gone
+                            binding.orderRatingContainer.visibility = gone
+
+                            binding.linearLayout10.visibility = View.INVISIBLE
+
+                            val acceptT = acceptedTime!!.toDate()
+                            //val packT = packedTime!!.toDate()
+                            val shipT = shippedTime!!.toDate()
+
+
+                            orderNew(orderTime)
+                            orderAccepted(acceptT)
+                            //orderPacked(packT)
+                            orderShipped(shipT)
+                        }
+                        "delivered" -> {
+                            binding.cancelOrderBtn.visibility = gone
+                            binding.returnOrderBtn.visibility = visible
+                            binding.orderRatingContainer.visibility = visible
+
+                            val acceptT = acceptedTime!!.toDate()
+                            //val packT = packedTime!!.toDate()
+                            val shipT = shippedTime!!.toDate()
+                            val deliverT = deliveredTime!!.toDate()
+
+                            orderNew(orderTime)
+                            orderAccepted(acceptT)
+                            //orderPacked(packT)
+                            orderShipped(shipT)
+                            orderDelivered(deliverT)
+
+                            getUsername()
+                            getProductRating(productId)
+                            isReviewed(productId)
+                        }
+
+                        "returned" -> {
+                            val returnT = returnedTime!!.toDate()
+                            binding.cancelOrderBtn.visibility = gone
+                            binding.returnOrderBtn.visibility = gone
+                        }
+                        else -> {
+
+                            binding.cancelOrderBtn.visibility = gone
+                            binding.returnOrderBtn.visibility = gone
+                        }
                     }
 
-                    "accepted" ->{
-                        binding.cancelOrderBtn.isEnabled = true
-                        binding.cancelOrderBtn.visibility = View.VISIBLE
-                        binding.returnOrderBtn.visibility = View.GONE
-                        val acceptT= acceptedTime!!.toDate()
-
-                        orderNew(orderTime)
-                        orderAccepted(acceptT)
-
-                    }
-                    "shipped" ->{
-                        binding.linearLayout10.visibility = View.INVISIBLE
-
-                        val acceptT= acceptedTime!!.toDate()
-                        //val packT = packedTime!!.toDate()
-                        val shipT = shippedTime!!.toDate()
-
-
-                        orderNew(orderTime)
-                        orderAccepted(acceptT)
-                        //orderPacked(packT)
-                        orderShipped(shipT)
-                    }
-                    "delivered" ->{
-                        binding.cancelOrderBtn.visibility = gone
-                        binding.returnOrderBtn.visibility = visible
-                        binding.orderRatingContainer.visibility = visible
-
-                        val acceptT= acceptedTime!!.toDate()
-                        //val packT = packedTime!!.toDate()
-                        val shipT = shippedTime!!.toDate()
-                        val deliverT = deliveredTime!!.toDate()
-
-                        orderNew(orderTime)
-                        orderAccepted(acceptT)
-                        //orderPacked(packT)
-                        orderShipped(shipT)
-                        orderDelivered(deliverT)
-                    }
-
-                    "returned"->{
-                        val returnT= returnedTime!!.toDate()
+                    if (isOrderCanceled) {
+                        val cancelT = canceledTime!!.toDate()
                         binding.cancelOrderBtn.visibility = gone
                         binding.returnOrderBtn.visibility = gone
+                        binding.orderTrackContainer.visibility = gone
+                        orderCanceled(cancelT, orderCanceledBy,cancellationReason)
+                        binding.statusTxt.text = "Canceled"
+                        binding.cancellationContainer.visibility = visible
+                    } else {
+                        binding.cancellationContainer.visibility = gone
+                        binding.statusTxt.text = status
                     }
-                    else ->{
 
-                        binding.cancelOrderBtn.visibility = gone
-                        binding.returnOrderBtn.visibility = gone
-                    }
+
+                    binding.orderIdTxt.text = orderID
+                    binding.trakingIdTxt.text = tracKingId
+                    binding.orderedDateText.text = daysAgo
+
+                    Glide.with(this@OrderDetailsActivity).load(productThumbnail)
+                        .placeholder(R.drawable.as_square_placeholder)
+                        .into(productImage)
+
+                    lay1.titleTxt.text = title
+                    lay1.priceTxt.text = priceTotal
+                    lay1.productQuantity.text = orderedQty.toString()
+
+
+                    val buyerName: String = address["name"].toString()
+                    val buyerAddress1: String = address["address1"].toString()
+                    val buyerAddress2: String = address["address2"].toString()
+                    val buyerAddressType: String = address["address_type"].toString()
+
+                    val buyerTown: String = address["city_vill"].toString()
+                    val buyerPinCode: String = address["pincode"].toString()
+
+                    val buyerState: String = address["state"].toString()
+                    val buyerPhone: String = address["phone"].toString()
+
+                    val addressBuilder = StringBuilder()
+                    addressBuilder.append(buyerAddress1).append(", ").append(buyerAddress2)
+
+                    val townPinBuilder = StringBuilder()
+                    townPinBuilder.append(buyerTown).append(", ").append(buyerPinCode)
+
+                    lay2.buyerName.text = buyerName
+                    lay2.buyerAddress.text = addressBuilder.toString()
+                    lay2.buyerAddressType.text = buyerAddressType
+                    lay2.buyerTownAndPin.text = townPinBuilder.toString()
+                    lay2.buyerState.text = buyerState
+                    lay2.buyerPhone.text = buyerPhone
+
+                    loadingDialog.dismiss()
+
+                } else {
+                    binding.orderScroll.visibility = gone
+                    binding.linearLayout10.visibility = gone
+                    loadingDialog.dismiss()
                 }
-
-                if (isOrderCanceled){
-                    val cancelT= canceledTime!!.toDate()
-
-                    binding.cancelOrderBtn.visibility = gone
-                    binding.returnOrderBtn.visibility = gone
-                    binding.orderTrackContainer.visibility = gone
-                    orderCanceled(cancelT,orderCanceledBy)
-                    binding.statusTxt.text = "Canceled"
-
-                }else{
-                    binding.statusTxt.text = status
-                }
-
-
-
-                binding.orderIdTxt.text = orderID
-                binding.trakingIdTxt.text = tracKingId
-                binding.orderedDateText.text = daysAgo
-
-
-                Glide.with(this@OrderDetailsActivity).load(productThumbnail)
-                    .placeholder(R.drawable.as_square_placeholder)
-                    .into(productImage)
-
-                lay1.titleTxt.text = title
-                lay1.priceTxt.text = price
-                lay1.productQuantity.text = orderedQty.toString()
-
-
-
-                val buyerName:String = address["name"].toString()
-                val buyerAddress1:String = address["address1"].toString()
-                val buyerAddress2:String = address["address2"].toString()
-                val buyerAddressType:String = address["address_type"].toString()
-
-
-                val buyerTown:String = address["city_vill"].toString()
-                val buyerPinCode:String = address["pincode"].toString()
-
-                val buyerState:String = address["state"].toString()
-                val buyerPhone:String = address["phone"].toString()
-
-                val addressBuilder  = StringBuilder()
-                addressBuilder.append(buyerAddress1).append(", ").append(buyerAddress2)
-
-                val townPinBuilder  = StringBuilder()
-                townPinBuilder.append(buyerTown).append(", ").append(buyerPinCode)
-
-                lay2.buyerName.text = buyerName
-                lay2.buyerAddress.text = addressBuilder.toString()
-                lay2.buyerAddressType.text = buyerAddressType
-                lay2.buyerTownAndPin.text =townPinBuilder.toString()
-                lay2.buyerState.text = buyerState
-                lay2.buyerPhone.text = buyerPhone
-
-                loadingDialog.dismiss()
-
-            }else{
-                binding.textView28.visibility = visible
+            }
+            .addOnFailureListener {
                 binding.orderScroll.visibility = gone
                 binding.linearLayout10.visibility = gone
                 loadingDialog.dismiss()
-            }
-
-        }.addOnFailureListener {
-            binding.textView28.visibility = visible
-            binding.orderScroll.visibility = gone
-            binding.linearLayout10.visibility = gone
-            loadingDialog.dismiss()
-            Log.e("Get Order details","faild: ${it.message}")
-        }.await()
-
+                Log.e("Get Order details", "faild: ${it.message}")
+            }.await()
 
 
     }
 
-    private fun orderNew(orderTime:Date){
+    private fun orderNew(orderTime: Date) {
 
         binding.lay3.orderDate.text = getDateTime(orderTime)
 
         binding.lay3.orderImageButton.backgroundTintList = AppCompatResources
-            .getColorStateList(this@OrderDetailsActivity,R.color.amber_600)
+            .getColorStateList(this@OrderDetailsActivity, R.color.amber_600)
         binding.lay3.orderImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
     }
 
-    private fun orderAccepted(acceptTime:Date){
+    private fun orderAccepted(acceptTime: Date) {
         binding.lay3.acceptDate.text = getDateTime(acceptTime)
 
         binding.lay3.acceptImageButton.backgroundTintList = AppCompatResources
-            .getColorStateList(this@OrderDetailsActivity,R.color.successGreen)
+            .getColorStateList(this@OrderDetailsActivity, R.color.successGreen)
         binding.lay3.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
     }
 
-    private fun orderShipped(shippedTime:Date){
+    private fun orderShipped(shippedTime: Date) {
         binding.lay3.shippedDate.text = getDateTime(shippedTime)
         binding.lay3.shippedImageButton.backgroundTintList = AppCompatResources
-            .getColorStateList(this@OrderDetailsActivity,R.color.indigo_500)
+            .getColorStateList(this@OrderDetailsActivity, R.color.blueLink)
         binding.lay3.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
     }
-    private fun orderDelivered(deliveredTime:Date){
+
+    private fun orderDelivered(deliveredTime: Date) {
 
         binding.lay3.deliveredDate.text = getDateTime(deliveredTime)
         binding.lay3.deliveredImageButton.backgroundTintList = AppCompatResources
-            .getColorStateList(this@OrderDetailsActivity,R.color.ratingGreen)
+            .getColorStateList(this@OrderDetailsActivity, R.color.indigo_900)
         binding.lay3.deliveredImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
     }
 
-    private fun orderCanceled(deliveredTime:Date,orderCanceledBy:String){
+    private fun orderCanceled(deliveredTime: Date, orderCanceledBy: String,reason:String) {
 
+        binding.lay0.cancellationReason.text = reason
         binding.lay0.cancellationTime.text = getDateTime(deliveredTime)
         binding.lay0.cancellationText.text = "Order is canceled by $orderCanceledBy"
     }
 
 
-    private suspend fun cancelOrder(orderID:String, sellerID:String){
+    private suspend fun cancelOrder(orderID: String, sellerID: String) {
 
 
-        val cancelMap:MutableMap<String,Any> = HashMap()
+        val cancelMap: MutableMap<String, Any> = HashMap()
         cancelMap["status"] = "canceled"
         cancelMap["is_order_canceled"] = true
         cancelMap["order_canceled_by"] = "Customer"
@@ -370,24 +374,24 @@ class OrderDetailsActivity : AppCompatActivity() {
             .collection("ORDERS")
             .document(orderID)
         orderRef.update(cancelMap).addOnSuccessListener {
-            sendNotification(productName,imageUrl,"canceled",sellerID,orderID)
+            sendNotification(productName, imageUrl, "canceled", sellerID, orderID)
 
         }.await()
 
 
-        val cancelT= Date()
+        val cancelT = Date()
         binding.cancelOrderBtn.visibility = gone
         binding.returnOrderBtn.visibility = gone
         binding.orderTrackContainer.visibility = gone
         binding.statusTxt.text = "Canceled"
 
-        binding.lay0.cancellationTime.text = FireStoreData().msToTimeAgo(this,cancelT)
+        binding.lay0.cancellationTime.text = FireStoreData().msToTimeAgo(this, cancelT)
         binding.lay0.cancellationText.text = "Order is canceled by customer"
 
     }
 
-    private fun returnOrder(orderID:String, sellerID:String){
-        val returnMap:MutableMap<String,Any> = HashMap()
+    private fun returnOrder(orderID: String, sellerID: String) {
+        val returnMap: MutableMap<String, Any> = HashMap()
         returnMap["status"] = "returned"
         returnMap["Time_returned"] = FieldValue.serverTimestamp()
 
@@ -401,7 +405,13 @@ class OrderDetailsActivity : AppCompatActivity() {
         orderRef.update(returnMap)
     }
 
-    private fun sendNotification(productName:String,url:String,status: String,sellerID:String,orderId:String,){
+    private fun sendNotification(
+        productName: String,
+        url: String,
+        status: String,
+        sellerID: String,
+        orderId: String,
+    ) {
         val ref = firebaseFirestore.collection("USERS")
             .document(sellerID)
             .collection("SELLER_DATA")
@@ -421,7 +431,7 @@ class OrderDetailsActivity : AppCompatActivity() {
             .addOnSuccessListener {
 
             }.addOnFailureListener {
-                Log.e("get buyer notification","${it.message}")
+                Log.e("get buyer notification", "${it.message}")
             }
     }
 
@@ -437,26 +447,41 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
+
+
+
+
+
+
+
+
+
 //TODO---  RATING LAYOUT #################################################################################################
 //TODO==================================================================================================================
 
 
-    private fun checkRatingBar():Boolean{
-        val rating = ratingBar.rating.toInt()
-        return rating != 0
-    }
 
-    private fun isReviewed(productID: String){
+
+
+
+    private fun isReviewed(productID: String) {
         firebaseFirestore.collection("PRODUCTS")
-            .document(productID).collection("PRODUCT_REVIEW")
+            .document(productID)
+            .collection("PRODUCT_REVIEW")
             .document(user!!.uid)
             .get().addOnSuccessListener {
-                if (it.exists()){
+                if (it.exists()) {
                     val ratings = it.getLong("rating")!!.toLong()
                     val review = it.getString("review").toString()
+
                     ratingBar.rating = ratings.toFloat()
-                    reviewInput.editText?.setText(review)
-                }else{
+                    if (review.isNullOrEmpty()){
+                        Log.w("review:","Empty")
+                    }else{
+                        reviewInput.editText?.setText(review)
+                    }
+
+                } else {
                     ALL_READY_REVIEWED = false
                 }
             }.addOnFailureListener {
@@ -465,41 +490,41 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
-
-     private fun getProductReting(productID:String){
+    private fun getProductRating(productID: String) {
         firebaseFirestore.collection("PRODUCTS")
             .document(productID).get()
             .addOnSuccessListener {
-                if (it.exists()){
+                if (it.exists()) {
                     rating5 = it.getLong("rating_Star_5")!!
                     rating4 = it.getLong("rating_Star_4")!!
                     rating3 = it.getLong("rating_Star_3")!!
                     rating2 = it.getLong("rating_Star_2")!!
                     rating1 = it.getLong("rating_Star_1")!!
-                    totalRatingsNumber= it.getLong("rating_total")!!
-                }else{
+                    totalRatingsNumber = it.getLong("rating_total")!!
+                } else {
                     binding.lay1.viewDetails.isEnabled = false
                     binding.lay1.viewDetails.backgroundTintList =
-                        AppCompatResources.getColorStateList(this,R.color.grey_600)
+                        AppCompatResources.getColorStateList(this, R.color.grey_600)
                 }
 
 
             }
     }
 
-    private fun getUsername(){
+
+    private fun getUsername() {
         firebaseFirestore.collection("USERS").document(user!!.uid)
-            .addSnapshotListener { value,error ->
+            .addSnapshotListener { value, error ->
                 error?.let {
-                    Log.e("Load user name","failed: ${it.message}")
+                    Log.e("Load user name", "failed: ${it.message}")
                     return@addSnapshotListener
                 }
                 value?.let {
                     val email = it.getString("email").toString()
                     val name = it.getString("name").toString()
-                    buyerName = if (name == ""){
+                    buyerName = if (name == "") {
                         email
-                    }else{
+                    } else {
                         name
                     }
                 }
@@ -507,78 +532,112 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
+    private fun checkRatingBar(): Boolean {
+        val rating = ratingBar.rating.toInt()
+        return rating != 0
+    }
 
-    private suspend fun updateProductReting(){
-        val productMap:MutableMap<String,Any> = HashMap()
 
-        when(val thisRating = ratingBar.rating.toInt()){
-            5->{
-                productMap["rating_Star_$thisRating"]= rating5+1
+    private fun checkAllDetails() {
+
+        if (!checkRatingBar()) {
+            binding.layRating.linearLayout2.backgroundTintList =
+                AppCompatResources.getColorStateList(this, R.color.red_600)
+            loadingDialog.dismiss()
+        } else {
+
+            binding.layRating.linearLayout2.backgroundTintList =
+                AppCompatResources.getColorStateList(this, R.color.white)
+
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+
+                    updateProductReting()
+                    createProductRatingDoc()
+                }
+                withContext(Dispatchers.Main) {
+                    loadingDialog.dismiss()
+                }
+
+
             }
-            4->{
-                productMap["rating_Star_$thisRating"]= rating4+1
+
+
+        }
+    }
+
+
+    private suspend fun updateProductReting() {
+        val productMap: MutableMap<String, Any> = HashMap()
+
+        when (val thisRating = ratingBar.rating.toInt()) {
+            5 -> {
+                productMap["rating_Star_$thisRating"] = rating5 + 1
             }
-            3->{
-                productMap["rating_Star_$thisRating"]= rating3+1
+            4 -> {
+                productMap["rating_Star_$thisRating"] = rating4 + 1
             }
-            2->{
-                productMap["rating_Star_$thisRating"]= rating2+1
+            3 -> {
+                productMap["rating_Star_$thisRating"] = rating3 + 1
             }
-            1->{
-                productMap["rating_Star_$thisRating"]= rating1+1
+            2 -> {
+                productMap["rating_Star_$thisRating"] = rating2 + 1
+            }
+            1 -> {
+                productMap["rating_Star_$thisRating"] = rating1 + 1
             }
 
         }
-        productMap["rating_total"] = totalRatingsNumber+1
+        productMap["rating_total"] = totalRatingsNumber + 1
         productMap["rating_avg"] = calculateRating().toString()
         firebaseFirestore.collection("PRODUCTS").document(productId)
             .update(productMap).await()
     }
 
 
-    private fun calculateRating():Float{
+    private fun calculateRating(): Float {
 
         var total = 0L
 
-        when(val thisRating = ratingBar.rating.toInt()){
-            5->{
-                total = (rating5+1)*5+rating4*4+rating3*3+rating2*2+rating1*1
+        when (val thisRating = ratingBar.rating.toInt()) {
+            5 -> {
+                total = (rating5 + 1) * 5 + rating4 * 4 + rating3 * 3 + rating2 * 2 + rating1 * 1
             }
-            4->{
-                total = rating5*5+(rating4+1)*4+rating3*3+rating2*2+rating1*1
+            4 -> {
+                total = rating5 * 5 + (rating4 + 1) * 4 + rating3 * 3 + rating2 * 2 + rating1 * 1
             }
-            3->{
-                total = rating5*5+rating4*4+(rating3+1)*3+rating2*2+rating1*1
+            3 -> {
+                total = rating5 * 5 + rating4 * 4 + (rating3 + 1) * 3 + rating2 * 2 + rating1 * 1
             }
-            2->{
-                total = rating5*5+rating4*4+rating3*3+(rating2+1)*2+rating1*1
+            2 -> {
+                total = rating5 * 5 + rating4 * 4 + rating3 * 3 + (rating2 + 1) * 2 + rating1 * 1
             }
-            1->{
-                total = rating5*5+rating4*4+rating3*3+rating2*2+(rating1+1)*1
+            1 -> {
+                total = rating5 * 5 + rating4 * 4 + rating3 * 3 + rating2 * 2 + (rating1 + 1) * 1
             }
         }
 
-        val avgRating:Float = (total.toFloat())/(totalRatingsNumber.toFloat()+1)
+        val avgRating: Float = (total.toFloat()) / (totalRatingsNumber.toFloat() + 1)
 
         return avgRating
 
     }
 
 
-    private fun createProductRatingDoc(){
-        val ratingMap:MutableMap<String,Any> = HashMap()
+    private fun createProductRatingDoc() {
+        val ratingMap: MutableMap<String, Any> = HashMap()
         val review = reviewInput.editText?.text.toString()
         ratingMap["buyer_name"] = buyerName
         ratingMap["rating"] = ratingBar.rating.toLong()
         ratingMap["review_Date"] = FieldValue.serverTimestamp()
         ratingMap["buyer_ID"] = user!!.uid
 
-        if (review.isEmpty()){
+        if (review.isEmpty()) {
             ratingMap["is_review_available"] = false
-            ratingMap["review"]=""
-        }else{
+            ratingMap["review"] = ""
+        } else {
             ratingMap["is_review_available"] = true
-            ratingMap["review"]=review
+            ratingMap["review"] = review
         }
 
 
@@ -588,43 +647,10 @@ class OrderDetailsActivity : AppCompatActivity() {
             .set(ratingMap)
     }
 
-    private fun checkAllDetails(){
-
-        if (!checkRatingBar()){
-            binding.layRating.linearLayout2.backgroundTintList =
-                AppCompatResources.getColorStateList(this,R.color.red_600)
-            loadingDialog.dismiss()
-        }else{
-
-            binding.layRating.linearLayout2.backgroundTintList =
-                AppCompatResources.getColorStateList(this,R.color.white)
-
-            lifecycleScope.launch{
-                withContext(Dispatchers.IO){
-
-                    updateProductReting()
-                    createProductRatingDoc()
-                }
-                withContext(Dispatchers.Main){
-                    loadingDialog.dismiss()
-                }
-
-
-
-
-            }
-
-
-        }
-    }
-
-
-
 
 
 
 //TODO---  RATING LAYOUT #################################################################################################
-
 
 
 }

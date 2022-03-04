@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable-v24/radio_btn_selector.xml" value="0.1245" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/cancel.xml" value="0.21095890410958903" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/cart_badge_icon.xml" value="0.15876288659793814" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/dot_defult.xml" value="0.12604166666666666" />
@@ -14,6 +15,9 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/ic_chevron_right_24.xml" value="0.15876288659793814" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/ic_favorite_24.xml" value="0.15876288659793814" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/ic_notifications_none_32.xml" value="0.22777777777777777" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/progress_bar_1.xml" value="0.1285" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/radio_btn_normal.xml" value="0.1245" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/radio_btn_selected.xml" value="0.1245" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/s_bigslider_background.xml" value="0.15876288659793814" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/s_bordar_2.xml" value="0.15876288659793814" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/s_border_1.xml" value="0.21095890410958903" />
@@ -30,7 +34,10 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/drawable/s_splash_background.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout-v31/le_notification_item_lay.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_add_address.xml" value="0.2" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_add_contribution.xml" value="0.17264957264957265" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_add_product.xml" value="0.1" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_all_donation.xml" value="0.22" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_all_donations.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_all_orders.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_buy_now.xml" value="0.14965277777777777" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_cart.xml" value="0.19953703703703704" />
@@ -38,6 +45,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_java.xml" value="0.14965277777777777" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_my_address.xml" value="0.19953703703703704" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_my_donation.xml" value="0.33" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_notification.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_order_details.xml" value="0.12526997840172785" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_payment_method.xml" value="0.19953703703703704" />
@@ -48,10 +56,14 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_search2.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_search_filter.xml" value="0.25" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_search_filter_java.xml" value="0.18426678067550234" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_seller_dashboard.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_seller_order_details.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_seller_register.xml" value="0.1841880341880342" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_seller_shop.xml" value="0.1" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_splash.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_test_java.xml" value="0.1841880341880342" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_test_kotlin.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/activity_web_view.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_add_address_lay.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_add_product_lay_1.xml" value="0.1841880341880342" />
@@ -71,7 +83,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_myaccount_1_lay.xml" value="0.33" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_myaccount_2_lay.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_myaccount_3_lay.xml" value="0.22" />
-        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_nav_header_layout.xml" value="0.25" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_nav_header_layout.xml" value="0.5" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_order_details_lay_0.xml" value="0.33" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_order_details_lay_1.xml" value="0.22" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_order_details_lay_2.xml" value="0.1841880341880342" />
@@ -93,7 +105,9 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_rating_lay.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_register_layout_1.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_register_layout_2.xml" value="0.25" />
-        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_search_filter_bottom_sheet.xml" value="0.33" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_search_filter_bottom_sheet.xml" value="0.22" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_search_filter_bottom_sheet_2.xml" value="0.33" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_seller_shop_lay_1.xml" value="0.18426678067550234" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_signup_layout.xml" value="0.22" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_withdrawal_lay_1.xml" value="0.18185654008438817" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/ar_withdrawal_lay_2.xml" value="0.18185654008438817" />
@@ -108,6 +122,8 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_category.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_change_product_image.xml" value="0.22" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_congratulation.xml" value="0.25" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_donate.xml" value="0.22" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_donor_instruction.xml" value="0.17264957264957265" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_edit_account.xml" value="0.22" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_forgot_password.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_home.xml" value="0.22447916666666667" />
@@ -123,7 +139,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_my_wishlist.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_notification.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_order_summary.xml" value="0.22" />
-        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_orders.xml" value="0.1841880341880342" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_orders.xml" value="0.33" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_other_orders.xml" value="0.18185654008438817" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_payment.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_product.xml" value="0.18703703703703703" />
@@ -135,6 +151,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_update_password.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/fragment_withdrawal.xml" value="0.18" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_ads.xml" value="0.5" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_all_donation_item.xml" value="0.33" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_big_ads_layout.xml" value="0.2" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_bottom_sheet_1.xml" value="0.22" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_cart_badge.xml" value="0.9" />
@@ -142,6 +159,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_cart_item_lay_1.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_cart_item_lay_2.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_category_item.xml" value="0.25" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_donate_item.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_dropdown_item.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_earning_item.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_empty_layout.xml" value="0.25" />
@@ -149,6 +167,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_home_lay.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_loading_progress_dialog.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_mini_address_view_lay.xml" value="0.4068825910931174" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_my_donation_item.xml" value="0.33" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_not_login_lay.xml" value="0.19953703703703704" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_notification_badge.xml" value="0.75" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/le_notification_item.xml" value="0.19953703703703704" />
@@ -199,10 +218,12 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/sl_le_my_product_item.xml" value="0.18185654008438817" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/sl_le_order_cancellation_lay_1.xml" value="0.18185654008438817" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/sl_le_order_item.xml" value="0.18185654008438817" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/layout/test_item_1.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/drawerm_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/filter_menu.xml" value="0.14965277777777777" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/main_option_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/profile_menu.xml" value="0.1841880341880342" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/search_icon_menu.xml" value="0.18426678067550234" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/xml/searchable.xml" value="0.14965277777777777" />
       </map>
     </option>

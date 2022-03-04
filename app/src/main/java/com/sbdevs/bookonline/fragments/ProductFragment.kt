@@ -46,23 +46,18 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var _binding: FragmentProductBinding? = null
     private val binding get() = _binding!!
 
-
     private var firebaseFirestore = Firebase.firestore
-
     private var user = Firebase.auth.currentUser
 
     private lateinit var addToCartBtn: LinearLayout
     lateinit var buyNowBtn: Button
-
     lateinit var fabBtn: FloatingActionButton
     private val gone = View.GONE
     private val visible = View.VISIBLE
     private var reviewList: MutableList<ProductReviewModel> = ArrayList()
     private lateinit var reviewAdapter: ProductReviewAdapter
-
     private lateinit var productImgViewPager: ViewPager2
     private var recommendedList:MutableList<String> = ArrayList()
-
 
     lateinit var cartBadgeText: TextView
 
@@ -74,7 +69,6 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var discount = 0
     private var totalAmount = 0
     var deliveryCharge = 0L
-
 
     private var productImgList: ArrayList<String> = ArrayList()
 
@@ -456,7 +450,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
-                    val url = it.get("product_thumbnail").toString().trim()
+
 
                     val bookWriter = it.getString("book_writer")
                     val bookPublisherName = it.getString("book_publisher")
@@ -467,6 +461,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val bookPageCount = it.getString("book_pageCount")
                     val isbnNumber = it.getString("book_ISBN")
                     val bookDimension = it.getString("book_dimension")
+                    val productReturn = it.getBoolean("product_return_available")!!
+
+                    productImgList = it.get("productImage_List") as ArrayList<String>
 
                     dbStockQty = stock.toInt()
 
@@ -480,7 +477,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                         CartModel(
                             productId,
                             sellerId,
-                            url,
+                            productImgList[0],
                             productName,
                             priceOriginal,
                             priceSelling,
@@ -501,7 +498,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                         tagsString += "#$tag  "
                     }
 
-                    productImgList = it.get("productImage_List") as ArrayList<String>
+
 
                     val adapter = ProductImgAdapter(productImgList,this@ProductFragment)
 
@@ -746,8 +743,8 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val productId = documentSnapshot.id
                     val productName = documentSnapshot.getString("book_title").toString()
 
-                    val url: String =
-                        documentSnapshot.getString("product_thumbnail").toString().trim()
+                    val productImgList:MutableList<String> = (documentSnapshot.get("productImage_List") as MutableList<String>?)!!
+
                     val stockQty: Long = documentSnapshot.getLong("in_stock_quantity")!!.toLong()
                     val avgRating = documentSnapshot.getString("rating_avg")!!
                     val totalRatings: Long = documentSnapshot.getLong("rating_total")!!
@@ -760,7 +757,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val bookType = documentSnapshot.getString("book_type")!!
 
                     searchList.add(
-                        SearchModel(productId, productName, url, priceOriginal, priceSelling,
+                        SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
                         stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
                     )
                 }

@@ -29,6 +29,25 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/name_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/light_black"
+                android:textSize="17sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email_input"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -44,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailSubject"
                 android:textColor="@color/light_black"
-                android:textSize="20sp" />
+                android:textSize="17sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -65,7 +84,7 @@
 
                 android:inputType="phone"
                 android:textColor="@color/light_black"
-                android:textSize="20sp" />
+                android:textSize="17sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -89,7 +108,7 @@
 
                 android:inputType="textPassword"
                 android:textColor="@color/light_black"
-                android:textSize="20sp" />
+                android:textSize="17sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -107,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:textColor="@color/light_black"
-                android:textSize="20sp" />
+                android:textSize="17sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
 

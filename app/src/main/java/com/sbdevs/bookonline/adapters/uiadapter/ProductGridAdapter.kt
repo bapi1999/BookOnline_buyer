@@ -55,7 +55,7 @@ class ProductGridAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Produ
             }
             firebaseFirestore.collection("PRODUCTS").document(productId)
                 .get().addOnSuccessListener{
-                    val url = it.get("product_thumbnail").toString().trim()
+                    val productImgList = it.get("productImage_List") as ArrayList<String>
                     val title:String = it.getString("book_title")!!
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()
@@ -86,7 +86,7 @@ class ProductGridAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Produ
                     // resize does not respect aspect ratio
 
                     Glide.with(itemView.context)
-                        .load(url)
+                        .load(productImgList[0])
                         .placeholder(R.drawable.as_square_placeholder)
                         .apply(requestOptions)
                         .into(productImage);

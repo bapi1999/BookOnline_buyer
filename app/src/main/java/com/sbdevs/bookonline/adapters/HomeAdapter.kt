@@ -130,7 +130,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
         fun bind(homeModel: HomeModel){
             val uiId:String = homeModel.UI_VIEW_ID.trim()
             sliderModelList.clear()
-            val pos:String = adapterPosition.toString()
+            val pos:String = absoluteAdapterPosition.toString()
             getFirebaeData(uiId)
 
             adapter = SliderAdapter(sliderModelList,sliderView)
@@ -177,6 +177,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
         }
 
     }
+
 
     class CategoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         private val categoryRecycler:RecyclerView = itemView.findViewById(R.id.topCategoryRecycler)
@@ -230,7 +231,7 @@ class HomeAdapter(var homeModelList: List<HomeModel>  ) : RecyclerView.Adapter<R
             val uiId:String = homeModel.UI_VIEW_ID.trim()
             getFirebaeData(uiId)
 
-            val pos:String = adapterPosition.toString()
+            val pos:String = absoluteAdapterPosition.toString()
 
 
 

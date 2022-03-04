@@ -18,6 +18,21 @@
         android:theme="@style/Theme.BookOnline"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".activities.java.SearchFilterJavaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.user.SellerShopActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.donation.AllDonationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.donation.MyDonationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.donation.AddContributionActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.NotificationActivity"
             android:exported="false" />
         <activity
@@ -39,7 +54,7 @@
             android:name=".activities.seller.EditProductActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SearchActivity2"
+            android:name=".activities.java.SearchActivity2"
             android:exported="false" />
         <activity
             android:name=".activities.WebViewActivity"

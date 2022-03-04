@@ -62,7 +62,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
             firebaseFirestore.collection("PRODUCTS").document(productId)
                 .get().addOnSuccessListener {
 
-                    val url:String = it.getString("product_thumbnail")!!
+                    val productImgList = it.get("productImage_List") as ArrayList<String>
                     val title:String = it.getString("book_title")!!
                     val ratingTotal = it.getLong("rating_total")!!.toString()
                     val stockQty = it.getLong("in_stock_quantity")!!
@@ -97,7 +97,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
                         outOfStockIcon.visibility = View.GONE
                     }
 
-                    Glide.with(itemView.context).load(url).placeholder(R.drawable.as_square_placeholder).into(productImage);
+                    Glide.with(itemView.context).load(productImgList[0]).placeholder(R.drawable.as_square_placeholder).into(productImage);
 
 
                 }.addOnFailureListener {

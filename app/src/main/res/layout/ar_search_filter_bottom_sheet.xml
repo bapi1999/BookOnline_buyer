@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -26,6 +27,51 @@
             android:textColor="@color/grey_900"
             android:textSize="14sp"
             android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/order_type_radio_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:checked="true"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="New(0)" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="Accepted(0)" />
+
+            <RadioButton
+                android:id="@+id/radioButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="Packed(0)" />
+        </RadioGroup>
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/relevance_chipGroup"
@@ -84,7 +130,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView61"
-            app:singleSelection="false">
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/type_chip1"
@@ -144,7 +190,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView62"
-            app:singleSelection="false">
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/condition_chip1"
@@ -210,32 +256,30 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView62"
-            app:singleSelection="true">
+            app:singleSelection="false">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/print_chip1"
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:tag="all"
-                android:text="All" />
+                android:tag="2022"
+                android:text="2022" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/print_chip2"
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="2022"
-                android:text="2022" />
-
-            <!--            <com.google.android.material.chip.Chip-->
-            <!--                android:id="@+id/print_chip3"-->
-            <!--                style="@style/CustomChipStyle"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:tag="2021"-->
-            <!--                android:text="2021" />-->
+                android:tag="2021"
+                android:text="2021" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/print_chip3"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2020"
+                android:text="2020" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -279,33 +323,42 @@
 
 
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/price_chipGroup"
-            android:layout_width="match_parent"
+        <RadioGroup
+            android:id="@+id/price_radioGroup"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView62"
-            app:singleSelection="true">
+            android:visibility="visible"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/price_chip1"
-                style="@style/CustomChipStyle"
+            <RadioButton
+                android:id="@+id/price_radio1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="34dp"
+                android:paddingStart="13dp"
+                android:paddingEnd="13dp"
                 android:checked="true"
-                android:tag="all_price"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
                 android:text="All price" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/price_chip2"
-                style="@style/CustomChipStyle"
+            <RadioButton
+                android:id="@+id/price_radio2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:tag="2022"
+                android:layout_height="34dp"
+                android:paddingStart="13dp"
+                android:paddingEnd="13dp"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
                 android:text="Custom price range" />
 
-        </com.google.android.material.chip.ChipGroup>
+        </RadioGroup>
+
 
 
         <com.google.android.material.slider.RangeSlider
@@ -325,7 +378,7 @@
             app:trackHeight="5dp"
             app:minSeparation="100dp"
             app:values="@array/initial_slider_values"
-            android:visibility="visible"/>
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/price_range_text_container"
@@ -334,7 +387,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/lower_input"

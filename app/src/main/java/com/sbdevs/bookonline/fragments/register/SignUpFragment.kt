@@ -37,6 +37,7 @@ class SignUpFragment : Fragment() {
     // do not use this
     //val user = firebaseAuth.currentUser
 
+    lateinit var nameInput: TextInputLayout
     lateinit var email: TextInputLayout
     lateinit var phone:TextInputLayout
     lateinit var pass: TextInputLayout
@@ -49,6 +50,7 @@ class SignUpFragment : Fragment() {
         savedInstanceState: Bundle?): View {
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
+        nameInput = binding.signupLay.emailInput
         email = binding.signupLay.emailInput
         phone = binding.signupLay.mobileInput
         pass = binding.signupLay.passwordInput
@@ -77,6 +79,20 @@ class SignUpFragment : Fragment() {
             activity?.finish()
         }
 
+    }
+
+    private fun checkName(): Boolean {
+        val nameString: String = nameInput.editText?.text.toString().trim()
+        return if (nameString.isEmpty()) {
+            nameInput.isErrorEnabled = true
+            nameInput.error = "Field can't be empty"
+            false
+        } else {
+            email.isErrorEnabled = false
+            email.error = null
+            true
+
+        }
     }
 
     private fun checkMail(): Boolean {
@@ -162,7 +178,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun checkAllDetails() {
-        if (!checkMail() or !checkPhome() or !checkPassword() or !checkConfirmPassword()) {
+        if (!checkName() or !checkMail() or !checkPhome() or !checkPassword() or !checkConfirmPassword()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             return
@@ -194,7 +210,7 @@ class SignUpFragment : Fragment() {
         dummyMap["DUMMY"] = "dummy"
 
         val userMap: MutableMap<String, Any> = HashMap()
-        userMap["name"] = ""
+        userMap["name"] = nameInput.editText?.text.toString().trim()
         userMap["email"] = email.editText?.text.toString().trim()
         userMap["Is_user"] = true
         userMap["Is_seller"] = false
@@ -222,7 +238,6 @@ class SignUpFragment : Fragment() {
 
             userRef.document("MY_ADDRESSES").set(addressMap).await()
             userRef.document("MY_CART").set(listSizeMap).await()
-            userRef.document("MY_ORDERS").set(listSizeMap).await()
             userRef.document("MY_WISHLIST").set(listSizeMap).await()
 
             withContext(Dispatchers.Main){

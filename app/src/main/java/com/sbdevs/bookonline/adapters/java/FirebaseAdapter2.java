@@ -1,4 +1,4 @@
-package com.sbdevs.bookonline.adapters;
+package com.sbdevs.bookonline.adapters.java;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.sbdevs.bookonline.R;
-import com.sbdevs.bookonline.models.user.QueryModel2;
+import com.sbdevs.bookonline.models.java.QueryModel2;
 
 public class FirebaseAdapter2 extends FirebaseRecyclerAdapter<QueryModel2,FirebaseAdapter2.ViewHolder> {
 

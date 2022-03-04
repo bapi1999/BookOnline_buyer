@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/s_dialog_bg" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Relevance"
+            android:textColor="@color/grey_900"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/relevance_radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/relevance_radio1"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:checked="true"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="Price Low - High" />
+
+            <RadioButton
+                android:id="@+id/relevance_radio2"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="Price High - Low" />
+
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/type_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+        <TextView
+            android:id="@+id/textView61"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Type"
+            android:textColor="@color/grey_900"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/type_chipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView61"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/type_chip1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="new"
+                android:text="New" />
+
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/type_chip2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="used"
+                android:text="Used Book" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/type_chip3"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="refurbished"
+                android:text="Refurbished" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/condition_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/type_container">
+
+        <TextView
+            android:id="@+id/textView62"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Condition"
+            android:textColor="@color/grey_900"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/condition_chipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView62"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/condition_chip1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="good"
+                android:text="Good" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/condition_chip2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="almost_new"
+                android:text="Almost new" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/condition_chip3"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="half_bad"
+                android:text="Half bad" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/condition_chip4"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="bad"
+                android:text="Bad" />
+        </com.google.android.material.chip.ChipGroup>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/printed_yera_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/condition_container">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Printed year"
+            android:textColor="@color/grey_900"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/print_chipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView62"
+            app:singleSelection="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/print_chip2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2022"
+                android:text="2022" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/print_chip3"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2021"
+                android:text="2021" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/print_chip4"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2021"
+                android:text="2020" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout24"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/printed_yera_container">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="By price"
+                android:textColor="@color/grey_900"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/type_chipGroup" />
+            <ImageView
+                android:layout_width="17dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_baseline_currency_rupee_24"
+                app:tint="@color/grey_900" />
+
+        </LinearLayout>
+
+
+        <RadioGroup
+            android:id="@+id/price_radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/price_radio1"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:paddingStart="13dp"
+                android:paddingEnd="13dp"
+                android:checked="true"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="All price" />
+
+            <RadioButton
+                android:id="@+id/price_radio2"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:paddingStart="13dp"
+                android:paddingEnd="13dp"
+                android:layout_marginEnd="8dp"
+                android:button="@android:color/transparent"
+                android:background="@drawable/radio_btn_selector"
+                android:textColor="@color/radio_text_color"
+                android:text="Custom price range" />
+
+        </RadioGroup>
+
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/price_range_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.0"
+            android:valueTo="15000.0"
+            android:stepSize="5"
+            app:haloColor="@color/secondaryLightColor"
+            app:haloRadius="20dp"
+            app:tickVisible="false"
+            app:thumbColor="@color/secondaryColor"
+            app:thumbRadius="12dp"
+            app:trackColorActive="@color/secondaryColor"
+
+            app:trackHeight="5dp"
+            app:minSeparation="100dp"
+            app:values="@array/initial_slider_values"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/price_range_text_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/lower_input"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/s_border_1"
+                android:backgroundTint="@color/grey_700"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="0.0"
+                android:textSize="17sp"
+                app:drawableStartCompat="@drawable/ic_baseline_currency_rupee_24" />
+
+            <View
+                android:id="@+id/divider15"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:attr/listDivider"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/upper_input"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/s_border_1"
+                android:backgroundTint="@color/grey_700"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="1000.0"
+                android:textSize="17sp"
+                app:drawableStartCompat="@drawable/ic_baseline_currency_rupee_24" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/apply_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/apply"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout24" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

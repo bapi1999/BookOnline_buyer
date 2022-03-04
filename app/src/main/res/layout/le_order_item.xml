@@ -11,6 +11,7 @@
         android:layout_height="100dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/as_square_placeholder" />
@@ -110,13 +111,20 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/s_shape_bg_1"
+        android:backgroundTint="@color/amber_600"
+        android:paddingStart="10dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="3dp"
         android:text="state"
         android:textAllCaps="true"
-        android:textColor="@color/grey_700"
-        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout23" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout23"
+        tools:ignore="TextContrastCheck" />
 
     <View
         android:id="@+id/divider12"

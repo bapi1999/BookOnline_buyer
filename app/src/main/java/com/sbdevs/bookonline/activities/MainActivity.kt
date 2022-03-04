@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -26,11 +27,16 @@ import com.sbdevs.bookonline.models.NotificationModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import androidx.core.view.GravityCompat
-import com.sbdevs.bookonline.activities.seller.SellerDashboardActivity
-import com.sbdevs.bookonline.activities.seller.SellerRegisterActivity
+import com.sbdevs.bookonline.activities.donation.AllDonationActivity
+import com.sbdevs.bookonline.activities.donation.MyDonationActivity
+import com.sbdevs.bookonline.activities.java.SearchActivity2
 import com.sbdevs.bookonline.activities.user.CartActivity
+import com.sbdevs.bookonline.activities.user.SellerShopActivity
+import com.squareup.picasso.Picasso
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,6 +55,14 @@ class MainActivity : AppCompatActivity() {
     private val gone = View.GONE
     private val visible = View.VISIBLE
     private var isSeller = false
+
+    private lateinit var userImage: ImageView
+    private lateinit var userName: TextView
+    private lateinit var userMail: TextView
+    private lateinit var profileText: TextView
+    private lateinit var donorContributedItem: TextView
+    private lateinit var donorCurrentPoint: TextView
+    private lateinit var donorBadge: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +99,14 @@ class MainActivity : AppCompatActivity() {
 //        (this as AppCompatActivity?)!!.supportActionBar!!.show()
         binding.navView.setupWithNavController(navController)
         val header = binding.navView.getHeaderView(0)
-        val userName: TextView = header.findViewById(R.id.nav_header_txt)
+
+        userImage = header.findViewById(R.id.user_image)
+        userName = header.findViewById(R.id.nav_header_txt)
+        userMail = header.findViewById(R.id.user_mail)
+        profileText = header.findViewById(R.id.profile_text)
+        donorContributedItem = header.findViewById(R.id.total_item_count)
+        donorCurrentPoint = header.findViewById(R.id.total_point)
+        donorBadge = header.findViewById(R.id.donor_badge)
 
         lifecycleScope.launch(Dispatchers.IO) {
 
@@ -137,14 +158,27 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.notificationFragment)
                     closeDrawer()
                 }
+
+                R.id.donate_menu ->{
+                    val donationIntent = Intent(this, AllDonationActivity::class.java)
+                    startActivity(donationIntent)
+                    closeDrawer()
+                }
+
+                R.id.my_donations ->{
+                    val myDonationIntent = Intent(this, MyDonationActivity::class.java)
+                    startActivity(myDonationIntent)
+                    closeDrawer()
+                }
+
                 R.id.termCondition ->{
-                    val webIntent = Intent(this,WebViewActivity::class.java)
-                    startActivity(webIntent)
+                    val dashIntent = Intent(this,SellerShopActivity::class.java)
+                    startActivity(dashIntent)
                     closeDrawer()
                 }
                 R.id.privacy_policy ->{
+
                     closeDrawer()
-                    //
                 }
                 R.id.return_policy ->{
                     closeDrawer()
@@ -321,17 +355,69 @@ class MainActivity : AppCompatActivity() {
                 .get().addOnSuccessListener {
                     val email = it.getString("email").toString()
                     val name = it.getString("name").toString()
-                    isSeller = it.getBoolean("Is_seller")!!
-
+                    val profile = it.getString("profile").toString()
                     val timeStamp1:Timestamp = (it.get("new_notification") as Timestamp?)!!
+                    val totalQty:Long = it.getLong("total_donation_qty")!!.toLong()
+                    val totalPoint = it.getLong("total_donation_point")!!.toLong()
+
+                    userName.text = name
+                    userMail.text = email
+                    donorCurrentPoint.text = totalPoint.toString()
+                    donorContributedItem.text = totalQty.toString()
+
+                    if (profile.isNullOrEmpty()){
+                        profileText.visibility = visible
+                        val firstLetter = name.substring( 0 , 1 ).uppercase(Locale.getDefault())
+                        profileText.text = firstLetter
+                    }else{
+                        profileText.visibility = View.INVISIBLE
+                        Picasso.get()
+                            .load(profile)
+                            .placeholder(R.drawable.as_square_placeholder)
+                            .resize(100, 100)
+                            .centerCrop()
+                            .into(userImage)
+                    }
+
+
+
+
+                    when {
+                        totalQty <10 -> {
+                            //donor badge image is created
+
+                        }
+                        totalQty in 10..49 -> {
+                            //donor badge image is created
+
+                        }
+                        totalQty in 50..199 -> {
+                            //donor badge image is created
+
+                        }
+                        totalQty in 200..499 -> {
+
+                        }
+                        totalQty in 500..1499 -> {
+
+                        }
+                        totalQty in 1500..4999 -> {
+
+                        }
+                        totalQty in 5000..9999 -> {
+
+                        }
+                        totalQty >10000 -> {
+
+                        }
+
+                    }
+
+
 
                     getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
 
-                    if (name == "") {
-                        textView.text = email
-                    } else {
-                        textView.text = name
-                    }
+
                 }
         }else{
             textView.text = getString(R.string.you_aren_t_logged_in)

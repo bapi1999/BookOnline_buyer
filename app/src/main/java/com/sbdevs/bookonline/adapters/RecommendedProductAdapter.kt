@@ -50,7 +50,7 @@ class RecommendedProductAdapter(var list: ArrayList<SearchModel>) :
                 itemView.context.startActivity(productIntent)
             }
             productName.text = model.book_title
-            val url = model.product_thumbnail
+            val url = model.productImage_List[0]
             val stockQty: Long = model.in_stock_quantity
 
             val priceOriginal: Long = model.price_original

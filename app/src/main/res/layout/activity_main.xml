@@ -17,14 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primaryColor"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat"
             app:contentInsetStart="0dp"
             app:contentInsetStartWithNavigation="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
 
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar">
+            >
 
             <ImageView
                 android:layout_width="100dp"

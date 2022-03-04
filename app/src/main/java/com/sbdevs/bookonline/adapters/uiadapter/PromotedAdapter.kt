@@ -48,7 +48,7 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
             firebaseFirestore.collection("PRODUCTS").document(productId)
                 .get().addOnSuccessListener {
 
-                    val url:String = it.get("product_thumbnail").toString().trim()
+                    val productImgList = it.get("productImage_List") as ArrayList<String>
                     val title:String = it.getString("book_title")!!
 
 
@@ -69,10 +69,10 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
                     productName.text = title
 
                     Picasso.get()
-                        .load(url)
+                        .load(productImgList[0])
                         .placeholder(R.drawable.as_square_placeholder)
-                        //.resize(300, 300)
-                        .fit()
+                        .resize(300, 300)
+                        .centerCrop()
                         .into(productImage)
 
 

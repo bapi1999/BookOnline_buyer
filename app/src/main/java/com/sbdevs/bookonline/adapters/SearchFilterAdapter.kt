@@ -43,13 +43,16 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
         private val bookConditionText:TextView = itemView.findViewById(R.id.product_condition)
 
         fun bind(model:SearchModel){
+
             itemView.setOnClickListener {
                 val productIntent = Intent(itemView.context, ProductActivity::class.java)
                 productIntent.putExtra("productId",model.productId)
                 itemView.context.startActivity(productIntent)
             }
+
+
             productName.text = model.book_title
-            val url = model.product_thumbnail
+            val url:String = model.productImage_List[0]
             val stockQty:Long = model.in_stock_quantity
 
             val priceOriginal:Long = model.price_original
@@ -61,8 +64,8 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
             Picasso.get()
                 .load(url)
                 .placeholder(R.drawable.as_square_placeholder)
-                //.resize(300, 300)
-                //.centerCrop()
+                .resize(200, 200)
+                .centerCrop()
                 .into(productImage)
 
             if (priceOriginal == 0L){

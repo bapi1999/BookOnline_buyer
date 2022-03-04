@@ -24,6 +24,7 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.user.CartAdapter
 import com.sbdevs.bookonline.databinding.ActivityCartBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
+import com.sbdevs.bookonline.models.user.CartMapModel
 import com.sbdevs.bookonline.models.user.CartModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,7 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
     private val user = Firebase.auth.currentUser
 
     var cartList:ArrayList<MutableMap<String,Any>> = ArrayList()
-
+    var newCartList:ArrayList<CartMapModel> = ArrayList()
     var sendingList:ArrayList<CartModel> = ArrayList()
 
     var netSellingPrice: Int = 0
@@ -177,6 +178,116 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
             }.await()
 
     }
+
+    private suspend fun getMyCartNew(){
+
+        firebaseFirestore.collection("USERS").document(user!!.uid)
+            .collection("USER_DATA").document("MY_CART")
+            .get().addOnSuccessListener {
+                val x = it.get("cart_list")
+                if (x ==null){
+                    binding.emptyContainer.visibility = View.VISIBLE
+                    binding.btnContainer.visibility = View.GONE
+                    binding.scrollviewCart.visibility = View.GONE
+                    loadingDialog.dismiss()
+
+                }else{
+//                    binding.proceedBtn.isEnabled = true
+//                    binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
+
+                    newCartList = x as ArrayList<CartMapModel>
+
+                    if (cartList.isEmpty()){
+
+                        binding.emptyContainer.visibility = View.VISIBLE
+                        binding.btnContainer.visibility = View.GONE
+                        binding.scrollviewCart.visibility = View.GONE
+                        loadingDialog.dismiss()
+
+                    }else{
+
+                        binding.proceedBtn.isEnabled = true
+                        binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
+
+
+                        binding.lay2.totalItem.text = "( ${cartList.size} item)"
+
+                        lifecycleScope.launch {
+                            getProduct(cartList)
+                        }
+
+
+                    }
+
+                }
+
+            }.addOnFailureListener {
+                Log.e("Fetch cartList","${it.message}")
+            }.await()
+
+    }
+
+    private suspend fun getProductNew(list :ArrayList<MutableMap<String, Any>>){
+        var count = 0
+
+
+
+        for (group in list){
+            val sellerId:String = group["Seller_id"] as String
+            val products:ArrayList<String> = group["product"] as ArrayList<String>
+            val quantities: ArrayList<Long> = group["quantity"] as ArrayList<Long>
+
+
+            for (i in 0..products.size){
+
+                firebaseFirestore.collection("PRODUCTS").document(products[i])
+                    .get().addOnSuccessListener {
+
+                        val productImgList = it.get("productImage_List") as ArrayList<String>
+                        val sellerId = it.getString("PRODUCT_SELLER_ID").toString()
+                        val title = it.getString("book_title")!!
+                        val stockQuantity = it.getLong("in_stock_quantity")!!
+
+                        val priceOriginal = it.getLong("price_original")!!.toLong()
+                        val priceSelling = it.getLong("price_selling")!!.toLong()
+
+                        val deliveryCharge1 = if (priceSelling>=500){
+                            0L
+                        }else{
+                            40L
+                        }
+
+                        sendingList.add(CartModel(products[i],sellerId,productImgList[0],title,priceOriginal,priceSelling,deliveryCharge1,stockQuantity,quantities[i]))
+
+
+                        if (stockQuantity == 0L){
+//                            binding.proceedBtn.isEnabled = false
+                            binding.proceedBtn.backgroundTintList = AppCompatResources.getColorStateList(this, R.color.grey_400)
+                            allItemStocked = false
+
+                        }
+
+                        if (count == list.size - 1){
+                            loadingDialog.dismiss()
+                            adapter.list = sendingList
+                            adapter.notifyDataSetChanged()
+                            calculateThePrice(sendingList)
+                        }
+
+                        swipeRefresh.isRefreshing = false
+                    }.addOnFailureListener {
+                        Log.e("Individual product Data fetch","${it.message}")
+                        loadingDialog.dismiss()
+                    }.await()
+
+                count +=1
+            }
+
+        }
+
+    }
+
+
     private suspend fun getProduct(list :ArrayList<MutableMap<String, Any>>){
         var count = 0
         for (group in list){
@@ -186,7 +297,7 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
             firebaseFirestore.collection("PRODUCTS").document(productId)
                 .get().addOnSuccessListener {
 
-                    val url = it.get("product_thumbnail").toString().trim()
+                    val productImgList = it.get("productImage_List") as ArrayList<String>
                     val sellerId = it.getString("PRODUCT_SELLER_ID").toString()
                     val title = it.getString("book_title")!!
                     val stockQuantity = it.getLong("in_stock_quantity")!!
@@ -200,7 +311,7 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
                         40L
                     }
 
-                    sendingList.add(CartModel(productId,sellerId,url,title,priceOriginal,priceSelling,deliveryCharge1,stockQuantity,qty))
+                    sendingList.add(CartModel(productId,sellerId,productImgList[0],title,priceOriginal,priceSelling,deliveryCharge1,stockQuantity,qty))
 
 
                     if (stockQuantity == 0L){
@@ -290,17 +401,14 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
                     Toast.makeText(this,"Your entered Quantity exceeds Stock Quantity", Toast.LENGTH_LONG).show()
 
                 }else{
-                    textView.text = qty
+//                    textView.text = qty
+//
+//                    sendingList[position].orderQuantity = qty.toLong()
+//
+//                    adapter.notifyItemChanged(position)
+//                    calculateThePrice(sendingList)
 
-                    sendingList[position].orderQuantity = qty.toLong()
-
-
-
-
-                    adapter.notifyItemChanged(position)
-                    calculateThePrice(sendingList)
-
-                    updateProductQuantityInsideDB(cartModelAtIndex.productId,qty.toLong(),position)
+                    updateProductQuantityInsideDB(cartModelAtIndex.productId,qty.toLong(),position,textView)
                     qtyDialog.dismiss()
 
 
@@ -327,11 +435,6 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
         binding.totalAmount.text = totalPriceToPay.toString()
 
     }
-
-//    private fun refreshList(){
-//        getFirebaseData3()
-//    }
-
 
     private fun calculateThePrice(list: ArrayList<CartModel> ){
 
@@ -371,7 +474,7 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
         }
     }
 
-    private fun updateProductQuantityInsideDB(productId:String, qty:Long, position: Int){
+    private fun updateProductQuantityInsideDB(productId:String, qty:Long, position: Int,textView: TextView){
         val listMap:MutableMap<String,Any> = HashMap()
         listMap["product"] = productId
         listMap["quantity"] = qty
@@ -382,12 +485,13 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
 
         firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
             .document("MY_CART").update(cartmap)
-            .addOnCompleteListener {
-                if (it.isSuccessful){
-//                    Toast.makeText(context,"Successful",Toast.LENGTH_SHORT).show()
-                }else{
-//                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
-                }
+            .addOnSuccessListener {
+
+                textView.text = qty.toString()
+                sendingList[position].orderQuantity = qty
+                adapter.notifyItemChanged(position)
+                calculateThePrice(sendingList)
+
             }
     }
 
