@@ -14,8 +14,11 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
@@ -127,6 +130,7 @@ class LoginFragment : Fragment() {
                 try {
                     firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
                     withContext(Dispatchers.Main){
+                        retrieveUserToken()
                         Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
                         val intent = Intent(context,MainActivity::class.java)
                         startActivity(intent)
@@ -145,6 +149,24 @@ class LoginFragment : Fragment() {
             }
 
         }
+    }
+
+
+    private fun retrieveUserToken(){
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token:String = task.result
+                val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
+
+                FirebaseDatabase.getInstance().getReference("Tokens")
+                    .child(userId)
+                    .setValue(token)
+
+            }
+
+        }
+
     }
 
 

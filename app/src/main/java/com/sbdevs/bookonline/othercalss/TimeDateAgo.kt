@@ -11,7 +11,7 @@ import kotlin.collections.ArrayList
 
 
 
-class FireStoreData {
+class TimeDateAgo {
 
     public val firebaseFirestore = Firebase.firestore
     val firebaseAuth = Firebase.auth

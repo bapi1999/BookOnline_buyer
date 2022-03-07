@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.java.SearchFilterJavaActivity">
+    tools:context=".activities.java.SearchFilterJavaActivity"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar2"
@@ -32,15 +33,18 @@
             <TextView
                 android:id="@+id/query_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
                 android:background="@drawable/s_shape_bg_2"
-                android:backgroundTint="@color/grey_100"
+                android:backgroundTint="@color/grey_200"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:padding="5dp"
                 android:text="@string/search_hint"
                 android:textSize="15sp"
+                android:textColor="@color/grey_800"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +69,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            tools:listitem="@layout/le_search_filter_item"/>
 
         <TextView
             android:id="@+id/no_result_found_text"

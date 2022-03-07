@@ -16,7 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.user.OrderDetailsActivity
 import com.sbdevs.bookonline.models.NotificationModel
-import com.sbdevs.bookonline.othercalss.FireStoreData
+import com.sbdevs.bookonline.othercalss.TimeDateAgo
 
 class NotificationAdapter(var list:List<NotificationModel>): RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
@@ -85,7 +85,7 @@ class NotificationAdapter(var list:List<NotificationModel>): RecyclerView.Adapte
             Glide.with(itemView.context).load(image)
                 .placeholder(R.drawable.as_notification_holder)
                 .into(notificationImage)
-            val dateFormat = FireStoreData()
+            val dateFormat = TimeDateAgo()
 //            val dayAgo = dateFormat.durationFromNow(item.date)
             val msAgo = dateFormat.msToTimeAgo(itemView.context,item.date)
             notificationTime.text = msAgo

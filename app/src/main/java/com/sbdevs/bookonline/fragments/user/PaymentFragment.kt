@@ -1,5 +1,6 @@
 package com.sbdevs.bookonline.fragments.user
 
+import android.content.res.AssetFileDescriptor
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -14,13 +15,18 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.FragmentPaymentBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.models.user.CartModel
+import com.sbdevs.bookonline.othercalss.NotificationData
+import com.sbdevs.bookonline.othercalss.PushNotification
+import com.sbdevs.bookonline.othercalss.RetrofitInstance
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -29,6 +35,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+const val TOPIC = "/topics/myTopic2"
 
 class PaymentFragment : Fragment() {
     private var _binding: FragmentPaymentBinding? = null
@@ -36,6 +43,7 @@ class PaymentFragment : Fragment() {
 
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
+    private val database = Firebase.database
 
     var receivedList: ArrayList<CartModel> = ArrayList()
     private var dbOrderList: ArrayList<String> = ArrayList()
@@ -52,6 +60,7 @@ class PaymentFragment : Fragment() {
     private lateinit var confirmBtn:Button
 
     private lateinit var address: MutableMap<String, Any>
+
 
 
     override fun onCreateView(
@@ -315,6 +324,7 @@ class PaymentFragment : Fragment() {
         firebaseFirestore.collection("ORDERS")
             .document(docName).set(productMap).addOnSuccessListener {
                 notifySeller(thumbnail, title, orderQty, docName, sellerId)
+                getSellerToken( title, orderQty, sellerId)
             }.addOnFailureListener {
                 Log.e("Create order error ","${it.message}")
             }.await()
@@ -366,10 +376,12 @@ class PaymentFragment : Fragment() {
         orderQuantity: Long, docName: String, sellerId: String
     ) {
 
+        val description = "( $orderQuantity ) product named ( $title ) has been ordered"
+
         val notificationMap: MutableMap<String, Any> = HashMap()
         notificationMap["date"] = FieldValue.serverTimestamp()
-        notificationMap["description"] =
-            "( $orderQuantity ) product named ( $title ) has been ordered"
+        notificationMap["description"] =description;
+
         notificationMap["image"] = thumbnail
         notificationMap["order_id"] = docName
         notificationMap["seen"] = false
@@ -378,6 +390,7 @@ class PaymentFragment : Fragment() {
             .collection("NOTIFICATIONS").add(notificationMap)
             .addOnSuccessListener {
                 Log.i("Notify Seller", "successful")
+
             }
             .addOnFailureListener {
                 Log.e("Notify Seller", "${it.message}")
@@ -385,6 +398,42 @@ class PaymentFragment : Fragment() {
 
 
     }
+
+    private fun getSellerToken(title: String, orderQuantity: Long, sellerId: String ){
+        database.getReference("Tokens").child(sellerId).get().addOnSuccessListener {snapShot ->
+            val sellerToken = snapShot.value.toString()
+            val description = "( $orderQuantity ) product named ( $title ) has been ordered"
+            val title = "New Order"
+            val message = description
+
+            if(title.isNotEmpty() && message.isNotEmpty() && sellerToken.isNotEmpty()) {
+                PushNotification(
+                    NotificationData(title, message),
+                    sellerToken
+                ).also {
+                    sendNotification(it)
+                }
+            }
+        }
+
+    }
+
+
+
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d("TAG", "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e("error2", response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e("error1", e.toString())
+        }
+    }
+
 
 
 }

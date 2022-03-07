@@ -11,8 +11,10 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
@@ -126,7 +128,7 @@ class MyAccountFragment : Fragment() {
 
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
-                    firebaseAuth.signOut()
+                    logOutUser()
                     ///SharedDataClass.dbCartList.clear()
                 }
                 withContext(Dispatchers.Main){
@@ -197,6 +199,23 @@ class MyAccountFragment : Fragment() {
            Log.e("User","${it.message}")
             loadingDialog.dismiss()
         }.await()
+    }
+
+
+    private fun logOutUser(){
+        val userId = FirebaseAuth.getInstance().currentUser
+        if (userId != null){
+            firebaseAuth.signOut()
+            deleteToken(userId.uid)
+        }
+    }
+    private fun deleteToken(uid:String){
+
+        FirebaseDatabase.getInstance()
+            .getReference("Tokens")
+            .child(uid)
+            .removeValue()
+
     }
 
 }

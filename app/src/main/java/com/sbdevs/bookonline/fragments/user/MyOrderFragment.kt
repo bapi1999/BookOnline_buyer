@@ -9,20 +9,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.user.MyOrderAdapter
 import com.sbdevs.bookonline.databinding.FragmentMyOrderBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
 import com.sbdevs.bookonline.models.user.MyOrderModel
-import com.sbdevs.bookonline.othercalss.FireStoreData
 import kotlin.collections.ArrayList
 
 

@@ -96,7 +96,7 @@ public class SearchFilterJavaAdapter extends RecyclerView.Adapter<SearchFilterJa
             bookConditionText.setText(model.getBook_condition());
 
             Picasso.get().load(url).placeholder(R.drawable.as_square_placeholder)
-                    .resize(100, 100).centerCrop()
+                    .resize(200, 200).centerCrop()
                     .into(productImage);
 
             if (priceOriginal == 0L) {

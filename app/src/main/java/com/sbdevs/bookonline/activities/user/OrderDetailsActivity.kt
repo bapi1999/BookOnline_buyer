@@ -22,7 +22,7 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
 import com.sbdevs.bookonline.databinding.ActivityOrderDetailsBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
-import com.sbdevs.bookonline.othercalss.FireStoreData
+import com.sbdevs.bookonline.othercalss.TimeDateAgo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -170,7 +170,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     val returnPeriod = it.getLong("Time_period")!!.toLong()
                     val address: MutableMap<String, Any> = it.get("address") as MutableMap<String, Any>
 
-                    val daysAgo = FireStoreData().msToTimeAgo(this@OrderDetailsActivity, orderTime)
+                    val daysAgo = TimeDateAgo().msToTimeAgo(this@OrderDetailsActivity, orderTime)
 
                     productId = productIdDB
 
@@ -385,7 +385,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         binding.orderTrackContainer.visibility = gone
         binding.statusTxt.text = "Canceled"
 
-        binding.lay0.cancellationTime.text = FireStoreData().msToTimeAgo(this, cancelT)
+        binding.lay0.cancellationTime.text = TimeDateAgo().msToTimeAgo(this, cancelT)
         binding.lay0.cancellationText.text = "Order is canceled by customer"
 
     }

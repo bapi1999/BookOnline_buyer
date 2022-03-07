@@ -3,18 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:elevation="1dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
 
     <ImageView
         android:id="@+id/product_image"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="2dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/as_square_placeholder" />
 
     <TextView
@@ -25,10 +28,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
-        android:maxLines="1"
+        android:maxLines="2"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/grey_900"
-        android:textSize="14sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
@@ -94,7 +97,7 @@
             android:maxLength="9"
             android:text="XXXXXXX"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -117,7 +120,7 @@
             android:layout_marginStart="8dp"
             android:maxLength="13"
             android:text="00% off"
-            android:textColor="@color/successGreen"
+            android:textColor="@color/grey_700"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -184,19 +187,18 @@
     </LinearLayout>
 
 
-
     <ImageView
         android:id="@+id/outofstock_icon"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:background="#77FFFFFF"
+        android:padding="25dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/product_image"
         app:layout_constraintEnd_toEndOf="@+id/product_image"
         app:layout_constraintStart_toStartOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="@+id/product_image"
-        app:srcCompat="@drawable/as_out_of_stock"
-        android:visibility="visible"
-        android:padding="15dp"/>
+        app:srcCompat="@drawable/as_out_of_stock" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,16 +38,12 @@ class SearchFilterActivity : AppCompatActivity() {
     lateinit var dialog: BottomSheetDialog
     private val firebaseFirestore = Firebase.firestore
 
-
     private var allSearchList: ArrayList<SearchModel> = ArrayList()
-
-
     private lateinit var searchFilterAdapter: SearchFilterAdapter
 
-
-    private val codeList: MutableList<String> = ArrayList()
     private val yearList: MutableList<String> = ArrayList()
     private var tags : MutableList<String> = ArrayList()
+    private var subTagList:MutableList<String> = ArrayList()
     private var priceRelevanceDirection = Query.Direction.ASCENDING
     private var bookType="";
     private var bookCondition = "";
@@ -81,9 +77,6 @@ class SearchFilterActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-
-//        loadingDialog.show(supportFragmentManager,"show")
-
         dialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialog)
         val view: View = layoutInflater.inflate(R.layout.ar_search_filter_bottom_sheet, null)
         dialog.setContentView(view)
@@ -96,11 +89,10 @@ class SearchFilterActivity : AppCompatActivity() {
         binding.queryText.text  = query.toString()
 
         var queryList: List<String> = query?.lowercase()?.split(" ")!!
-
-
         tags.addAll(queryList)
 
-//        queryEqualCount0()
+        loadingDialog.show(supportFragmentManager,"show")
+        queryEqualCount0()
 
         searchFilterAdapter = SearchFilterAdapter(allSearchList)
         searchRecycler.adapter = searchFilterAdapter
@@ -245,57 +237,56 @@ class SearchFilterActivity : AppCompatActivity() {
             upperInput.text = upperLimit.toString()
         }
 
-
         applyBtn.setOnClickListener {
             subFilterMap.clear()
             searchFilterAdapter.notifyItemRangeRemoved(0,allSearchList.size)
             allSearchList.clear()
             lastResult = null
+            subTagList.clear()
 
             subFilterMap.putAll(mainFilterMap)
 
-            if(yearList.size !=0){
-                tags.addAll(yearList)
-            }
-
-
-            var st = "map size ${mainFilterMap.size} \n"
-            st += "_______________________\n"
-
-            val keynum = subFilterMap.keys
-            val valunum = subFilterMap.values
-            for (i in 0 until subFilterMap.size){
-                st +="${valunum.elementAt(i)} = ${keynum.elementAt(i)} \n"
-            }
-            st += if (priceRageIsApplied){
-                " Price Range Applied \n lower: $lowerLimit / upper: $upperLimit\n"
-            }else{
-                " No Price Range Applied\n"
-            }
-
-            st += "\n tags $tags \n"
-
-            st += "_______________________\n"
-            binding.noResultFoundText.text = st
-
-//            when(subFilterMap.size){
-//                0->{
-//                    queryEqualCount0()
-//                    searchCode = 0
-//                }
-//                1->{
-//                    queryEqualCount1(subFilterMap)
-//                    searchCode = 1
-//                }
-//                2->{
-//                    queryEqualCount2(subFilterMap)
-//                    searchCode = 2
-//                }
+//            subTagList.addAll(tags)
+//            subTagList.addAll(yearList)
+//
+//            var st = "map size ${mainFilterMap.size} \n"
+//            st += "_______________________\n"
+//            val keynum = subFilterMap.keys
+//            val valunum = subFilterMap.values
+//            for (i in 0 until subFilterMap.size){
+//                st +="${valunum.elementAt(i)} = ${keynum.elementAt(i)} \n"
 //            }
+//            st += if (priceRageIsApplied){
+//                " Price Range Applied \n lower: $lowerLimit / upper: $upperLimit\n"
+//            }else{
+//                " No Price Range Applied\n"
+//            }
+//            st += "\n tags $subTagList \n"
+//            st += "_______________________\n"
+//            binding.noResultFoundText.text = st
+
+
+
+            when(subFilterMap.size){
+                0->{
+                    queryEqualCount0()
+                    searchCode = 0
+                }
+                1->{
+                    queryEqualCount1(subFilterMap)
+                    searchCode = 1
+                }
+                2->{
+                    queryEqualCount2(subFilterMap)
+                    searchCode = 2
+                }
+            }
 
             dialog.dismiss()
 
         }
+
+
     }
 
 
@@ -358,12 +349,17 @@ class SearchFilterActivity : AppCompatActivity() {
 
         val searchList: ArrayList<SearchModel> = ArrayList()
         searchList.clear()
-        val filterTask:Query
 
+
+
+        subTagList.addAll(tags)
+        subTagList.addAll(yearList)
+
+        val filterTask:Query
         if (lastResult == null){
             filterTask = if (!priceRageIsApplied){
                 firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
+                    .whereArrayContainsAny("tags", subTagList)
                     .orderBy("price_selling",priceRelevanceDirection)
             } else{
                 firebaseFirestore.collection("PRODUCTS")
@@ -451,14 +447,17 @@ class SearchFilterActivity : AppCompatActivity() {
                 binding.progressBar2.visibility = View.GONE
             }
 
-
+            subTagList.clear()
             loadingDialog.dismiss()
         }.addOnFailureListener {
             Log.e("get search query 0", "${it.message}")
             loadingDialog.dismiss()
+            subTagList.clear()
         }
 
     }
+
+
 
 
     private fun queryEqualCount1(queryMap: MutableMap<Any,String>){
@@ -468,17 +467,21 @@ class SearchFilterActivity : AppCompatActivity() {
         val searchList: ArrayList<SearchModel> = ArrayList()
         searchList.clear()
 
+        val subTagList:MutableList<String> = ArrayList()
+        subTagList.addAll(tags)
+        subTagList.addAll(yearList)
+
         val filterTask:Query
 
         if (lastResult == null){
             filterTask = if (!priceRageIsApplied){
                 firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
+                    .whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .orderBy("price_selling",priceRelevanceDirection)
             } else{
                 firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
+                    .whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .whereGreaterThan("price_selling",lowerLimit)
                     .whereLessThan("price_selling",upperLimit)
@@ -488,13 +491,13 @@ class SearchFilterActivity : AppCompatActivity() {
         else{
             filterTask = if (!priceRageIsApplied){
                 firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
+                    .whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .orderBy("price_selling",priceRelevanceDirection)
                     .startAfter(lastResult)
             } else{
                 firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
+                    .whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .whereGreaterThan("price_selling",lowerLimit)
                     .whereLessThan("price_selling",upperLimit)
@@ -572,23 +575,25 @@ class SearchFilterActivity : AppCompatActivity() {
 
     private fun queryEqualCount2(queryMap: MutableMap<Any,String>){
         Toast.makeText(this,"2 query",Toast.LENGTH_LONG).show()
-
         val keys = queryMap.keys
         val values = queryMap.values
-
         val searchList: ArrayList<SearchModel> = ArrayList()
         searchList.clear()
+
+        val subTagList:MutableList<String> = ArrayList()
+        subTagList.addAll(tags)
+        subTagList.addAll(yearList)
 
         val filterTask:Query
 
         if (lastResult == null){
             filterTask = if (!priceRageIsApplied){
-                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", tags)
+                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .whereEqualTo(values.elementAt(1),keys.elementAt(1))
                     .orderBy("price_selling",priceRelevanceDirection)
             } else{
-                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", tags)
+                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .whereEqualTo(values.elementAt(1),keys.elementAt(1))
                     .whereGreaterThan("price_selling",lowerLimit)
@@ -598,13 +603,13 @@ class SearchFilterActivity : AppCompatActivity() {
         }
         else{
             filterTask = if (!priceRageIsApplied){
-                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", tags)
+                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .whereEqualTo(values.elementAt(1),keys.elementAt(1))
                     .orderBy("price_selling",priceRelevanceDirection)
                     .startAfter(lastResult)
             } else{
-                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", tags)
+                firebaseFirestore.collection("PRODUCTS").whereArrayContainsAny("tags", subTagList)
                     .whereEqualTo(values.elementAt(0),keys.elementAt(0))
                     .whereEqualTo(values.elementAt(1),keys.elementAt(1))
                     .whereGreaterThan("price_selling",lowerLimit)
@@ -673,122 +678,6 @@ class SearchFilterActivity : AppCompatActivity() {
             }
 
             loadingDialog.dismiss()
-        }.addOnFailureListener {
-            Log.e("get search query 2", "${it.message}")
-            loadingDialog.dismiss()
-        }
-    }
-
-
-    private fun queryEqualCount3(queryMap: MutableMap<Any,String>){
-        Toast.makeText(this,"3 query",Toast.LENGTH_LONG).show()
-
-        val searchList: ArrayList<SearchModel> = ArrayList()
-        searchList.clear()
-
-        val filterTask:Query
-
-        if (lastResult == null){
-            filterTask = if (!priceRageIsApplied){
-                firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
-                    .whereEqualTo("book_type",bookType)
-                    .whereEqualTo("book_condition",bookCondition)
-                    .orderBy("price_selling",priceRelevanceDirection)
-            } else{
-                firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
-                    .whereEqualTo("book_type",bookType)
-                    .whereEqualTo("book_condition",bookCondition)
-                    .whereGreaterThan("price_selling",lowerLimit)
-                    .whereLessThan("price_selling",upperLimit)
-                    .orderBy("price_selling",priceRelevanceDirection)
-            }
-        }
-        else{
-            filterTask = if (!priceRageIsApplied){
-                firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
-                    .whereEqualTo("book_type",bookType)
-                    .whereEqualTo("book_condition",bookCondition)
-                    .orderBy("price_selling",priceRelevanceDirection)
-                    .startAfter(lastResult)
-            } else{
-                firebaseFirestore.collection("PRODUCTS")
-                    .whereArrayContainsAny("tags", tags)
-                    .whereEqualTo("book_type",bookType)
-                    .whereEqualTo("book_condition",bookCondition)
-                    .whereGreaterThan("price_selling",lowerLimit)
-                    .whereLessThan("price_selling",upperLimit)
-                    .orderBy("price_selling",priceRelevanceDirection)
-                    .startAfter(lastResult)
-            }
-        }
-
-        filterTask.limit(10L).get().addOnSuccessListener {
-            val allDocumentSnapshot = it.documents
-
-            if (allDocumentSnapshot.isNotEmpty()){
-
-
-
-                for (documentSnapshot in allDocumentSnapshot) {
-                    val productId = documentSnapshot.id
-                    val productName = documentSnapshot.getString("book_title").toString()
-
-                    val productImgList:ArrayList<String> = documentSnapshot.get("productImage_List") as ArrayList<String>
-
-                    val stockQty: Long = documentSnapshot.getLong("in_stock_quantity")!!.toLong()
-                    val avgRating = documentSnapshot.getString("rating_avg")!!
-                    val totalRatings: Long = documentSnapshot.getLong("rating_total")!!
-
-                    val priceOriginal = documentSnapshot.getLong("price_original")!!.toLong()
-                    val priceSelling = documentSnapshot.getLong("price_selling")!!.toLong()
-
-                    val printedYear = documentSnapshot.getLong("book_printed_ON")!!
-                    val bookCondition = documentSnapshot.getString("book_condition").toString()
-                    val bookType = documentSnapshot.getString("book_type")!!
-
-                    searchList.add(SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
-                }
-                isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
-
-
-            }else{
-                isReachLast = true
-            }
-
-            allSearchList.addAll(searchList)
-
-            if (allSearchList.isEmpty()){
-                searchRecycler.visibility = gone
-                binding.progressBar2.visibility = gone
-                binding.noResultFoundText.visibility = visible
-            }else{
-                searchRecycler.visibility = visible
-                binding.progressBar2.visibility = visible
-                binding.noResultFoundText.visibility = gone
-
-                searchFilterAdapter.list = allSearchList
-
-                if (lastResult == null ){
-                    searchFilterAdapter.notifyItemRangeInserted(0,searchList.size)
-                }else{
-                    searchFilterAdapter.notifyItemRangeInserted(allSearchList.size-1,searchList.size)
-                }
-                loadingDialog.dismiss()
-                //Todo- new approach =================================================================
-                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                lastResult = lastR
-                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
-//Todo- new approach =================================================================
-
-                binding.progressBar2.visibility = View.GONE
-            }
-
-//            newlist = allSearchList.distinctBy { it.productId } as ArrayList<SearchModel>
-
         }.addOnFailureListener {
             Log.e("get search query 2", "${it.message}")
             loadingDialog.dismiss()

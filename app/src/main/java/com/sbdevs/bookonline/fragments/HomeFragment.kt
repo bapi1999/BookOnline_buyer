@@ -57,13 +57,9 @@ class HomeFragment : Fragment() {
         homeRecycler.isNestedScrollingEnabled = false
         homeRecycler.layoutManager = LinearLayoutManager(context)
 
-        //binding.textView40.text = SharedDataClass.uiViewLIst.size.toString()
-
         if (SharedDataClass.uiViewLIst.isEmpty()){
 
-            //Toast.makeText(requireContext(),"1 method",Toast.LENGTH_SHORT).show()
             SharedDataClass.getHomePageData( binding.progressBar2,loadingDialog )
-
             //homeRecycler.adapter = SharedDataClass.homeAdapter
         }else{
             uiViewLIst = SharedDataClass.uiViewLIst
@@ -114,8 +110,8 @@ class HomeFragment : Fragment() {
 //                    }else{
 //                        binding.progressBar2.visibility = View.VISIBLE
 //                        Log.e("last query", "${SharedDataClass.lastResult.toString()}")
-//
 //                    }
+
 
                 }
 

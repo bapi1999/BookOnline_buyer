@@ -12,10 +12,13 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
@@ -187,7 +190,9 @@ class SignUpFragment : Fragment() {
                 .createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
                 .addOnSuccessListener {
                     lifecycleScope.launch(Dispatchers.IO){
+                        retrieveUserToken()
                         createPaths()
+
                     }
                 }
                 .addOnFailureListener {
@@ -250,6 +255,24 @@ class SignUpFragment : Fragment() {
 
         }
 
+
+    }
+
+
+    private fun retrieveUserToken(){
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token:String = task.result
+                val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
+
+                FirebaseDatabase.getInstance().getReference("Tokens")
+                    .child(userId)
+                    .setValue(token)
+
+            }
+
+        }
 
     }
 

@@ -15,7 +15,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.user.OrderDetailsActivity
 import com.sbdevs.bookonline.models.user.MyOrderModel
-import com.sbdevs.bookonline.othercalss.FireStoreData
+import com.sbdevs.bookonline.othercalss.TimeDateAgo
 import java.util.*
 
 
@@ -73,7 +73,7 @@ class MyOrderAdapter(var list: ArrayList<MyOrderModel>) :
             productPriceTxt.text = price.toString()
             productQuantityTxt.text = "$orderedQty"
             productStatusTxt.text = status
-            orderTimeText.text = FireStoreData().msToTimeAgo(itemView.context, orderTime)
+            orderTimeText.text = TimeDateAgo().msToTimeAgo(itemView.context, orderTime)
 
             when (status) {
                 "new" -> {
