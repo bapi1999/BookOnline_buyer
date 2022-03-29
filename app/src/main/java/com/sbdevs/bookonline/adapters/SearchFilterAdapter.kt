@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
+import com.sbdevs.bookonline.models.SearchModel
 import com.squareup.picasso.Picasso
 
 class SearchFilterAdapter(var list:ArrayList<SearchModel>):
@@ -18,7 +18,7 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_search_filter_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_search_filter, parent, false)
         return ViewHolder(view)
     }
 
@@ -42,7 +42,7 @@ class SearchFilterAdapter(var list:ArrayList<SearchModel>):
         private val bookTypeText:TextView = itemView.findViewById(R.id.book_type)
         private val bookConditionText:TextView = itemView.findViewById(R.id.product_condition)
 
-        fun bind(model:SearchModel){
+        fun bind(model: SearchModel){
 
             itemView.setOnClickListener {
                 val productIntent = Intent(itemView.context, ProductActivity::class.java)

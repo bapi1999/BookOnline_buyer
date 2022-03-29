@@ -1,23 +1,16 @@
 package com.sbdevs.bookonline.adapters
 
-import androidx.annotation.NonNull
-
 import android.view.ViewGroup
 
 import com.sbdevs.bookonline.R
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 import com.bumptech.glide.request.RequestOptions
 
 import com.bumptech.glide.Glide
-
-import androidx.viewpager.widget.PagerAdapter
-import com.squareup.picasso.Picasso
 
 
 class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOnItemClickListener) :
@@ -31,7 +24,7 @@ class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOn
         parent: ViewGroup,
         viewType: Int
     ): ProductImgAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_image_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_image,parent,false)
         return ViewHolder(view)
     }
 

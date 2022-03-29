@@ -27,7 +27,7 @@ public class SearchFilterJavaAdapter extends RecyclerView.Adapter<SearchFilterJa
     @Override
     public SearchFilterJavaAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.le_search_filter_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_filter, parent, false);
 
         return new ViewHolder(view);
     }

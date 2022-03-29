@@ -9,9 +9,9 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/primaryColor"
-        android:theme="@style/ThemeOverlay.AppCompat"
+        android:theme="@style/Theme.BookOnline"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="20dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +100,7 @@
                 android:visibility="gone"
                 >
                 <include android:id="@+id/lay2"
-                    layout="@layout/le_product_horizontal_layout"/>
+                    layout="@layout/item_product_horizon_lay"/>
             </LinearLayout>
 
 
@@ -112,7 +112,7 @@
 
                 <include
                     android:id="@+id/lay3"
-                    layout="@layout/le_product_grid_layout" />
+                    layout="@layout/item_product_grid_lay" />
             </LinearLayout>
 
 

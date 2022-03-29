@@ -76,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/le_all_donation_item"/>
+            tools:listitem="@layout/item_all_donation"/>
 
 
     </LinearLayout>

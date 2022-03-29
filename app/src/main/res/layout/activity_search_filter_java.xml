@@ -70,7 +70,7 @@
             android:layout_weight="1"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="vertical"
-            tools:listitem="@layout/le_search_filter_item"/>
+            tools:listitem="@layout/item_search_filter"/>
 
         <TextView
             android:id="@+id/no_result_found_text"

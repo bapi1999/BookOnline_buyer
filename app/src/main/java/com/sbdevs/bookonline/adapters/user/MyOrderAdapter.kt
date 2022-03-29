@@ -25,7 +25,7 @@ class MyOrderAdapter(var list: ArrayList<MyOrderModel>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.le_order_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_order, parent, false)
         return ViewHolder(view)
     }
 

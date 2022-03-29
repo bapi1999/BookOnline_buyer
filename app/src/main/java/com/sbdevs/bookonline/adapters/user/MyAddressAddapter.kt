@@ -28,7 +28,7 @@ class MyAddressAddapter (var list:ArrayList<MutableMap<String,Any>>,var selectNo
         viewType: Int
     ): ViewHolder {
         val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.le_mini_address_view_lay, parent, false)
+            .inflate(R.layout.item_mini_address_view, parent, false)
         return ViewHolder(view)
     }
 

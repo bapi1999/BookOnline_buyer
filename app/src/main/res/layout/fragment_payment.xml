@@ -82,7 +82,7 @@
         app:layout_constraintTop_toBottomOf="@+id/no_address">
 
         <include
-            android:id="@+id/mini_address"
+            android:id="@+id/mini_addres"
             layout="@layout/ar_address_detail_lay" />
     </LinearLayout>
 
@@ -168,26 +168,6 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/confirm_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        android:backgroundTint="@color/grey_600"
-        android:text="Confirm"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="17sp"
-        app:cornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout22"
-        tools:ignore="TextContrastCheck" />
-
     <View
         android:id="@+id/divider8"
         android:layout_width="0dp"
@@ -218,6 +198,45 @@
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
             android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout22">
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/amber_900"
+            android:insetTop="0dp"
+            android:text="Next"
+            android:textSize="17sp"
+            app:cornerRadius="20dp"
+            android:drawableEnd="@drawable/ic_arrow_forward_24"
+            tools:ignore="TextContrastCheck"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/grey_600"
+            android:insetTop="0dp"
+            android:text="Confirm"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:cornerRadius="20dp"
+            tools:ignore="TextContrastCheck" />
     </LinearLayout>
 
 

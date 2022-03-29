@@ -46,12 +46,12 @@ class EditAddressActivity : AppCompatActivity() {
 
         autoCompleteType = binding.lay1.autoCompleteType
         val addressTypelist = resources.getStringArray(R.array.address_type)
-        val typeAdapter = ArrayAdapter(this,R.layout.le_dropdown_item,addressTypelist)
+        val typeAdapter = ArrayAdapter(this,R.layout.item_dropdown,addressTypelist)
         autoCompleteType.setAdapter(typeAdapter)
 
         autoCompleteState = binding.lay1.autoCompleteState
         val stateList = resources.getStringArray(R.array.india_states)
-        val sateAdapter = ArrayAdapter(this,R.layout.le_dropdown_item,stateList)
+        val sateAdapter = ArrayAdapter(this,R.layout.item_dropdown,stateList)
         autoCompleteState.setAdapter(sateAdapter)
     }
 

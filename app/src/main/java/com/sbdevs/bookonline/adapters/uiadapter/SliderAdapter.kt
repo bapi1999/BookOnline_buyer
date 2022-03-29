@@ -17,14 +17,12 @@ class SliderAdapter(var picList:ArrayList<SliderModel> ,var viewPager2: ViewPage
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.le_slider_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_slider,parent,false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val pic = picList[position].url
-        val sliderAction = picList[position].sliderAction
-        holder.bind(pic,sliderAction)
+        holder.bind(picList[position])
 
     }
 
@@ -35,9 +33,12 @@ class SliderAdapter(var picList:ArrayList<SliderModel> ,var viewPager2: ViewPage
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView:ImageView = itemView.findViewById(R.id.imageSliderItem)
 
-        fun bind(data: String,sliderAction: String){
+        fun bind(model:SliderModel){
+            val image = model.image
 
-            Glide.with(itemView.context).load(data).into(imageView)
+            Glide.with(itemView.context).load(image)
+                .placeholder(R.drawable.as_rectangle_placeholder)
+                .into(imageView)
 //            itemView.setOnClickListener {
 //                Toast.makeText(itemView.context,"the action is $sliderAction", Toast.LENGTH_LONG).show()
 //            }

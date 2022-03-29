@@ -19,7 +19,7 @@ import com.sbdevs.bookonline.activities.java.SearchActivity2
 import com.sbdevs.bookonline.adapters.uiadapter.ProductGrid2Adapter
 import com.sbdevs.bookonline.databinding.ActivitySellerShopBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
+import com.sbdevs.bookonline.models.SearchModel
 
 class SellerShopActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySellerShopBinding
@@ -66,7 +66,7 @@ class SellerShopActivity : AppCompatActivity() {
         gridRecycler.layoutManager = GridLayoutManager(this,2)
         gridRecycler.adapter = gridAdapter
         loadingDialog.show(supportFragmentManager,"show")
-        val seller = "10GvOyBVnGYVnanAhFdVHLcHE4g2"
+        val seller = intent.getStringExtra("sellerId").toString()
         getBestSellingProduct(seller)
         getBusinessDetails(seller)
 
@@ -135,8 +135,10 @@ class SellerShopActivity : AppCompatActivity() {
                     val bookCondition = documentSnapshot.getString("book_condition").toString()
                     val bookType = documentSnapshot.getString("book_type")!!
 
-                    gridList.add(SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
+                    gridList.add(
+                        SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
+                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                    )
                 }
 
 
@@ -188,6 +190,7 @@ class SellerShopActivity : AppCompatActivity() {
 
             }
     }
+
 
 
 

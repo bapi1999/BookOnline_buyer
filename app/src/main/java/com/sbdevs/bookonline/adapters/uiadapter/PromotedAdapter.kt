@@ -18,7 +18,7 @@ class PromotedAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Promoted
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_promoted_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_promoted,parent,false)
         return ViewHolder(view)
     }
 

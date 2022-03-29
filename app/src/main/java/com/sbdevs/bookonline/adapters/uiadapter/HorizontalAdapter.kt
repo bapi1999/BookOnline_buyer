@@ -23,7 +23,7 @@ class HorizontalAdapter(var list:ArrayList<String>): RecyclerView.Adapter<Horizo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int
     ): HorizontalAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_horizontal_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_horizontal,parent,false)
         return ViewHolder(view)
     }
 

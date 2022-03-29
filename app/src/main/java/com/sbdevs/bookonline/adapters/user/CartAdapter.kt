@@ -1,7 +1,6 @@
 package com.sbdevs.bookonline.adapters.user
 
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +30,7 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_cart_item_lay_1, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_cart_product, parent, false)
         return ViewHolder(view)
 
     }

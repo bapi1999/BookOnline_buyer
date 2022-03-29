@@ -17,7 +17,7 @@ class OrderSummaryAdapter(var list:ArrayList<CartModel>): RecyclerView.Adapter<O
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_order_summery_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order_summery, parent, false)
         return ViewHolder(view)
     }
 

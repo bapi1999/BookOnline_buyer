@@ -21,7 +21,6 @@ import com.sbdevs.bookonline.adapters.donate.MyDonationAdapter
 import com.sbdevs.bookonline.databinding.ActivityMyDonationBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.models.MyDonationModel
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await

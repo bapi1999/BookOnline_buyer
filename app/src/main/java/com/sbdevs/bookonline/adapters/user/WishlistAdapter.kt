@@ -22,7 +22,7 @@ class WishlistAdapter (var list:ArrayList<String>, val listner: MyonItemClickLis
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_wishlist_item_lay, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_wishlist, parent, false)
         return ViewHolder(view)
     }
 

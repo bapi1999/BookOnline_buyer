@@ -10,12 +10,12 @@ plugins {
 
 
 android {
-    compileSdk 31
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.sbdevs.bookonline"
         minSdk 26
-        targetSdk 31
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -59,7 +59,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:29.0.4')
+    implementation platform('com.google.firebase:firebase-bom:29.1.0')
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
@@ -67,7 +67,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
-    implementation 'com.firebaseui:firebase-ui-storage:8.0.0'
+
     implementation 'com.firebaseui:firebase-ui-database:8.0.0'
 
 
@@ -107,8 +107,7 @@ dependencies {
     //implementation fileTree(dir: "libs", include: [ "*.aar"])
     //implementation 'com.paytm.appinvokesdk:appinvokesdk:1.6.3'
 
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.android.volley:volley:1.2.1'
 
 
 

@@ -9,15 +9,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.models.uidataclass.TopCategoryModel
 import com.squareup.picasso.Picasso
 
-class TopCategoryAdapter(val list: ArrayList<MutableMap<String, String>>) :
+class TopCategoryAdapter(val list: ArrayList<TopCategoryModel>) :
     RecyclerView.Adapter<TopCategoryAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): TopCategoryAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.le_top_category_item, parent, false)
+            .inflate(R.layout.item_top_category, parent, false)
         return ViewHolder(view)
     }
 
@@ -29,7 +30,11 @@ class TopCategoryAdapter(val list: ArrayList<MutableMap<String, String>>) :
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return if(list.size >4){
+            4
+        }else{
+            list.size
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,11 +42,11 @@ class TopCategoryAdapter(val list: ArrayList<MutableMap<String, String>>) :
         val imageView: ImageView = itemView.findViewById(R.id.categoryImage)
         val name: TextView = itemView.findViewById(R.id.categoryName)
 
-        fun bind(item: MutableMap<String, String>) {
+        fun bind(item: TopCategoryModel) {
 
 
-            val url = item["image"].toString()
-            val categoryName = item["name"].toString()
+            val url = item.image
+            val categoryName =item.name
 
 //            Glide.with(itemView.context).load(url)
 //                .placeholder(R.drawable.as_square_placeholder)

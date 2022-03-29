@@ -63,7 +63,7 @@
         android:id="@+id/address_recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:listitem="@layout/le_mini_address_view_lay"
+        tools:listitem="@layout/item_mini_address_view"
         app:layout_constraintBottom_toTopOf="@+id/continue_to_order_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

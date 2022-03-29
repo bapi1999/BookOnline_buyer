@@ -93,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
-        actionBar.navigationIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY)
 
         setupActionBarWithNavController(navController, appBarConfiguration)
 //        (this as AppCompatActivity?)!!.supportActionBar!!.show()
@@ -172,8 +171,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.termCondition ->{
-                    val dashIntent = Intent(this,SellerShopActivity::class.java)
-                    startActivity(dashIntent)
+
                     closeDrawer()
                 }
                 R.id.privacy_policy ->{

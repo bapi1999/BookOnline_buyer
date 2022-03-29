@@ -91,8 +91,8 @@ class SignUpFragment : Fragment() {
             nameInput.error = "Field can't be empty"
             false
         } else {
-            email.isErrorEnabled = false
-            email.error = null
+            nameInput.isErrorEnabled = false
+            nameInput.error = null
             true
 
         }

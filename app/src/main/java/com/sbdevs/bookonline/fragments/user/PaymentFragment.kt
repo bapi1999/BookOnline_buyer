@@ -1,6 +1,6 @@
 package com.sbdevs.bookonline.fragments.user
 
-import android.content.res.AssetFileDescriptor
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -14,22 +14,29 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.FragmentPaymentBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.models.user.CartModel
-import com.sbdevs.bookonline.othercalss.NotificationData
-import com.sbdevs.bookonline.othercalss.PushNotification
-import com.sbdevs.bookonline.othercalss.RetrofitInstance
-import com.sbdevs.bookonline.othercalss.SharedDataClass
+import com.sbdevs.bookonline.othercalss.*
+import com.sbdevs.bookonline.othercalss.Constants.Companion.BASE_URL
+import com.sbdevs.bookonline.othercalss.Constants.Companion.CONTENT_TYPE_FCM
+import com.sbdevs.bookonline.othercalss.Constants.Companion.SERVER_KEY
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import org.json.JSONException
+import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
@@ -46,8 +53,7 @@ class PaymentFragment : Fragment() {
     private val database = Firebase.database
 
     var receivedList: ArrayList<CartModel> = ArrayList()
-    private var dbOrderList: ArrayList<String> = ArrayList()
-    private var newOrderList: ArrayList<String> = ArrayList()
+
     var selecter = 0
     private val loadingDialog = LoadingDialog()
     var warnings: Int = 0
@@ -60,7 +66,9 @@ class PaymentFragment : Fragment() {
     private lateinit var confirmBtn:Button
 
     private lateinit var address: MutableMap<String, Any>
-
+    private var buyerToken = ""
+    var count = 0
+    var fromTo = -1
 
 
     override fun onCreateView(
@@ -76,9 +84,14 @@ class PaymentFragment : Fragment() {
         confirmBtn.isEnabled = false
         confirmBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_600)
 
+        val miniAddress = binding.miniAddres
+
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+
         val intent = requireActivity().intent
         totalAmount = intent.getIntExtra("total_amount", 0)
         binding.totalAmount.text = "$totalAmount/-"
+        fromTo = intent.getIntExtra("From_To", -1)
 
         address = intent.getSerializableExtra("address") as MutableMap<String, Any>
 
@@ -107,15 +120,16 @@ class PaymentFragment : Fragment() {
         val townPinBuilder = StringBuilder()
         townPinBuilder.append(buyerTown).append(", ").append(buyerPinCode)
 
-        binding.miniAddress.buyerName.text = buyerName
-        binding.miniAddress.buyerAddress.text = addressBuilder.toString()
-        binding.miniAddress.buyerAddressType.text = buyerAddressType
-        binding.miniAddress.buyerTownAndPin.text = townPinBuilder.toString()
-        binding.miniAddress.buyerState.text = buyerState
-        binding.miniAddress.buyerPhone.text = buyerPhone
+        binding.miniAddres.buyerName.text = buyerName
+        binding.miniAddres.buyerAddress.text = addressBuilder.toString()
+        binding.miniAddres.buyerAddressType.text = buyerAddressType
+        binding.miniAddres.buyerTownAndPin.text = townPinBuilder.toString()
+        binding.miniAddres.buyerState.text = buyerState
+        binding.miniAddres.buyerPhone.text = buyerPhone
 
         receivedList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
 
+        getMyToken()
 
 
 
@@ -169,17 +183,23 @@ class PaymentFragment : Fragment() {
                 2 -> {
 
                     lifecycleScope.launch(Dispatchers.IO) {
+
                         checkAllOrderMethods(receivedList, address)
-                        //updateOrderToBuyer()
-                        deleteProductFromCart()
-                        withContext(Dispatchers.Main) {
-                            loadingDialog.dismiss()
-                            val action = PaymentFragmentDirections.actionPaymentFragmentToCongratulationFragment(
-                                    warnings,
-                                    orderedItem
-                                )
-                            findNavController().navigate(action)
+
+                        if (fromTo == 1){
+                            deleteProductFromCart()
+                        }else{
+                            Log.i("from","Buy now")
                         }
+
+
+//                        withContext(Dispatchers.Main) {
+//                            val action = PaymentFragmentDirections.actionPaymentFragmentToCongratulationFragment(
+//                                warnings,
+//                                orderedItem
+//                            )
+//                            findNavController().navigate(action)
+//                        }
                     }
                 }
                 else -> {
@@ -192,10 +212,10 @@ class PaymentFragment : Fragment() {
     }
 
 
-    private suspend fun checkAllOrderMethods(
+    private suspend fun checkAllOrderMethods (
         list: ArrayList<CartModel>,
         address: MutableMap<String, Any>
-    ) {
+    )   {
         for (item in list) {
 
             firebaseFirestore.collection("PRODUCTS")
@@ -215,18 +235,22 @@ class PaymentFragment : Fragment() {
                             // update product
                             updateProductStock(item.productId, newQty, itemSoldNow)
                             // create order
-                            createOrders(
-                                item.url,
-                                item.title,
-                                item.productId,
-                                item.sellerId,
-                                orderQuantity,
-                                docname,
-                                address,
-                                item.priceSelling,
-                                item.deliveryCharge,
-                                productReturnAvailable
-                            )
+
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                createOrders(
+                                    item.url,
+                                    item.title,
+                                    item.productId,
+                                    item.sellerId,
+                                    orderQuantity,
+                                    docname,
+                                    address,
+                                    item.priceSelling,
+                                    item.deliveryCharge,
+                                    productReturnAvailable
+                                )
+                            }
+
 
                         }
                         stockQty in 1L until orderQuantity -> {
@@ -236,18 +260,22 @@ class PaymentFragment : Fragment() {
 
                             updateProductStock(item.productId, newQty, itemSoldNow)
 
-                            createOrders(
-                                item.url,
-                                item.title,
-                                item.productId,
-                                item.sellerId,
-                                stockQty,
-                                docname,
-                                address,
-                                item.priceSelling,
-                                item.deliveryCharge,
-                                productReturnAvailable
-                            )
+                            lifecycleScope.launch (Dispatchers.IO){
+                                createOrders(
+                                    item.url,
+                                    item.title,
+                                    item.productId,
+                                    item.sellerId,
+                                    stockQty,
+                                    docname,
+                                    address,
+                                    item.priceSelling,
+                                    item.deliveryCharge,
+                                    productReturnAvailable
+                                )
+                            }
+
+
 
                         }
                         stockQty == 0L -> {
@@ -273,7 +301,7 @@ class PaymentFragment : Fragment() {
         firebaseFirestore.collection("PRODUCTS").document(productId).update(productMap)
     }
 
-    private fun createOrders(
+    private suspend  fun createOrders(
         thumbnail: String,
         title: String,
         productId: String,
@@ -294,7 +322,7 @@ class PaymentFragment : Fragment() {
         productMap["PRICE_SELLING_TOTAL"] = unitSellingPrice*orderQty // x * QTY  = y
         productMap["PRICE_SHIPPING_CHARGE"] = shippingCharge// SHIPPING CHARGE  = z
         productMap["PRICE_TOTAL"] = (unitSellingPrice*orderQty)+shippingCharge // total  = y+z
-
+        productMap["BUYER_TOKEN"] = buyerToken
         productMap["ID_Of_BUYER"] = user!!.uid
         productMap["ID_Of_SELLER"] = sellerId
         productMap["ID_Of_Tracking"] = "Not Available yet"
@@ -404,35 +432,76 @@ class PaymentFragment : Fragment() {
             val sellerToken = snapShot.value.toString()
             val description = "( $orderQuantity ) product named ( $title ) has been ordered"
             val title = "New Order"
-            val message = description
 
-            if(title.isNotEmpty() && message.isNotEmpty() && sellerToken.isNotEmpty()) {
-                PushNotification(
-                    NotificationData(title, message),
-                    sellerToken
-                ).also {
-                    sendNotification(it)
-                }
+            if(title.isNotEmpty() && description.isNotEmpty() && sellerToken.isNotEmpty()) {
+                sendNotificationStep1(title,description)
             }
+        }.addOnFailureListener {
+            Log.e(" getSellerToken error1", it.message.toString())
         }
 
     }
 
 
+    private fun getMyToken(){
+        database.getReference("Tokens").child(user!!.uid).get().addOnSuccessListener{
+            buyerToken = it.toString()
+        }.addOnFailureListener {
+            Log.e(" getMyToken error1", it.message.toString())
+        }
+    }
 
 
-    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+
+    //TODO-<<<<<<<<<<<<<=================  SEND NOTIFICATION ==============================================
+    private fun sendNotificationStep1(title:String,message:String){
+        val topic = "/topics/Enter_your_topic_name" //topic has to match what the receiver subscribed to
+
+        val notification = JSONObject()
+        val notifcationBody = JSONObject()
+
         try {
-            val response = RetrofitInstance.api.postNotification(notification)
-            if(response.isSuccessful) {
-                Log.d("TAG", "Response: ${Gson().toJson(response)}")
-            } else {
-                Log.e("error2", response.errorBody().toString())
-            }
-        } catch(e: Exception) {
-            Log.e("error1", e.toString())
+            notifcationBody.put("title", "Enter_title")
+            notifcationBody.put("message", message)   //Enter your notification message
+            notification.put("to", buyerToken)
+            notification.put("data", notifcationBody)
+            Log.e("TAG", "try")
+        } catch (e: JSONException) {
+            Log.e("TAG", "onCreate: " + e.message)
         }
+
+        sendNotificationStep2(notification)
+
     }
+
+    private fun sendNotificationStep2(notification: JSONObject) {
+        Log.e("TAG", "sendNotification")
+        val jsonObjectRequest = object : JsonObjectRequest(
+            Request.Method.POST,BASE_URL, notification,
+            Response.Listener<JSONObject> { response ->
+                Log.i("TAG", "onResponse: $response")
+
+            },
+            Response.ErrorListener {
+                Toast.makeText(requireContext(), "Request error", Toast.LENGTH_LONG).show()
+                Log.i("TAG", "onErrorResponse: Didn't work")
+            }) {
+
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = SERVER_KEY
+                params["Content-Type"] = CONTENT_TYPE_FCM
+                return params
+            }
+        }
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(requireContext())
+    }
+
+    //TODO-==============================  SEND NOTIFICATION ======>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 

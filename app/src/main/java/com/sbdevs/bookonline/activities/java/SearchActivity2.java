@@ -9,10 +9,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -20,6 +29,11 @@ import com.sbdevs.bookonline.R;
 import com.sbdevs.bookonline.activities.SearchFilterActivity;
 import com.sbdevs.bookonline.adapters.java.FirebaseAdapter2;
 import com.sbdevs.bookonline.models.java.QueryModel2;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SearchActivity2 extends AppCompatActivity {
     SearchView searchView;
@@ -140,4 +154,50 @@ public class SearchActivity2 extends AppCompatActivity {
         super.onStop();
         adapter2.stopListening();
     }
+
+
+
+//
+//
+//// writing this in java then convert it in kotlin
+//    //https://www.youtube.com/watch?v=e9llz2TXBz8
+//    public void pushNotification(){
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//
+//        try {
+//
+//
+//            JSONObject json = new JSONObject();
+//            json.put("to",token);
+//            JSONObject notification = new JSONObject();
+//            notification.put("title",title);
+//            notification.put("body",message);
+//            json.put("notification",notification);
+//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL, json, new Response.Listener<JSONObject>() {
+//                @Override
+//                public void onResponse(JSONObject response) {
+//
+//                }
+//            }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//
+//                }
+//            }){
+//                @Override
+//                public Map<String, String> getHeaders() throws AuthFailureError {
+//                    Map<String,String >  params = new HashMap<>();
+//                    params.put("Content_Type","application/json");
+//                    return super.getHeaders();
+//                }
+//            };
+//
+//
+//        }catch (Exception e){
+//
+//        }
+//    }
+
 }

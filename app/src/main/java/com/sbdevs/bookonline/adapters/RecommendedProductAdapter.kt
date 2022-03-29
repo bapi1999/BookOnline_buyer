@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
+import com.sbdevs.bookonline.models.SearchModel
 import com.squareup.picasso.Picasso
 
 class RecommendedProductAdapter(var list: ArrayList<SearchModel>) :
@@ -17,7 +17,7 @@ class RecommendedProductAdapter(var list: ArrayList<SearchModel>) :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_recommended_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_recommended, parent, false)
         return ViewHolder(view)
     }
 

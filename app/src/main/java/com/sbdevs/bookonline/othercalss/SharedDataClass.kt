@@ -2,22 +2,10 @@ package com.sbdevs.bookonline.othercalss
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.view.View
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.Query
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.sbdevs.bookonline.R
-import com.sbdevs.bookonline.adapters.HomeAdapter
-import com.sbdevs.bookonline.fragments.LoadingDialog
-import com.sbdevs.bookonline.models.HomeModel
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
 
 class SharedDataClass {
 
@@ -26,20 +14,20 @@ class SharedDataClass {
 
     companion object {
 
+        val database = Firebase.database("https://ecommerceapp2-ui-db-home.asia-southeast1.firebasedatabase.app/").reference
+
+
+        var orderCameFrom = 0
+        //1 = buy now / 2 = cart
+
         var cartNumber:Int = 0
         @SuppressLint("StaticFieldLeak")
         private val firebaseFirestore = Firebase.firestore
         private val user = Firebase.auth.currentUser
-
         var currentACtivity = 1 // 1 -> MainActivity, 2->ProductActivity
         var product_id = ""
         var newLogin = false
 
-        var uiViewLIst:MutableList<HomeModel> = ArrayList()
-        var lastResult : DocumentSnapshot ?=null
-        var lastIndex : Long =-1L
-        var isReachLast:Boolean = false
-        var homeAdapter:HomeAdapter = HomeAdapter(uiViewLIst)
         var dbCartList:ArrayList<MutableMap<String, Any>> = ArrayList()
         private var counter1 = 0
 
@@ -84,79 +72,7 @@ class SharedDataClass {
 
 
 
-        fun getHomePageData(progressBar:ProgressBar,dialog: LoadingDialog){
-            var homeElementList: MutableList<HomeModel> = ArrayList()
-            homeElementList.clear()
-            if(isReachLast){
-                progressBar.visibility = View.GONE
-            }else{
-                progressBar.visibility = View.VISIBLE
-                val query:Query = if (lastResult==null){
-                    firebaseFirestore.collection("HOMEPAGE")
-                        .orderBy("index", Query.Direction.ASCENDING)
-                }else{
-                    firebaseFirestore.collection("HOMEPAGE")
-                        .orderBy("index", Query.Direction.ASCENDING)
-                        .startAfter(lastIndex)
-                }
 
-                query.limit(5L)
-                    .get().addOnSuccessListener{
-
-                        val allDocumentSnapshot = it.documents
-
-                        if (allDocumentSnapshot.isNotEmpty()){
-
-                            homeElementList = it.toObjects(HomeModel::class.java)
-
-                            isReachLast = allDocumentSnapshot.size < 5 // limit is 5
-
-                        }
-                        else{
-                            isReachLast = true
-                        }
-
-
-                        uiViewLIst.addAll(homeElementList)
-
-
-                        if (uiViewLIst.isEmpty()){
-
-                            Log.e("Home List", " empty list")
-                        }else{
-
-
-                            homeAdapter.homeModelList =uiViewLIst
-
-
-                            if (lastResult == null ){
-                                homeAdapter.notifyItemRangeInserted(0, homeElementList.size)
-                            }else{
-                                homeAdapter.notifyItemRangeInserted(uiViewLIst.size-1,homeElementList.size)
-                            }
-
-
-                            val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                            lastResult = lastR
-                            lastIndex = lastR.getLong("index")!!
-
-                            progressBar.visibility = View.GONE
-                            //counter1 = 1
-
-
-
-                        }
-                        dialog.dismiss()
-
-                    }.addOnFailureListener{
-                        Log.e("HomeFragment","Failed to load home ${it.message}",it.cause)
-                        progressBar.visibility = View.GONE
-                        dialog.dismiss()
-                    }
-
-            }
-
-        }
 
 
         fun getWishList(){

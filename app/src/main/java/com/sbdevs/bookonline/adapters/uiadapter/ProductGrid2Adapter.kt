@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.ProductActivity
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
+import com.sbdevs.bookonline.models.SearchModel
 import com.squareup.picasso.Picasso
 
 class ProductGrid2Adapter (var list:ArrayList<SearchModel>):
@@ -19,7 +19,7 @@ class ProductGrid2Adapter (var list:ArrayList<SearchModel>):
         parent: ViewGroup,
         viewType: Int
     ): ProductGrid2Adapter.ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_product_grid_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_product_grid, parent, false)
         return ViewHolder(view)
     }
 
@@ -43,7 +43,7 @@ class ProductGrid2Adapter (var list:ArrayList<SearchModel>):
 //        private val bookTypeText: TextView = itemView.findViewById(R.id.book_type)
 //        private val bookConditionText: TextView = itemView.findViewById(R.id.product_condition)
 
-        fun bind(model:SearchModel){
+        fun bind(model: SearchModel){
             itemView.setOnClickListener {
                 val productIntent = Intent(itemView.context, ProductActivity::class.java)
                 productIntent.putExtra("productId",model.productId)

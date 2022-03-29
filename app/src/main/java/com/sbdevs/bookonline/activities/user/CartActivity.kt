@@ -39,7 +39,8 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
     private val user = Firebase.auth.currentUser
 
     var cartList:ArrayList<MutableMap<String,Any>> = ArrayList()
-    var newCartList:ArrayList<CartMapModel> = ArrayList()
+    var newCartList:MutableList<CartMapModel> = ArrayList()
+    var sellerList:MutableList<String> = ArrayList()
     var sendingList:ArrayList<CartModel> = ArrayList()
 
     var netSellingPrice: Int = 0
@@ -192,12 +193,10 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
                     loadingDialog.dismiss()
 
                 }else{
-//                    binding.proceedBtn.isEnabled = true
-//                    binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
 
-                    newCartList = x as ArrayList<CartMapModel>
+//                    newCartList = x as MutableList<String>
 
-                    if (cartList.isEmpty()){
+                    if (newCartList.isEmpty()){
 
                         binding.emptyContainer.visibility = View.VISIBLE
                         binding.btnContainer.visibility = View.GONE
@@ -205,12 +204,18 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
                         loadingDialog.dismiss()
 
                     }else{
-
                         binding.proceedBtn.isEnabled = true
                         binding.proceedBtn.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
 
+                        var i = 0
+                        for(item in newCartList){
+                            val seller = item.Seller_id
+                            sellerList.add(seller)
+                        }
 
-                        binding.lay2.totalItem.text = "( ${cartList.size} item)"
+                        for (nSeller in sellerList){
+
+                        }
 
                         lifecycleScope.launch {
                             getProduct(cartList)

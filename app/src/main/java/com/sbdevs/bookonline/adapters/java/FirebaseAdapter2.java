@@ -38,7 +38,7 @@ public class FirebaseAdapter2 extends FirebaseRecyclerAdapter<QueryModel2,Fireba
     @NonNull
     @Override
     public FirebaseAdapter2.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.le_search_query_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_query, parent, false);
         return new ViewHolder(view,queryClickListener);
     }
 

@@ -60,6 +60,7 @@ class ProceedOrderActivity : AppCompatActivity() {
     private val loadingDialog = LoadingDialog()
     private var thereIsAddressError = false
     private var thereIsPriceError = false
+    var fromTo = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +80,7 @@ class ProceedOrderActivity : AppCompatActivity() {
         amountTxt = binding.totalLay.amountToPay
         continueToPaymentBtn = binding.continueToPaymentBtn
 
-        val fromTo = intent.getIntExtra("From_To", -1)
+        fromTo = intent.getIntExtra("From_To", -1)
         receivedList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
 
         amountToPay1 = intent.getIntExtra("total_amount",-1)
@@ -130,6 +131,8 @@ class ProceedOrderActivity : AppCompatActivity() {
                 intent.putExtra("total_amount",amountToPay2)
                 intent.putParcelableArrayListExtra("productList",receivedList)
                 intent.putExtra("address",addressMap as Serializable)
+                intent.putExtra("From_To",fromTo)
+                //todo: 1=> MyCart / 2=> BuyNow
                 startActivity(intent)
             }
 

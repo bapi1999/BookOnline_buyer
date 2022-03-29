@@ -46,24 +46,7 @@
         <activity
             android:name=".activities.NotificationActivity"
             android:exported="false" />
-        <activity
-            android:name=".activities.seller.AllOrdersActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.seller.SellerDashboardActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.seller.SellerRegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.seller.SellerOrderDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.seller.SellerFeesAndPriceActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.seller.EditProductActivity"
-            android:exported="false" />
+
         <activity
             android:name=".activities.java.SearchActivity2"
             android:exported="false" />
@@ -86,9 +69,6 @@
         <activity
             android:name=".activities.user.MyAddressActivity"
             android:exported="true" />
-        <activity
-            android:name=".activities.seller.AddProductActivity"
-            android:exported="false" />
         <activity
             android:name=".activities.SearchFilterActivity"
             android:exported="true" />

@@ -225,11 +225,87 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/profile_menu.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/menu/search_icon_menu.xml" value="0.18426678067550234" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BookOnline/app/src/main/res/xml/searchable.xml" value="0.14965277777777777" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/cart_badge_icon.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/ic_baseline_how_to_vote_24.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/ic_baseline_keyboard_arrow_down_24.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/ic_baseline_keyboard_arrow_up_24.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/ic_baseline_payments_24.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/ic_help_24.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/drawable/s_strick_through.xml" value="0.1" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_all_orders.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_cart.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_proceed_order.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_product.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_search.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_search_filter.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_search_filter_java.xml" value="0.33" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_seller_dashboard.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/activity_seller_shop.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_add_address_lay.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_address_detail_lay.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_goto_seller_shop.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_order_filter_bottom_sheet.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_order_showcase_lay.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_product_detail_lay_2.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_qualtity_dialog.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_register_layout_1.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_register_layout_2.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_search_filter_bottom_sheet.xml" value="0.22" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_search_filter_bottom_sheet_2.xml" value="0.1621376811594203" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/ar_seller_shop_lay_1.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_add_address.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_add_product_instruction.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_all_review.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_category.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_congratulation.xml" value="0.12222222222222222" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_donate.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_donor_instruction.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_edit_account.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_forgot_password.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_home.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_loading_dialog.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_login.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_login_dialog.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_my_account.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_my_product.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_my_wishlist.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_notification.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_orders.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_other_orders.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_payment.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_product.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_product_image.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_profile_menu.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/fragment_sign_up.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/item_donate.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_ads.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_all_donation_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_big_ads_layout.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_cart_item_lay_1.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_cart_item_lay_2.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_category_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_donate_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_home_category_item_lay.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_loading_progress_dialog.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_mini_address_view_lay.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_my_donation_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_product_image_item.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_search_filter_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_search_query_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_top_category_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/le_top_category_layout.xml" value="0.12222222222222222" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_myaccount_1_lay.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_myaccount_2_lay.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_order_details_lay_2.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_order_details_lay_3.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_order_details_lay_4.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_product_detail_lay_1.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_ar_product_detail_lay_4.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_le_my_product_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_le_order_cancellation_lay_1.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/layout/sl_le_order_item.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/menu/drawerm_menu.xml" value="0.2" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BookOnline_buyer/app/src/main/res/menu/profile_menu.xml" value="0.2" />
       </map>
     </option>
   </component>

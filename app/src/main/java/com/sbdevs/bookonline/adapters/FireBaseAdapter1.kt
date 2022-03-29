@@ -18,7 +18,7 @@ class FireBaseAdapter1(var options: FirebaseRecyclerOptions<QueryModel1>): Fireb
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_search_query_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_search_query, parent, false)
         return ViewHolder(view)
     }
 

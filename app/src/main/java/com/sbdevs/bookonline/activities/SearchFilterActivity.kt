@@ -28,8 +28,7 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.SearchFilterAdapter
 import com.sbdevs.bookonline.databinding.ActivitySearchFilterBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
-import java.time.Year
+import com.sbdevs.bookonline.models.SearchModel
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -404,8 +403,10 @@ class SearchFilterActivity : AppCompatActivity() {
                     val bookCondition = documentSnapshot.getString("book_condition").toString()
                     val bookType = documentSnapshot.getString("book_type")!!
 
-                    searchList.add(SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
+                    searchList.add(
+                        SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
+                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                    )
                 }
 
                 isReachLast = allDocumentSnapshot.size < 10 // limit is 10
@@ -524,8 +525,10 @@ class SearchFilterActivity : AppCompatActivity() {
                     val bookCondition = documentSnapshot.getString("book_condition").toString()
                     val bookType = documentSnapshot.getString("book_type")!!
 
-                    searchList.add(SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
+                    searchList.add(
+                        SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
+                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                    )
                 }
 
                 isReachLast = allDocumentSnapshot.size <= 10 // limit is 10
@@ -637,8 +640,10 @@ class SearchFilterActivity : AppCompatActivity() {
                     val bookCondition = documentSnapshot.getString("book_condition").toString()
                     val bookType = documentSnapshot.getString("book_type")!!
 
-                    searchList.add(SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear))
+                    searchList.add(
+                        SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
+                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                    )
                 }
 
                 isReachLast = allDocumentSnapshot.size <= 10

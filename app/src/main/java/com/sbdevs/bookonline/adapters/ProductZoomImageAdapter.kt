@@ -3,7 +3,6 @@ package com.sbdevs.bookonline.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -16,7 +15,7 @@ class ProductZoomImageAdapter(var productImgList: ArrayList<String>) :
         parent: ViewGroup,
         viewType: Int
     ):ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_image_zoom_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_image_zoom,parent,false)
         return ViewHolder(view)
     }
 

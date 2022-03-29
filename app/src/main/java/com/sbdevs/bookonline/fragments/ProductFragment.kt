@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -28,6 +29,7 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.user.CartActivity
 import com.sbdevs.bookonline.activities.user.ProceedOrderActivity
 import com.sbdevs.bookonline.activities.SearchActivity
+import com.sbdevs.bookonline.activities.user.SellerShopActivity
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import com.sbdevs.bookonline.adapters.ProductReviewAdapter
 import com.sbdevs.bookonline.adapters.RecommendedProductAdapter
@@ -35,7 +37,7 @@ import com.sbdevs.bookonline.databinding.FragmentProductBinding
 import com.sbdevs.bookonline.fragments.user.AllReviewFragment
 import com.sbdevs.bookonline.models.user.CartModel
 import com.sbdevs.bookonline.models.ProductReviewModel
-import com.sbdevs.bookonline.models.uidataclass.SearchModel
+import com.sbdevs.bookonline.models.SearchModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,6 +95,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var avgRating = ""
     private var totalRating = 0
     private var ratingNum :ArrayList<String> = ArrayList()
+    private var sellerId = ""
 
 
     override fun onCreateView(
@@ -116,6 +119,7 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
         val intent = requireActivity().intent
 //        productId ="2022_01_06T22_50_02_682LgDXu4pnoRfxNJgF8bQrhN8Faxt2"
+//        productId ="5VtYiOejv8ZRaLjDJwCN"
         productId = arguments?.getString("productId").toString().trim()
 
         fabBtn = binding.lay1.floatingActionButton
@@ -240,6 +244,12 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
         })
 
+
+        binding.lay51.gotoSellerShop.setOnClickListener {
+            val sellerIntent = Intent(requireContext(), SellerShopActivity::class.java)
+            sellerIntent.putExtra("sellerId", sellerId)
+            startActivity(sellerIntent)
+        }
 
 
     }
@@ -444,13 +454,12 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val priceSelling = it.getLong("price_selling")!!.toLong()
 
                     avgRating = it.getString("rating_avg")!!
-                    val sellerId = it.getString("PRODUCT_SELLER_ID")!!
+                    sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     totalRating = it.getLong("rating_total")!!.toInt()
                     val stock = it.getLong("in_stock_quantity")!!
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
-
 
                     val bookWriter = it.getString("book_writer")
                     val bookPublisherName = it.getString("book_publisher")
@@ -461,17 +470,24 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
                     val bookPageCount = it.getString("book_pageCount")
                     val isbnNumber = it.getString("book_ISBN")
                     val bookDimension = it.getString("book_dimension")
-                    val productReturn = it.getBoolean("product_return_available")!!
+                    val productReturn = it.getString("Replacement_policy")!!
 
                     productImgList = it.get("productImage_List") as ArrayList<String>
-
                     dbStockQty = stock.toInt()
+
+                    if (productReturn == "No Replacement Policy"){
+                        val imgview = binding.replacementPolicyImg
+                        imgview.imageTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
+                        Glide.with(requireContext()).load(R.drawable.ic_outline_cancel_24).into(imgview)
+                    }
 
                     val deliveryCharge1 = if (priceSelling>=500){
                         0L
                     }else{
                         40L
                     }
+
+                    getSellerName(sellerId)
 
                     sendingList.add(
                         CartModel(
@@ -620,6 +636,15 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
             }.await()
     }
 
+    private fun getSellerName(seller:String){
+        firebaseFirestore.collection("USERS")
+            .document(seller).get()
+            .addOnSuccessListener {
+                val sellName:String = it.getString("name")!!
+                binding.lay51.sellerName.text = sellName
+            }
+    }
+
     private fun getReview(productID: String) {
         firebaseFirestore.collection("PRODUCTS").document(productID)
             .collection("PRODUCT_REVIEW")
@@ -638,13 +663,13 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
 
     private fun getCartList() {
 
-        for (item in SharedDataClass.dbCartList){
-            val productIdDB: String = item["product"] as String
-
-            if (productIdDB.contentEquals(productId)) {
-                ALREADY_ADDED_TO_CART = true
-            }
-        }
+//        for (item in SharedDataClass.dbCartList){
+//            val productIdDB: String = item["product"] as String
+//
+//            if (productIdDB.contentEquals(productId)) {
+//                ALREADY_ADDED_TO_CART = true
+//            }
+//        }
 
     }
 
@@ -801,6 +826,9 @@ class ProductFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
         }
 
     }
+
+
+
 
 
 

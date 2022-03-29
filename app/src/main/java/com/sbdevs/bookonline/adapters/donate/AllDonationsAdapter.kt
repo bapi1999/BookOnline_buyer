@@ -18,7 +18,7 @@ class AllDonationsAdapter (var list: MutableList<MyDonationModel>, ) : RecyclerV
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_all_donation_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_all_donation, parent, false)
         return ViewHolder(view)
     }
 

@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.models.MyDonationModel
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MyDonationAdapter(var list: MutableList<MyDonationModel>, ) : RecyclerView.Adapter<MyDonationAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_my_donation_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_donation, parent, false)
         return ViewHolder(view)
     }
 
