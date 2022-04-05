@@ -18,6 +18,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.donation.ThanksForDonateActivity
 import com.sbdevs.bookonline.activities.user.MyAddressActivity
 import com.sbdevs.bookonline.adapters.donate.DonateItemAdapter
 import com.sbdevs.bookonline.adapters.user.OrderSummaryAdapter
@@ -185,6 +186,9 @@ class DonateFragment : Fragment(), DonateItemAdapter.MyOnItemClickListener {
 
                 loadingDialog.dismiss()
                 dbItemList.clear()
+                val newIntent = Intent(requireContext(), ThanksForDonateActivity::class.java)
+                newIntent.putExtra("totalPoint",totalPoint)
+                startActivity(newIntent)
                 activity?.finish()
             }
             .addOnFailureListener {

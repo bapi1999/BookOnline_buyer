@@ -20,10 +20,6 @@
         android:label="fragment_congratulation"
         tools:layout="@layout/fragment_congratulation" >
         <argument
-            android:name="warning"
-            app:argType="integer"
-            />
-        <argument
             android:name="orderItem"
             app:argType="integer"
            />

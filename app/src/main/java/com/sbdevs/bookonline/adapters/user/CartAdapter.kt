@@ -54,19 +54,23 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
         private val productName: TextView = itemView.findViewById(R.id.product_name)
         private val productPrice: TextView = itemView.findViewById(R.id.product_price)
         private val productRealPrice:TextView = itemView.findViewById(R.id.product_real_price)
-        private val percentOff: TextView = itemView.findViewById(R.id.percent_off)
         private val quantitiesTxt:TextView = itemView.findViewById(R.id.quantity)
+        private val deliveryChargeText:TextView = itemView.findViewById(R.id.delivery_charge)
         private val outofstockIcon:ImageView = itemView.findViewById(R.id.outofstock_icon)
         private val viewBtn:AppCompatButton = itemView.findViewById(R.id.view_details)
         private val removeBtn:LinearLayout = itemView.findViewById(R.id.remove_btn)
         private val quantityContainer:LinearLayout = itemView.findViewById(R.id.quantity_container)
-
-
+        private val warningsAndStockContainer:LinearLayout = itemView.findViewById(R.id.warningAndStockContainer)
+        private val stockQuantityText:TextView = itemView.findViewById(R.id.stock_quantity)
+        private val gone = View.GONE
+        private val visible = View.VISIBLE
 
 
         fun bind(item: CartModel){
             val productId:String = item.productId
             val quantity:Long = item.orderQuantity
+
+            val deliveryCharge = item.deliveryCharge
 
             quantitiesTxt.text = quantity.toString()
 
@@ -79,6 +83,9 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
             quantityContainer.setOnClickListener {
                 listener.onQuantityChange(absoluteAdapterPosition,quantitiesTxt)
             }
+
+            deliveryChargeText.text = deliveryCharge.toString()
+
 
             viewBtn.setOnClickListener {
                 val productIntent = Intent(itemView.context, ProductActivity::class.java)
@@ -98,24 +105,31 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
             if (priceOriginal == 0L){
                 val price = priceSelling.toInt()*quantity.toInt()
                 productPrice.text = price.toString()
-                productRealPrice.visibility = View.GONE
-                percentOff.visibility = View.GONE
+                productRealPrice.visibility = gone
+
 
             }else{
 
                 val price = priceSelling.toInt()*quantity.toInt()
                 val realPrice = priceOriginal.toInt()*quantity.toInt()
-                val percent:Int = (100* (realPrice - price)) / ( realPrice )
 
                 productPrice.text = price.toString()
                 productRealPrice.text = realPrice.toString()
-                percentOff.text = "${percent}% off"
+
 
             }
             if (stock == 0L){
-                outofstockIcon.visibility = View.VISIBLE
+                outofstockIcon.visibility = visible
             }else{
-                outofstockIcon.visibility = View.GONE
+                outofstockIcon.visibility = gone
+            }
+
+            stockQuantityText.text = "Only $stock left in stock"
+
+            if (stock<quantity){
+                warningsAndStockContainer.visibility = visible
+            }else{
+                warningsAndStockContainer.visibility = gone
             }
 
         }

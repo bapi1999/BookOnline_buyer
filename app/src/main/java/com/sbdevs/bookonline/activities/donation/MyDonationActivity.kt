@@ -217,7 +217,7 @@ class MyDonationActivity : AppCompatActivity() {
                     val totalQty:Long = it.getLong("total_donation_qty")!!.toLong()
                     val totalPoint = it.getLong("total_donation_point")!!.toLong()
                     when {
-                        totalQty <10 -> {
+                        totalQty <100 -> {
                             //donor badge image is created
                             donorLevel.text = "Level 0"
                             minPoint.text = "0"
@@ -227,7 +227,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.progress = totalQty.toInt()
 
                         }
-                        totalQty in 10..49 -> {
+                        totalQty in 100..499 -> {
                             //donor badge image is created
                             donorLevel.text = "Level 1"
                             minPoint.text = "10"
@@ -236,7 +236,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.max = 50
                             levelProgress.progress = totalQty.toInt()
                         }
-                        totalQty in 50..199 -> {
+                        totalQty in 500..1999 -> {
                             //donor badge image is created
                             donorLevel.text = "Level 2"
                             minPoint.text = "50"
@@ -245,7 +245,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.max = 200
                             levelProgress.progress = totalQty.toInt()
                         }
-                        totalQty in 200..499 -> {
+                        totalQty in 2000..4999 -> {
                             donorLevel.text = "Level 3"
                             minPoint.text = "200"
                             maxPoint.text = "500"
@@ -253,7 +253,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.max = 500
                             levelProgress.progress = totalQty.toInt()
                         }
-                        totalQty in 500..1499 -> {
+                        totalQty in 5000..14999 -> {
                             donorLevel.text = "Level 4"
                             minPoint.text = "500"
                             maxPoint.text = "1500"
@@ -261,7 +261,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.max = 1500
                             levelProgress.progress = totalQty.toInt()
                         }
-                        totalQty in 1500..4999 -> {
+                        totalQty in 15000..49990 -> {
                             donorLevel.text = "Level 5"
                             minPoint.text = "1500"
                             maxPoint.text = "5000"
@@ -269,7 +269,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.max = 5000
                             levelProgress.progress = totalQty.toInt()
                         }
-                        totalQty in 5000..9999 -> {
+                        totalQty in 50000..99999 -> {
                             donorLevel.text = "Level 6"
                             minPoint.text = "5000"
                             maxPoint.text = "10000"
@@ -277,7 +277,7 @@ class MyDonationActivity : AppCompatActivity() {
                             levelProgress.max = 10000
                             levelProgress.progress = totalQty.toInt()
                         }
-                        totalQty >10000 -> {
+                        totalQty >100000 -> {
                             donorLevel.text = "Level 7"
                             minPoint.text = "10000"
                             maxPoint.text = "100000"

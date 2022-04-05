@@ -15,26 +15,22 @@
 <!--            android:iconTint="@color/gray_700"-->
 <!--            android:title="Offer Zone" />-->
 
-<!--        <item-->
-<!--            android:id="@+id/sell_on_book"-->
-<!--            android:icon="@drawable/i_sell"-->
-<!--            android:title="Sell on BooksOnline" />-->
     </group>
 
 
     <group android:id="@+id/group1">
         <item
             android:id="@+id/homeFragment"
-            android:icon="@drawable/ic_home_24"
+            android:icon="@drawable/ic_outline_home_24"
             android:title="Home" />
 
         <item
             android:id="@+id/myWishlistFragment"
-            android:icon="@drawable/ic_favorite_24"
+            android:icon="@drawable/ic_favorite_border_24"
             android:title="Wishlist" />
         <item
             android:id="@+id/myCartFragment"
-            android:icon="@drawable/ic_twotone_shopping_cart_24"
+            android:icon="@drawable/ic_outline_shopping_cart_24"
             android:title="Cart" />
 
         <item
@@ -43,7 +39,7 @@
             android:title="Orders" />
         <item
             android:id="@+id/myAccountFragment"
-            android:icon="@drawable/ic_account_circle_24"
+            android:icon="@drawable/ic_outline_account_circle_24"
             android:title="My Account" />
 
 
@@ -76,7 +72,7 @@
             android:title="@string/terms_condition" />
         <item
             android:id="@+id/privacy_policy"
-            android:icon="@drawable/ic_baseline_privacy_tip_24"
+            android:icon="@drawable/ic_outline_privacy_tip_24"
             android:title="Privacy Policy" />
         <item
             android:id="@+id/return_policy"
@@ -84,7 +80,7 @@
             android:title="Return Policy" />
         <item
             android:id="@+id/help"
-            android:icon="@drawable/ic_help_24"
+            android:icon="@drawable/ic_outline_help_24"
             android:title="Help" />
 
 

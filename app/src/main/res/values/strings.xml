@@ -25,7 +25,8 @@
     <string name="addressline_1">Home No,Building Name, Apartment</string>
     <string name="addressline_2">Road, Street, Area, Locality</string>
     <string name="terms_condition"><![CDATA[Terms & Condition]]></string>
-    <string name="out_of_stock_now">Some products were out of stock just a few seconds ago. We apologize for not processing your order properly. Please contact the Help Center for further assistance </string>
+    <string name="out_of_stock_now">Some products were out of stock just a few seconds agoPlease contact the Help Center for further assistance </string>
+    <string name="out_of_stock_just_now">Some products were out of stock just a few seconds ago. We apologize for not processing your order properly. Please contact the Help Center for further assistance</string>
     <string name="order_will_delivered">Your order will be delivered within 7 to 10 working days</string>
     <string name="snackBarText_itemRemoved">Item removed from Cart</string>
     <string name="snackBarText_outOfStockItem">Please remove Out of Stock item before continue</string>

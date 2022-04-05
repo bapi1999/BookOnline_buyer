@@ -9,6 +9,28 @@
     android:elevation="5dp"
     android:background="@color/white">
 
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/le_ads" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="Sponsored"
+            android:textColor="@color/light_black"
+            android:textSize="13sp" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/bigads_image"
         android:layout_width="0dp"
@@ -16,7 +38,7 @@
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2"
         app:srcCompat="@drawable/as_google_ads_logo" />
 
     <TextView
@@ -62,8 +84,6 @@
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ad_description">
-
-        <include layout="@layout/le_ads" />
 
         <TextView
             android:id="@+id/ad_provider_name"

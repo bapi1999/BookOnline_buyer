@@ -22,14 +22,14 @@
         android:id="@+id/product_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/black"
-        android:textSize="14sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toStartOf="@+id/product_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -39,16 +39,26 @@
         android:id="@+id/linearLayout23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/product_name">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="9"
+            android:text="Price :"
+            android:textColor="@color/grey_700"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <ImageView
-            android:layout_width="17dp"
+            android:layout_width="15dp"
             android:layout_height="match_parent"
+            android:layout_marginStart="4dp"
             android:src="@drawable/ic_baseline_currency_rupee_24"
             app:tint="@color/grey_900" />
 
@@ -56,9 +66,8 @@
             android:id="@+id/product_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:maxLength="9"
-            android:text="Rs.XXXXXXX"
+            android:text="XXXXXXX"
             android:textColor="@color/black"
             android:textSize="15sp"
             android:textStyle="bold"
@@ -69,36 +78,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
             android:background="@drawable/s_strick_through"
-            android:maxLength="8"
-            android:text="000000"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/percent_off"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLength="13"
-            android:text="00% off"
-            android:textColor="@color/ratingGreen"
-            android:textSize="13sp" />
+            android:maxLength="9"
+            android:text="XXX"
+            android:textColor="@color/grey_700"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/quantity_container"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/s_border_1"
         android:backgroundTint="@color/purple_500"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout23">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_image">
 
         <TextView
             android:id="@+id/textView36"
@@ -205,7 +204,75 @@
         android:background="?android:attr/listDivider"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_image" />
+        app:layout_constraintTop_toBottomOf="@+id/quantity_container" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout23">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delivery charge :"
+            android:textColor="@color/grey_700" />
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:src="@drawable/ic_baseline_currency_rupee_24"
+            app:tint="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/delivery_charge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="40"
+            android:textColor="@color/grey_700"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/warningAndStockContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <TextView
+            android:id="@+id/textView44"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order quantity exceeds Stock Quantity"
+            android:textColor="@color/red_600"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/stock_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Only 1 left in stock"
+            android:textColor="@color/grey_700"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

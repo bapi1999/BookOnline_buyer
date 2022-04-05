@@ -27,16 +27,8 @@ class CongratulationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCongratulationBinding.inflate(inflater, container, false)
-        val warningLayout = binding.warningContainer
 
         Log.e("layout","onCreateView")
-
-        val warnings:Int = args.warning
-        if(warnings == 0){
-            warningLayout.visibility = viewGone
-        }else{
-            warningLayout.visibility = viewVisible
-        }
 
 
         val orderItem = args.orderItem
@@ -56,15 +48,16 @@ class CongratulationFragment : Fragment() {
         binding.orderCounter.text = orderItem.toString()
 
 
-//        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//
-//                val intent = Intent(context,MainActivity::class.java)
-//                startActivity(intent)
-//                activity!!.finish()
-//
-//            }
-//        })
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val intent = Intent(context,MainActivity::class.java)
+                startActivity(intent)
+                activity!!.finish()
+//                Toast.makeText(requireContext(),"from congratulation fragment", Toast.LENGTH_SHORT).show()
+
+            }
+        })
 
 
 

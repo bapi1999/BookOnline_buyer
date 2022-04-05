@@ -80,7 +80,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:headerLayout="@layout/ar_nav_header_layout"
-
+        app:itemIconTint="@color/drawer_item_selector"
+        app:itemTextColor="@color/drawer_item_selector"
         app:menu="@menu/drawerm_menu"
         android:layout_gravity="start"/>
 

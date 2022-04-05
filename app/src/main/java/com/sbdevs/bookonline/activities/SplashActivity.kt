@@ -7,10 +7,13 @@ import android.widget.Toast
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
+import android.util.Log
 
 import androidx.lifecycle.lifecycleScope
 
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.activities.user.RegisterActivity
 import kotlinx.coroutines.Dispatchers
@@ -62,4 +65,5 @@ class SplashActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
     }
+
 }

@@ -40,14 +40,12 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var productId: String
 
     private lateinit var orderID: String
-    private var sellerID:String = ""
+    private var sellerID: String = ""
 
     private lateinit var productName: String
     private lateinit var imageUrl: String
     val gone = View.GONE
     val visible = View.VISIBLE
-    private var isEligibleForRating = false
-
 
     //Rating lay out ================================
 
@@ -61,6 +59,7 @@ class OrderDetailsActivity : AppCompatActivity() {
     var rating2: Long = 0
     var rating1: Long = 0
     var totalRatingsNumber = 0L
+    var onlinePayment = false
 
     private lateinit var buyerName: String
     //Rating lay out ================================
@@ -151,6 +150,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 
                     val orderedQty = it.getLong("ordered_Qty")!!
                     val status = it.get("status").toString()
+                    onlinePayment = it.getBoolean("Online_payment")!!
 
                     val productIdDB = it.get("productId").toString()
                     val tracKingId = it.get("ID_Of_Tracking").toString()
@@ -168,7 +168,8 @@ class OrderDetailsActivity : AppCompatActivity() {
                     val returnedTime = it.getTimestamp("Time_returned")
                     val canceledTime = it.getTimestamp("Time_canceled")
                     val returnPeriod = it.getLong("Time_period")!!.toLong()
-                    val address: MutableMap<String, Any> = it.get("address") as MutableMap<String, Any>
+                    val address: MutableMap<String, Any> =
+                        it.get("address") as MutableMap<String, Any>
 
                     val daysAgo = TimeDateAgo().msToTimeAgo(this@OrderDetailsActivity, orderTime)
 
@@ -254,7 +255,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                         binding.cancelOrderBtn.visibility = gone
                         binding.returnOrderBtn.visibility = gone
                         binding.orderTrackContainer.visibility = gone
-                        orderCanceled(cancelT, orderCanceledBy,cancellationReason)
+                        orderCanceled(cancelT, orderCanceledBy, cancellationReason)
                         binding.statusTxt.text = "Canceled"
                         binding.cancellationContainer.visibility = visible
                     } else {
@@ -350,7 +351,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         binding.lay3.deliveredImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
     }
 
-    private fun orderCanceled(deliveredTime: Date, orderCanceledBy: String,reason:String) {
+    private fun orderCanceled(deliveredTime: Date, orderCanceledBy: String, reason: String) {
 
         binding.lay0.cancellationReason.text = reason
         binding.lay0.cancellationTime.text = getDateTime(deliveredTime)
@@ -373,10 +374,14 @@ class OrderDetailsActivity : AppCompatActivity() {
             .document("SELLER_DATA")
             .collection("ORDERS")
             .document(orderID)
-        orderRef.update(cancelMap).addOnSuccessListener {
-            sendNotification(productName, imageUrl, "canceled", sellerID, orderID)
+        orderRef.update(cancelMap)
+            .addOnSuccessListener {
+                sendNotification(productName, imageUrl, "canceled", sellerID, orderID)
+                if (onlinePayment){
+                    sendRefundRequest()
+                }
 
-        }.await()
+            }.await()
 
 
         val cancelT = Date()
@@ -388,6 +393,28 @@ class OrderDetailsActivity : AppCompatActivity() {
         binding.lay0.cancellationTime.text = TimeDateAgo().msToTimeAgo(this, cancelT)
         binding.lay0.cancellationText.text = "Order is canceled by customer"
 
+    }
+
+    private fun sendRefundRequest(){
+        val refundMap: MutableMap<String, Any> = HashMap()
+        refundMap["Buyer_Id"] = user!!.uid
+        refundMap["Time"] = FieldValue.serverTimestamp()
+        refundMap["Money_refunded"]=false
+        refundMap["Order_id"] = orderID
+
+        firebaseFirestore.collection("REFUND_REQUEST").add(refundMap)
+            .addOnSuccessListener {  }
+    }
+
+    private fun sendProductReturnRequest(){
+        val refundMap: MutableMap<String, Any> = HashMap()
+        refundMap["Buyer_Id"] = user!!.uid
+        refundMap["Time"] = FieldValue.serverTimestamp()
+        refundMap["requested_to_delivery_partner"]=false
+        refundMap["Order_id"] = orderID
+
+        firebaseFirestore.collection("PRODUCT_RETURN_REQUEST").add(refundMap)
+            .addOnSuccessListener {  }
     }
 
     private fun returnOrder(orderID: String, sellerID: String) {
@@ -402,7 +429,9 @@ class OrderDetailsActivity : AppCompatActivity() {
             .collection("ORDERS")
             .document(orderID)
 
-        orderRef.update(returnMap)
+        orderRef.update(returnMap).addOnSuccessListener {
+            sendProductReturnRequest()
+        }
     }
 
     private fun sendNotification(
@@ -447,21 +476,8 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
-
-
-
-
-
 //TODO---  RATING LAYOUT #################################################################################################
 //TODO==================================================================================================================
-
-
-
-
 
 
     private fun isReviewed(productID: String) {
@@ -471,13 +487,14 @@ class OrderDetailsActivity : AppCompatActivity() {
             .document(user!!.uid)
             .get().addOnSuccessListener {
                 if (it.exists()) {
+                    ALL_READY_REVIEWED = true
                     val ratings = it.getLong("rating")!!.toLong()
                     val review = it.getString("review").toString()
 
                     ratingBar.rating = ratings.toFloat()
-                    if (review.isNullOrEmpty()){
-                        Log.w("review:","Empty")
-                    }else{
+                    if (review.isNullOrEmpty()) {
+                        Log.w("review:", "Empty")
+                    } else {
                         reviewInput.editText?.setText(review)
                     }
 
@@ -485,7 +502,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     ALL_READY_REVIEWED = false
                 }
             }.addOnFailureListener {
-
+                ALL_READY_REVIEWED = false
             }
     }
 
@@ -646,8 +663,6 @@ class OrderDetailsActivity : AppCompatActivity() {
             .document(user!!.uid)
             .set(ratingMap)
     }
-
-
 
 
 //TODO---  RATING LAYOUT #################################################################################################

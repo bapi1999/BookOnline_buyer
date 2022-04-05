@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:elevation="4dp"
+    android:layout_marginBottom="4dp">
 
     <LinearLayout
         android:id="@+id/batch_background"
@@ -11,8 +14,6 @@
         android:layout_height="50dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
-        android:layout_marginEnd="1dp"
-        android:background="@color/primaryDarkColor"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,20 +26,20 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:fontFamily="@font/agency_fb"
+            android:fontFamily="@font/smoochsans_medium"
             android:text="Top Deals"
-            android:textColor="@color/white"
-            android:textSize="23dp"
-            android:textStyle="bold"/>
+            android:textColor="@color/grey_900"
+            android:textSize="25dp"
+            />
 
-        <Button
+        <ImageView
             android:id="@+id/view_all_button"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/s_shape_bg_1"
             android:backgroundTint="@color/purple_500"
-            android:text="@string/view_all"
-            android:layout_marginEnd="8dp"
-            android:textAllCaps="false"
+            app:srcCompat="@drawable/ic_chevron_right_24"
             android:textColor="@color/white" />
     </LinearLayout>
 
@@ -49,13 +50,11 @@
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="8dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/batch_background"
-        app:spanCount="2"
-        tools:listitem="@layout/item_product_grid"
-         />
+        app:spanCount="2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

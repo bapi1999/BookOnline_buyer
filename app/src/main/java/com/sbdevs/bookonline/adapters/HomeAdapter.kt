@@ -178,7 +178,6 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
     class CategoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         private val firebaseDatabase = SharedDataClass.database
         private val categoryRecycler:RecyclerView = itemView.findViewById(R.id.topCategoryRecycler)
-        private val categoryTitle:TextView = itemView.findViewById(R.id.textView4)
         private var categoryList: ArrayList<TopCategoryModel> = ArrayList()
         private lateinit var categoryAdapter: TopCategoryAdapter
         fun bind(homeModel: HomeModel){
@@ -268,7 +267,6 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
         val firebaseFirestore = Firebase.firestore
         private val productRecycler:RecyclerView = itemView.findViewById(R.id.product_grid_recycler)
         private val batchHeader:TextView = itemView.findViewById(R.id.batch_header)
-        private val batchBackground:LinearLayout = itemView.findViewById(R.id.batch_background)
         private var productList= ArrayList<SearchModel>()
         private lateinit var adapter1: ProductGridAdapter
         fun bind(homeModel: HomeModel){
@@ -293,9 +291,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
 
                         val queryOrderBy = it.child("query_orderBy").value.toString()
                         val queryDirection = it.child("query_direction").value.toString()
-                        val background = it.child("batch_bg_color").value.toString()
                         val title = it.child("batch_title").value.toString()
-
                         var direction = Query.Direction.DESCENDING
 
                         direction = if(queryDirection == "D"){
@@ -305,7 +301,6 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
                         }
 
                         batchHeader.text = title
-                        batchBackground.setBackgroundColor(parseColor(background))
                         getFirebaeData(queryOrderBy,direction)
                     }
                     .addOnFailureListener {

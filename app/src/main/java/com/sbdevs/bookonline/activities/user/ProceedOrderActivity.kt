@@ -24,6 +24,7 @@ import com.sbdevs.bookonline.models.user.CartModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.Serializable
 
@@ -37,7 +38,9 @@ class ProceedOrderActivity : AppCompatActivity() {
 
 
     lateinit var recyclerView: RecyclerView
-    var receivedList:ArrayList<CartModel> = ArrayList()
+    private var receivedList:ArrayList<CartModel> = ArrayList()
+    var newReceivedList:ArrayList<CartModel> = ArrayList()
+    var outOfStockItemList:ArrayList<CartModel> = ArrayList()
 
     lateinit var addressList:ArrayList<MutableMap<String, Any>>
 
@@ -52,6 +55,8 @@ class ProceedOrderActivity : AppCompatActivity() {
     var netSellingPrice = 0
     var deliveryCharge = 0L
 
+    var changeInQtyItem: Int = 0
+
     lateinit var  priceTxt:TextView
     lateinit var  discountTxt:TextView
     lateinit var  deliverChargeTxt:TextView
@@ -59,7 +64,7 @@ class ProceedOrderActivity : AppCompatActivity() {
 
     private val loadingDialog = LoadingDialog()
     private var thereIsAddressError = false
-    private var thereIsPriceError = false
+
     var fromTo = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +87,7 @@ class ProceedOrderActivity : AppCompatActivity() {
 
         fromTo = intent.getIntExtra("From_To", -1)
         receivedList = intent.getParcelableArrayListExtra<Parcelable>("productList") as ArrayList<CartModel>
+        newReceivedList.addAll(receivedList)
 
         amountToPay1 = intent.getIntExtra("total_amount",-1)
 
@@ -120,20 +126,35 @@ class ProceedOrderActivity : AppCompatActivity() {
         continueToPaymentBtn.setOnClickListener {
             val intent = Intent(this, PaymentMethodActivity::class.java)
 
-            if (thereIsAddressError or thereIsPriceError){
+            if (thereIsAddressError){
 
                 continueToPaymentBtn.isEnabled = false
                 continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.grey_600)
             }else{
                 continueToPaymentBtn.isEnabled = true
                 continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.purple_500)
+                loadingDialog.show(supportFragmentManager,"Show")
+                lifecycleScope.launch(Dispatchers.IO) {
+                    checkAllOrderMethods(receivedList)
+                    delay(1000L)
+                    withContext(Dispatchers.Main){
+                        intent.putExtra("total_amount",amountToPay2)
+                        intent.putExtra("deliveryCharge",deliveryCharge)
+                        intent.putExtra("netSellingPrice",netSellingPrice)
+                        intent.putParcelableArrayListExtra("productList",newReceivedList)
+                        intent.putParcelableArrayListExtra("OutOfStockProductList",outOfStockItemList)
+                        intent.putExtra("address",addressMap as Serializable)
+                        intent.putExtra("From_To",fromTo)
+                        intent.putExtra("changInQuantity",changeInQtyItem)
+                        //todo: 1=> MyCart / 2=> BuyNow
+                        startActivity(intent)
+                        Log.e("goto PaymentMethod","success")
+                        loadingDialog.dismiss()
+                    }
+                }
 
-                intent.putExtra("total_amount",amountToPay2)
-                intent.putParcelableArrayListExtra("productList",receivedList)
-                intent.putExtra("address",addressMap as Serializable)
-                intent.putExtra("From_To",fromTo)
-                //todo: 1=> MyCart / 2=> BuyNow
-                startActivity(intent)
+
+
             }
 
 
@@ -221,12 +242,81 @@ class ProceedOrderActivity : AppCompatActivity() {
 
     }
 
-    private suspend fun calculateThePrice(list: ArrayList<CartModel> ){
+
+
+
+    private suspend fun checkAllOrderMethods (list: ArrayList<CartModel>)  {
+
+        for ((i, item) in list.withIndex()) {
+
+            firebaseFirestore.collection("PRODUCTS")
+                .document(item.productId).get()
+                .addOnSuccessListener {
+
+                    val stockQty = it.getLong("in_stock_quantity")!!.toLong()
+                    val orderQuantity = item.orderQuantity
+                    val itemSoldSoFar = it.getLong("number_of_item_sold")!!.toLong()
+                    when {
+                        stockQty >= orderQuantity -> {
+                            val newQty = stockQty - orderQuantity
+                            val itemSoldNow = itemSoldSoFar + orderQuantity
+                            // update product
+                            updateProductStock(item.productId, newQty, itemSoldNow)
+                            Log.e("checkAllOrderMethods","Size Of RL-${receivedList.size} / NRL-${newReceivedList.size}")
+
+
+                        }
+                        stockQty in 1L until orderQuantity -> {
+                            changeInQtyItem ++
+                            val newQty = 0L
+                            val itemSoldNow = itemSoldSoFar + stockQty
+
+                            updateProductStock(item.productId, newQty, itemSoldNow)
+                            newReceivedList[i].orderQuantity = stockQty
+                            calculateThePrice(newReceivedList)
+
+                            Log.e("checkAllOrderMethods","Some product Change in Qty")
+                        }
+                        stockQty <= 0L -> {
+//                            Toast.makeText(this, "Some Product just  out of stock now", Toast.LENGTH_SHORT).show()
+
+                            outOfStockItemList.add(item)
+                            newReceivedList.remove(item)
+                            calculateThePrice(newReceivedList)
+                            // Don't update product
+
+                            Log.e("checkAllOrderMethods","Product just OOS. Size Of RL-${receivedList.size} / NRL-${newReceivedList.size}")
+                        }
+                    }
+                }.addOnFailureListener {
+                    Log.e("check all orders error","${it.message}")
+                }.await()
+
+        }
+    }
+
+    private fun updateProductStock(productId: String, newQty: Long, itemSoldNow: Long) {
+
+        val productMap: MutableMap<String, Any> = HashMap()
+
+        productMap["in_stock_quantity"] = newQty
+        productMap["number_of_item_sold"] = itemSoldNow
+
+        firebaseFirestore.collection("PRODUCTS").document(productId).update(productMap)
+            .addOnSuccessListener { Log.e("updateProductStock ","Success") }
+            .addOnFailureListener { Log.e("updateProductStock error","${it.message}") }
+    }
+
+
+
+
+
+
+    private fun calculateThePrice(list: ArrayList<CartModel> ){
 
         netSellingPrice = 0
         discount = 0
         totalSellingPrice = 0
-
         deliveryCharge = 0L
         amountToPay2 = 0
 
@@ -253,19 +343,15 @@ class ProceedOrderActivity : AppCompatActivity() {
 
         amountToPay2 = (deliveryCharge+netSellingPrice).toInt()
 
+        Log.e("calculate price","Success")
     }
 
-    private suspend fun setValuesInTextView(){
-        thereIsPriceError = if (amountToPay1 ==amountToPay2){
-            false
-        }else{
-            Toast.makeText(this,"Some problem in calculating the price", Toast.LENGTH_LONG).show()
-            true
-        }
+    private fun setValuesInTextView(){
         priceTxt.text = totalSellingPrice.toString()
-        discountTxt.text = discount.toString()
+        discountTxt.text ="-$discount"
         deliverChargeTxt.text = deliveryCharge.toString()
         amountTxt.text = amountToPay2.toString()
+
     }
 
 }

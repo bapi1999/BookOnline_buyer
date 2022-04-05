@@ -15,5 +15,6 @@ class CartModel (
     val deliveryCharge:Long = 0L,
 
     val stockQty:Long = 0L,
-    var orderQuantity:Long = 0L
+    var orderQuantity:Long = 0L,
+    val returnPolicy:String = ""
         )  : Parcelable

@@ -171,7 +171,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.termCondition ->{
-
                     closeDrawer()
                 }
                 R.id.privacy_policy ->{
