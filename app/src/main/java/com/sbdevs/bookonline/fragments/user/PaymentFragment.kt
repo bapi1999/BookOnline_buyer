@@ -9,10 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
@@ -22,9 +19,11 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -67,13 +66,21 @@ class PaymentFragment : Fragment() {
     var warnings: Int = 0
     var st = ""
     var totalAmount:Int = 0
+    var coinDiscountPrice = 0
     var fromTo = -1
+    private var myCoins =0L
+    private var newCoins =0L
+    private var payWithCoin =false
+    private lateinit var coinImage:ImageView
 
     private lateinit var payOnline: LinearLayout
     private lateinit var cashOnDelivery: LinearLayout
     private lateinit var confirmBtn:Button
 
     private lateinit var address: MutableMap<String, Any>
+
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
 
 
 
@@ -92,11 +99,13 @@ class PaymentFragment : Fragment() {
 
         val miniAddress = binding.miniAddres
         val lay2 = binding.lay2
+        coinImage = binding.imageView14
 
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
-        val intent = requireActivity().intent
 
+
+        val intent = requireActivity().intent
         totalAmount = intent.getIntExtra("total_amount", 0)
         val deliveryCharge = intent.getIntExtra("deliveryCharge", 0)
         val netSellingPrice = intent.getIntExtra("netSellingPrice", 0)
@@ -104,6 +113,13 @@ class PaymentFragment : Fragment() {
         binding.totalAmount.text = "$totalAmount/-"
         fromTo = intent.getIntExtra("From_To", -1)
         warnings = intent.getIntExtra("changInQuantity", 0)
+
+        if(fromTo == 1){
+            binding.payWithCoinBtn.visibility = gone
+        }else{
+            binding.payWithCoinBtn.visibility = visible
+            getMyCoin()
+        }
 
         address = intent.getSerializableExtra("address") as MutableMap<String, Any>
 
@@ -160,17 +176,7 @@ class PaymentFragment : Fragment() {
 
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                lifecycleScope.launch(Dispatchers.IO){
-                    undoProductQtyChange(receivedList)
-
-                    delay(1000L)
-                    withContext(Dispatchers.Main){
-                        requireActivity().finish()
-                    }
-
-                }
-
-
+                goBackMethod()
             }
         })
 
@@ -180,30 +186,30 @@ class PaymentFragment : Fragment() {
     }
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.goBackBtn.setOnClickListener {
-
-            lifecycleScope.launch(Dispatchers.IO){
-                undoProductQtyChange(receivedList)
-
-                delay(1000L)
-                withContext(Dispatchers.Main){
-                    requireActivity().finish()
-                }
-
-            }
-
-
+        binding.backBtn1.setOnClickListener {
+            goBackMethod()
         }
+
+        binding.backBtn2.setOnClickListener {
+            goBackMethod()
+        }
+
+
 
         payOnline.setOnClickListener {
             payOnline.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.amber_500)
             cashOnDelivery.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_400)
             selecter = 1
+
+            binding.imageView15.setImageResource(R.drawable.ic_check_box_24)
+            binding.imageView15.imageTintList = AppCompatResources.getColorStateList(requireContext(),R.color.amber_600)
+            binding.imageView16.setImageResource(R.drawable.ic_baseline_check_box_outline_blank_24)
+            binding.imageView16.imageTintList = AppCompatResources.getColorStateList(requireContext(),R.color.grey_800)
+
 
             confirmBtn.isEnabled = true
             confirmBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.amber_600)
@@ -218,6 +224,11 @@ class PaymentFragment : Fragment() {
                 AppCompatResources.getColorStateList(requireContext(), R.color.amber_500)
             selecter = 2
 
+            binding.imageView15.setImageResource(R.drawable.ic_baseline_check_box_outline_blank_24)
+            binding.imageView15.imageTintList = AppCompatResources.getColorStateList(requireContext(),R.color.grey_800)
+            binding.imageView16.setImageResource(R.drawable.ic_check_box_24)
+            binding.imageView16.imageTintList = AppCompatResources.getColorStateList(requireContext(),R.color.amber_600)
+
             confirmBtn.isEnabled = true
             confirmBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.amber_600)
         }
@@ -226,16 +237,18 @@ class PaymentFragment : Fragment() {
 
         confirmBtn.setOnClickListener {
             loadingDialog.show(childFragmentManager, "Show")
-            Toast.makeText(requireContext(),"clicked",Toast.LENGTH_SHORT).show()
 
             when (selecter) {
                 1 -> {
-//
+
                     // PayTM task and firebase task
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        delay(1000)
-                        loadingDialog.dismiss()
-                    }
+                    loadingDialog.dismiss()
+                    Toast.makeText(context, "Online Payment is currently unavailable", Toast.LENGTH_SHORT).show()
+//                    lifecycleScope.launch(Dispatchers.Main) {
+//                        delay(1000)
+//                        loadingDialog.dismiss()
+//                    }
+
                 }
                 2 -> {
 
@@ -244,9 +257,15 @@ class PaymentFragment : Fragment() {
                         checkAllOrderMethods(receivedList, address)
 
                         if (fromTo == 1){
+                            //From Cart
                             deleteProductFromCart()
                         }else{
-                            Log.i("from","Buy now")
+                            //From BuyNow
+                            if (payWithCoin){
+                                updateMyCoins()
+                            }else{
+                                Log.i("nothing","todo")
+                            }
                         }
 
                         delay(2000L)
@@ -266,7 +285,60 @@ class PaymentFragment : Fragment() {
             }
         }
 
+
+
+        binding.payWithCoinBtn.setOnClickListener {
+            if (payWithCoin){
+                payWithCoin = false
+
+                binding.lay2.amountToPay.text = totalAmount.toString()
+                binding.totalAmount.text = "$totalAmount/-"
+                binding.payWithCoinBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.grey_100)
+                Glide.with(requireContext()).load(R.drawable.as_coin_not_select).into(coinImage)
+                binding.lay2.additionalDiscountContainer.visibility = gone
+
+            }else{
+                payWithCoin = true
+                binding.payWithCoinBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.amber_100)
+                Glide.with(requireContext()).load(R.drawable.as_coin_selected).into(coinImage)
+
+                var additionalDiscount = 0
+                when {
+                    totalAmount>myCoins -> {
+                        coinDiscountPrice = (totalAmount - myCoins).toInt()
+                        newCoins = 0
+                        additionalDiscount = myCoins.toInt()
+                    }
+                    totalAmount<myCoins -> {
+                        coinDiscountPrice = 0
+                        newCoins = myCoins - totalAmount
+                        additionalDiscount = totalAmount
+                    }
+
+                }
+
+                binding.lay2.amountToPay.text = coinDiscountPrice.toString()
+                binding.lay2.additionalDiscountContainer.visibility = visible
+                binding.lay2.additionalDiscount.text = "-${additionalDiscount}"
+                binding.totalAmount.text = "$coinDiscountPrice/-"
+            }
+
+        }
+
+
     }
+
+    private fun goBackMethod(){
+
+        lifecycleScope.launch(Dispatchers.IO){
+            undoProductQtyChange(receivedList)
+            delay(1000L)
+            withContext(Dispatchers.Main){
+                requireActivity().finish()
+            }
+        }
+    }
+
 
 
 
@@ -284,7 +356,8 @@ class PaymentFragment : Fragment() {
                     address,
                     item.priceSelling,
                     item.deliveryCharge,
-                    item.returnPolicy
+                    item.returnPolicy,
+                    item.SELLER_PROFIT
                 )
                 getSellerToken( item.title, item.orderQuantity, item.sellerId)
             }
@@ -339,7 +412,8 @@ class PaymentFragment : Fragment() {
         address: MutableMap<String, Any>,
         unitSellingPrice: Long,
         shippingCharge:Long,
-        productReturnAvailable:String
+        productReturnAvailable:String,
+        sellerProfit:Double
         ) = CoroutineScope(Dispatchers.IO).launch {
         val productMap: MutableMap<String, Any> = HashMap()
         productMap["productThumbnail"] = thumbnail
@@ -362,6 +436,7 @@ class PaymentFragment : Fragment() {
         productMap["is_order_canceled"] = false
         productMap["address"] = address
         productMap["Time_ordered"] = FieldValue.serverTimestamp()
+        productMap["SELLER_PROFIT"] = sellerProfit
 
         if (productReturnAvailable == "No Replacement Policy"){
             productMap["Time_period"] = 0L
@@ -431,6 +506,48 @@ class PaymentFragment : Fragment() {
         return docName
     }
 
+    private fun getMyCoin(){
+
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid).get()
+            .addOnSuccessListener {
+                myCoins = it.getLong("my_donation_coins")!!.toLong()
+                if (myCoins <= 0L){
+                    binding.payWithCoinBtn.visibility = gone
+                }else{
+                    binding.payWithCoinBtn.visibility = visible
+                    binding.myCoin.text = "$myCoins c"
+                    var discount = 0
+                    when {
+                        totalAmount>myCoins -> {
+                            discount = (totalAmount - myCoins).toInt()
+                        }
+                        totalAmount<myCoins -> {
+                            discount = 0
+                        }
+                    }
+                    binding.coinDisCountPrice.text = discount.toString()
+                    binding.realPrice.text = totalAmount.toString()
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Get MyCoin","${it.message}")
+                binding.payWithCoinBtn.visibility = gone
+            }
+
+    }
+
+    private fun updateMyCoins(){
+        val coin = hashMapOf(
+            "my_donation_coins" to newCoins
+        )
+
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid).set(coin, SetOptions.merge())
+//            .addOnSuccessListener {  }
+//            .addOnFailureListener {  }
+    }
+
     private fun notifySeller(
         thumbnail: String, title: String,
         orderQuantity: Long, docName: String, sellerId: String
@@ -447,7 +564,7 @@ class PaymentFragment : Fragment() {
         notificationMap["seen"] = false
 
         firebaseFirestore.collection("USERS").document(sellerId)
-            .collection("NOTIFICATIONS").add(notificationMap)
+            .collection("SELLER_NOTIFICATIONS").add(notificationMap)
             .addOnSuccessListener {
                 Log.i("Notify Seller", "successful")
 
@@ -463,7 +580,7 @@ class PaymentFragment : Fragment() {
         val description = "($orderQuantity) product named ( $productName ) has been ordered"
         val title = "New Order"
 
-        database.getReference("Tokens").child(sellerId).get()
+        database.getReference("Seller_Tokens").child(sellerId).get()
             .addOnSuccessListener {snapShot ->
             val sellerToken = snapShot.value.toString()
 
@@ -475,6 +592,8 @@ class PaymentFragment : Fragment() {
         }.await()
 
     }
+
+
 
 
 

@@ -6,22 +6,20 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
+import com.sbdevs.bookonline.databinding.ActivityThanksForDonateBinding
 
 class ThanksForDonateActivity : AppCompatActivity() {
+    private lateinit var binding:ActivityThanksForDonateBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_thanks_for_donate)
+        binding = ActivityThanksForDonateBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        val newlyAddedPoint:Int = intent.getIntExtra("totalPoint",0)
 
-//        onBackPressedDispatcher.addCallback( object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                val intent = Intent(this@ThanksForDonateActivity, MainActivity::class.java)
-//                startActivity(intent)
-//                finish()
-//                Toast.makeText(requireContext(),"from congratulation fragment", Toast.LENGTH_SHORT).show()
-//
-//            }
-//        })
+        binding.newlyAddedPoint.text = "$newlyAddedPoint Points"
+
 
 
     }

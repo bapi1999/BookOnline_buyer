@@ -159,7 +159,7 @@ class LoginFragment : Fragment() {
                 val token:String = task.result
                 val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
 
-                FirebaseDatabase.getInstance().getReference("Tokens")
+                FirebaseDatabase.getInstance().getReference("Buyer_Tokens")
                     .child(userId)
                     .setValue(token)
 

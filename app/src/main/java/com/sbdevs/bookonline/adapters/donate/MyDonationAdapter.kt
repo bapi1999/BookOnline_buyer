@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.models.MyDonationModel
@@ -28,24 +29,29 @@ class MyDonationAdapter(var list: MutableList<MyDonationModel>, ) : RecyclerView
     }
 
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
+        private val receivedText: TextView = itemView.findViewById(R.id.received_text)
         private val totalQtyText: TextView = itemView.findViewById(R.id.total_item_count)
         private val totalPointText: TextView = itemView.findViewById(R.id.total_point)
         private val timeText: TextView = itemView.findViewById(R.id.donation_time)
         private val itemsText: TextView = itemView.findViewById(R.id.donated_items)
 
         fun bind(model:MyDonationModel){
-            val totalPoint = model.total_point
-            val totalQty = model.total_qty
+            var totalPoint = 0L
+            var totalQty = 0L
             val timeRequest: Date = model.Time_donate_request
-            val timeReceived: Date = model.Time_donate_received
-            val isReceived = model.is_received
+            var isReceived = model.is_received
             var st  = ""
             val itemList = model.item_List
 
 
             for ((i, item) in itemList.withIndex()){
                 val name = item["Type"]
-                val qty = item["qty"]
+                val qty:Long = item["qty"] as Long
+                val poitPerItem:Long = item["points_per_item"] as Long
+
+                totalQty += qty
+                totalPoint+=(qty*poitPerItem)
+
                 st+="$name ($qty)"
 
                 st += if (i >= itemList.size-1){
@@ -55,14 +61,20 @@ class MyDonationAdapter(var list: MutableList<MyDonationModel>, ) : RecyclerView
                 }
             }
 
+            timeText.text = getDateTime(timeRequest)
+
             if (isReceived){
-                timeText.text = getDateTime(timeReceived)
+                receivedText.text = "Received"
+                receivedText.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.lightGreen_700)
             }else{
-                timeText.text = getDateTime(timeRequest)
+                receivedText.text = "Not received"
+                receivedText.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.red_500)
             }
 
+
+
             totalPointText.text = totalPoint.toString()
-            totalQtyText.text = totalQty.toString()
+            totalQtyText.text = "$totalQty items"
             itemsText.text = st
 
 
@@ -73,7 +85,7 @@ class MyDonationAdapter(var list: MutableList<MyDonationModel>, ) : RecyclerView
         @SuppressLint("SimpleDateFormat")
         private fun getDateTime(date: Date): String? {
             return try {
-                val sdf = SimpleDateFormat("dd MMMM yyyy hh:mm a")
+                val sdf = SimpleDateFormat("dd/MM/yyyy")
                 //val netDate = Date(s.toLong() * 1000)
                 sdf.format(date)
             } catch (e: Exception) {

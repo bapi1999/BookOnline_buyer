@@ -42,7 +42,7 @@ class SignUpFragment : Fragment() {
 
     lateinit var nameInput: TextInputLayout
     lateinit var email: TextInputLayout
-    lateinit var phone:TextInputLayout
+
     lateinit var pass: TextInputLayout
     lateinit var confirmPass:TextInputLayout
     lateinit var errorTxt: TextView
@@ -55,7 +55,7 @@ class SignUpFragment : Fragment() {
 
         nameInput = binding.signupLay.emailInput
         email = binding.signupLay.emailInput
-        phone = binding.signupLay.mobileInput
+
         pass = binding.signupLay.passwordInput
         confirmPass = binding.signupLay.confirmPassInput
 
@@ -119,25 +119,25 @@ class SignUpFragment : Fragment() {
     }
 
 
-    private fun checkPhome(): Boolean {
-        val phoneInput: String = phone.editText?.text.toString().trim()
-        return if (phoneInput.isEmpty()) {
-            phone.isErrorEnabled = true
-            phone.error = "Field can't be empty"
-            false
-        } else {
-            if(phoneInput.length==10){
-                phone.isErrorEnabled = false
-                phone.error = null
-                true
-            }else{
-                phone.isErrorEnabled = true
-                phone.error = "Must be 10 digit number"
-                false
-            }
-
-        }
-    }
+//    private fun checkPhome(): Boolean {
+//        val phoneInput: String = phone.editText?.text.toString().trim()
+//        return if (phoneInput.isEmpty()) {
+//            phone.isErrorEnabled = true
+//            phone.error = "Field can't be empty"
+//            false
+//        } else {
+//            if(phoneInput.length==10){
+//                phone.isErrorEnabled = false
+//                phone.error = null
+//                true
+//            }else{
+//                phone.isErrorEnabled = true
+//                phone.error = "Must be 10 digit number"
+//                false
+//            }
+//
+//        }
+//    }
 
 
     private fun checkPassword(): Boolean {
@@ -181,7 +181,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun checkAllDetails() {
-        if (!checkName() or !checkMail() or !checkPhome() or !checkPassword() or !checkConfirmPassword()) {
+        if (!checkName() or !checkMail() or !checkPassword() or !checkConfirmPassword()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             return
@@ -205,6 +205,8 @@ class SignUpFragment : Fragment() {
     }
     private suspend fun createPaths(){
 
+        val timstamp1 = FieldValue.serverTimestamp()
+
         val listSizeMap: MutableMap<String, Any> = HashMap()
         listSizeMap["listSize"] = 0L
 
@@ -219,21 +221,21 @@ class SignUpFragment : Fragment() {
         userMap["email"] = email.editText?.text.toString().trim()
         userMap["Is_user"] = true
         userMap["Is_seller"] = false
-        userMap["signup_date"] = FieldValue.serverTimestamp()
-        userMap["mobile_No"] = phone.editText?.text.toString().trim()
+        userMap["signup_date"] = timstamp1
         userMap["profile"] = ""
-        userMap["new_notification"] = FieldValue.serverTimestamp()
+        userMap["new_notification_user"] = timstamp1
 
         if (firebaseAuth.currentUser!=null){
             val currentUser = firebaseAuth.currentUser!!.uid
 
             val docRef = firebaseFirestore.collection("USERS").document(currentUser)
+
             docRef.set(userMap)
                 .addOnFailureListener {
                     Log.e("Create user","${it.message}")
                 }.await()
 
-            docRef.collection("NOTIFICATIONS").document("DUMMY").set(dummyMap)
+            docRef.collection("USER_NOTIFICATIONS").document("DUMMY").set(dummyMap)
                 .addOnFailureListener {
                     Log.e("Create Notifications","${it.message}")
                 }
@@ -266,7 +268,7 @@ class SignUpFragment : Fragment() {
                 val token:String = task.result
                 val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
 
-                FirebaseDatabase.getInstance().getReference("Tokens")
+                FirebaseDatabase.getInstance().getReference("Buyer_Tokens")
                     .child(userId)
                     .setValue(token)
 

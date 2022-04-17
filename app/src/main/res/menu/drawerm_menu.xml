@@ -35,7 +35,7 @@
 
         <item
             android:id="@+id/myOrderFragment"
-            android:icon="@drawable/i_deliverd"
+            android:icon="@drawable/ic_outline_ballot_24"
             android:title="Orders" />
         <item
             android:id="@+id/myAccountFragment"
@@ -55,7 +55,7 @@
 
         <item
             android:id="@+id/donate_menu"
-            android:icon="@drawable/ic_baseline_toys_24"
+            android:icon="@drawable/as_donate"
             android:title="Donate" />
 
         <item

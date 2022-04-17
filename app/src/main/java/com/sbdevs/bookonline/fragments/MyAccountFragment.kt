@@ -41,7 +41,7 @@ class MyAccountFragment : Fragment() {
 
     var profilePicture:String = ""
     var buyerName:String =""
-    var mobileNumber = ""
+
 
     private var loadingDialog = LoadingDialog()
 
@@ -154,7 +154,7 @@ class MyAccountFragment : Fragment() {
 
 
     fun goToEditdFragment(){
-        val action = MyAccountFragmentDirections.actionMyAccountFragmentToEditAccountFragment(profilePicture,buyerName,mobileNumber)
+        val action = MyAccountFragmentDirections.actionMyAccountFragmentToEditAccountFragment(profilePicture,buyerName,"00")
         findNavController().navigate(action)
     }
 
@@ -168,7 +168,6 @@ class MyAccountFragment : Fragment() {
         userRef.addOnSuccessListener {
                 val title = it.getString("name").toString()
                 val gmail = it.getString("email")
-                val mobile = it.getString("mobile_No").toString()
                 val profile = it.get("profile").toString().trim()
 
                 if (title!=""){
@@ -179,12 +178,11 @@ class MyAccountFragment : Fragment() {
 
                 profilePicture = profile
                 buyerName = title
-                mobileNumber= mobile
 
 
 
                 lay1.userMail.text = gmail
-                lay1.userPhone.text = mobile
+
 
                 if (profile!=""){
                     //binding.lay1.textView57.visibility = View.GONE
@@ -212,7 +210,7 @@ class MyAccountFragment : Fragment() {
     private fun deleteToken(uid:String){
 
         FirebaseDatabase.getInstance()
-            .getReference("Tokens")
+            .getReference("Buyer_Tokens")
             .child(uid)
             .removeValue()
 

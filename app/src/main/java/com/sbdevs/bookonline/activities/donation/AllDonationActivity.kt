@@ -52,7 +52,7 @@ class AllDonationActivity : AppCompatActivity() {
             getAllDonation()
         }
 
-        binding.donateButton.setOnClickListener {
+        binding.donateFabBtn.setOnClickListener {
             val donateIntent = Intent(this,AddContributionActivity::class.java)
             startActivity(donateIntent)
         }

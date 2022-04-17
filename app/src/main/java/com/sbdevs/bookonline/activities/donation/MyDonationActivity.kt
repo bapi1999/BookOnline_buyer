@@ -24,6 +24,8 @@ import com.sbdevs.bookonline.models.MyDonationModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MyDonationActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMyDonationBinding
@@ -42,7 +44,6 @@ class MyDonationActivity : AppCompatActivity() {
     private val gone = View.GONE
     private val visible =View.VISIBLE
 
-    private var status = false
     private var orderByString = "Time_donate_request"
 
     private lateinit var donorBadge:ImageView
@@ -78,7 +79,7 @@ class MyDonationActivity : AppCompatActivity() {
 
         getUsername()
         lifecycleScope.launch(Dispatchers.IO) {
-            getRequestedDonations(status,orderByString)
+            getRequestedDonations(orderByString)
 
         }
 
@@ -109,52 +110,25 @@ class MyDonationActivity : AppCompatActivity() {
             }
         })
 
-        binding.orderTypeRadioGroup.setOnCheckedChangeListener { group, checkedId ->
-            when(checkedId){
 
-                R.id.radioButton1->{
-                    status = false
-                    orderByString = "Time_donate_request"
-                    changeOrderMethod(status,orderByString)
-                }
-                R.id.radioButton2->{
-                    status = true
-                    orderByString = "Time_donate_received"
-                    changeOrderMethod(status,orderByString)
-                }
-
-            }
-        }
 
     }
 
 
 
-    private fun changeOrderMethod(status:Boolean, orderTimeType:String){
-
-        donationList.clear()
-        donationAdapter.notifyDataSetChanged()
-        lastResult = null
-        isReachLast = false
-
-        loadingDialog.show(supportFragmentManager,"Show")
-        lifecycleScope.launch(Dispatchers.IO) {
-            getRequestedDonations(status,orderTimeType)
-        }
-    }
 
 
-    private suspend fun getRequestedDonations(receivedStatus:Boolean, orderTimeType:String){
+    private suspend fun getRequestedDonations(orderTimeType:String){
+        val newList:MutableList<MyDonationModel> = ArrayList()
+
         val query:Query = if (lastResult == null){
             firebaseFirestore.collection("DONATIONS")
                 .whereEqualTo("Donor_Id",user!!.uid)
-                .whereEqualTo("is_received",receivedStatus)
-                .orderBy(orderTimeType)
+                .orderBy(orderTimeType,Query.Direction.DESCENDING)
         }else{
             firebaseFirestore.collection("DONATIONS")
                 .whereEqualTo("Donor_Id",user!!.uid)
-                .whereEqualTo("is_received",receivedStatus)
-                .orderBy(orderTimeType)
+                .orderBy(orderTimeType,Query.Direction.DESCENDING)
                 .startAfter(times)
         }
 
@@ -162,43 +136,53 @@ class MyDonationActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 val allDocumentSnapshot = it.documents
 
-                isReachLast = if (allDocumentSnapshot.isNotEmpty()){
-                    allDocumentSnapshot.size < 10 // limit is 10
+                 if (allDocumentSnapshot.isNotEmpty()){
+                     isReachLast =allDocumentSnapshot.size < 10 // limit is 10
+
+                     for (item in allDocumentSnapshot){
+                         val timeRequest:Date = item.getTimestamp("Time_donate_request")!!.toDate()
+                         val donorId:String = item.getString("Donor_Id")!!
+                         val totalQty:Long = item.getLong("total_qty")!!
+                         val totalPoint:Long = item.getLong("total_point")!!
+                         val isReceived:Boolean = item.getBoolean("is_received")!!
+                         val itemList:MutableList<MutableMap<String, Any>> = item.get("item_List") as MutableList<MutableMap<String, Any>>
+                         newList.add(MyDonationModel(timeRequest,donorId,totalQty,totalPoint,isReceived,itemList))
+                     }
+
+                     donationList.addAll(newList)
+
+                     if (donationList.isEmpty()){
+                         recyclerView.visibility = gone
+                         binding.progressBar.visibility = gone
+                         binding.textView94.visibility = visible
+                     }
+                     else{
+                         recyclerView.visibility = visible
+                         binding.textView94.visibility = gone
+
+                         donationAdapter.list = donationList
+
+                         if (lastResult == null ){
+                             donationAdapter.notifyItemRangeInserted(0,newList.size)
+                         }else{
+                             donationAdapter.notifyItemRangeInserted(donationList.size-1,newList.size)
+                         }
+
+
+//Todo- new approach =================================================================
+                         if (allDocumentSnapshot.isNotEmpty()){
+                             val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                             lastResult = lastR
+                             times = lastR.getTimestamp(orderTimeType)!!
+                         }
+//Todo- new approach =================================================================
+
+                         binding.progressBar.visibility = gone
+                     }
                 }else{
-                    true
+                     isReachLast = true
                 }
-                val list:MutableList<MyDonationModel> = it.toObjects(MyDonationModel::class.java)
-                donationList.addAll(list)
 
-                if (donationList.isEmpty()){
-                    recyclerView.visibility = gone
-                    binding.progressBar.visibility = gone
-                    binding.textView94.visibility = visible
-                }
-                else{
-                    recyclerView.visibility = visible
-//                    binding.progressBar.visibility = visible
-                    binding.textView94.visibility = gone
-
-                    donationAdapter.list = donationList
-
-                    if (lastResult == null ){
-                        donationAdapter.notifyItemRangeInserted(0,list.size)
-                    }else{
-                        donationAdapter.notifyItemRangeInserted(donationList.size-1,list.size)
-                    }
-
-
-//Todo- new approach =================================================================
-                    if (allDocumentSnapshot.isNotEmpty()){
-                        val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-                        lastResult = lastR
-                        times = lastR.getTimestamp(orderTimeType)!!
-                    }
-//Todo- new approach =================================================================
-
-                    binding.progressBar.visibility = gone
-                }
 
                 loadingDialog.dismiss()
             }
@@ -216,74 +200,80 @@ class MyDonationActivity : AppCompatActivity() {
                 .get().addOnSuccessListener {
                     val totalQty:Long = it.getLong("total_donation_qty")!!.toLong()
                     val totalPoint = it.getLong("total_donation_point")!!.toLong()
+                    val usablePoint = it.getLong("my_donation_coins")!!.toLong()
+                    binding.totalPoint.text = totalPoint.toString()
+                    binding.totalItem.text = "$totalQty items"
+                    binding.usablePoint.text = "$usablePoint"
+
+
                     when {
-                        totalQty <100 -> {
+                        totalPoint <100 -> {
                             //donor badge image is created
                             donorLevel.text = "Level 0"
                             minPoint.text = "0"
-                            maxPoint.text = "10"
-                            currentPoint.text = "${totalQty}/"
-                            levelProgress.max = 10
-                            levelProgress.progress = totalQty.toInt()
+                            maxPoint.text = "100"
+                            currentPoint.text = "${totalPoint}/"
+                            levelProgress.max = 100
+                            levelProgress.progress = totalPoint.toInt()
 
                         }
-                        totalQty in 100..499 -> {
+                        totalPoint in 100..499 -> {
                             //donor badge image is created
                             donorLevel.text = "Level 1"
-                            minPoint.text = "10"
-                            maxPoint.text = "50"
-                            currentPoint.text = "${totalQty}/"
-                            levelProgress.max = 50
-                            levelProgress.progress = totalQty.toInt()
+                            minPoint.text = "100"
+                            maxPoint.text = "500"
+                            currentPoint.text = "${totalPoint}/"
+                            levelProgress.max = 500
+                            levelProgress.progress = totalPoint.toInt()
                         }
-                        totalQty in 500..1999 -> {
+                        totalPoint in 500..1999 -> {
                             //donor badge image is created
                             donorLevel.text = "Level 2"
-                            minPoint.text = "50"
-                            maxPoint.text = "200"
-                            currentPoint.text = "${totalQty}/"
-                            levelProgress.max = 200
-                            levelProgress.progress = totalQty.toInt()
-                        }
-                        totalQty in 2000..4999 -> {
-                            donorLevel.text = "Level 3"
-                            minPoint.text = "200"
-                            maxPoint.text = "500"
-                            currentPoint.text = "${totalQty}/"
-                            levelProgress.max = 500
-                            levelProgress.progress = totalQty.toInt()
-                        }
-                        totalQty in 5000..14999 -> {
-                            donorLevel.text = "Level 4"
                             minPoint.text = "500"
-                            maxPoint.text = "1500"
-                            currentPoint.text = "${totalQty}/"
-                            levelProgress.max = 1500
-                            levelProgress.progress = totalQty.toInt()
+                            maxPoint.text = "2000"
+                            currentPoint.text = "${totalPoint}/"
+                            levelProgress.max = 2000
+                            levelProgress.progress = totalPoint.toInt()
                         }
-                        totalQty in 15000..49990 -> {
-                            donorLevel.text = "Level 5"
-                            minPoint.text = "1500"
+                        totalPoint in 2000..4999 -> {
+                            donorLevel.text = "Level 3"
+                            minPoint.text = "2000"
                             maxPoint.text = "5000"
-                            currentPoint.text = "${totalQty}/"
+                            currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 5000
-                            levelProgress.progress = totalQty.toInt()
+                            levelProgress.progress = totalPoint.toInt()
                         }
-                        totalQty in 50000..99999 -> {
-                            donorLevel.text = "Level 6"
+                        totalPoint in 5000..14999 -> {
+                            donorLevel.text = "Level 4"
                             minPoint.text = "5000"
-                            maxPoint.text = "10000"
-                            currentPoint.text = "${totalQty}/"
-                            levelProgress.max = 10000
-                            levelProgress.progress = totalQty.toInt()
+                            maxPoint.text = "15000"
+                            currentPoint.text = "${totalPoint}/"
+                            levelProgress.max = 15000
+                            levelProgress.progress = totalPoint.toInt()
                         }
-                        totalQty >100000 -> {
-                            donorLevel.text = "Level 7"
-                            minPoint.text = "10000"
+                        totalPoint in 15000..49990 -> {
+                            donorLevel.text = "Level 5"
+                            minPoint.text = "15000"
+                            maxPoint.text = "50000"
+                            currentPoint.text = "${totalPoint}/"
+                            levelProgress.max = 50000
+                            levelProgress.progress = totalPoint.toInt()
+                        }
+                        totalPoint in 50000..99999 -> {
+                            donorLevel.text = "Level 6"
+                            minPoint.text = "50000"
                             maxPoint.text = "100000"
-                            currentPoint.text = "${totalQty}/"
+                            currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 100000
-                            levelProgress.progress = totalQty.toInt()
+                            levelProgress.progress = totalPoint.toInt()
+                        }
+                        totalPoint >100000 -> {
+                            donorLevel.text = "Level 7"
+                            minPoint.text = "100000"
+                            maxPoint.text = "1000000"
+                            currentPoint.text = "${totalPoint}/"
+                            levelProgress.max = 1000000
+                            levelProgress.progress = totalPoint.toInt()
                         }
 
                     }

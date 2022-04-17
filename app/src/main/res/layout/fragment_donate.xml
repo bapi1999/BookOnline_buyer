@@ -51,10 +51,12 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:background="@drawable/s_shape_bg_3"
-                    android:backgroundTint="@color/red_600"
+                    android:backgroundTint="@color/red_50"
+                    android:elevation="5dp"
                     android:padding="10dp"
+                    android:textStyle="bold"
                     android:text="@string/no_address_error"
-                    android:textColor="@color/white"
+                    android:textColor="@color/red_700"
                     android:textSize="14sp"
                     android:visibility="visible" />
 
@@ -64,10 +66,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:backgroundTint="@color/purple_500"
+                    android:backgroundTint="@color/orange_100"
                     android:text="Change or Add Address"
                     android:textAllCaps="false"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/orange_600" />
 
             </LinearLayout>
 
@@ -173,7 +175,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/purple_500"
+            android:backgroundTint="@color/orange_400"
             android:insetTop="4dp"
             android:insetBottom="0dp"
             android:text="Confirm"

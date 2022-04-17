@@ -130,7 +130,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
             val pos:String = absoluteAdapterPosition.toString()
             getSliderUi(uiId)
 
-            adapter = SliderAdapter(sliderModelList,sliderView)
+            adapter = SliderAdapter(sliderModelList)
 
             sliderView.adapter = adapter
             dotsIndicator.setViewPager2(sliderView)

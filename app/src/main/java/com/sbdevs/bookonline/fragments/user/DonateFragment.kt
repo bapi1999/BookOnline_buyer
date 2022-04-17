@@ -79,13 +79,13 @@ class DonateFragment : Fragment(), DonateItemAdapter.MyOnItemClickListener {
         recyclerView = binding.itemRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        itemList.add(DonateItemModel("Books", 5))
-        itemList.add(DonateItemModel("School Bags", 8))
-        itemList.add(DonateItemModel("Pencil Box", 6))
-        itemList.add(DonateItemModel("Clip Board", 8))
-        itemList.add(DonateItemModel("Colors set", 1))
-        itemList.add(DonateItemModel("Paint Brush", 5))
+        itemList.add(DonateItemModel("Books", 8))
+        itemList.add(DonateItemModel("School Bags", 5))
+        itemList.add(DonateItemModel("Pencil Box", 3))
+        itemList.add(DonateItemModel("Clip Board", 5))
+        itemList.add(DonateItemModel("Board Game", 2))
         itemList.add(DonateItemModel("Toy", 2))
+        itemList.add(DonateItemModel("Clothes", 5))
 
 
         recyclerView.adapter = itemAdapter
@@ -180,6 +180,8 @@ class DonateFragment : Fragment(), DonateItemAdapter.MyOnItemClickListener {
         donateMap["is_received"] = false
         donateMap["address"] = addressMap
         donateMap["Donation_ID"] = donationId()
+        donateMap["is_picked"] = false
+        donateMap["picked_by"] = ""
         firebaseFirestore.collection("DONATIONS").add(donateMap)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Successful", Toast.LENGTH_SHORT).show()
@@ -277,7 +279,7 @@ class DonateFragment : Fragment(), DonateItemAdapter.MyOnItemClickListener {
     }
 
     private fun donationId():String{
-        val rnds = (10000000..100000000).random()
+        val rnds = (10000000..99999999).random()
         return rnds.toString()
     }
 

@@ -100,6 +100,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     private var totalRating = 0
     private var ratingNum: ArrayList<String> = ArrayList()
     private var sellerId = ""
+    private var myCoins = 0L
 
 
     override fun onCreateView(
@@ -465,6 +466,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()
 
+                    val sellerProfit = it.getDouble("SELLER_PROFIT")!!
                     avgRating = it.getString("rating_avg")!!
                     sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     totalRating = it.getLong("rating_total")!!.toInt()
@@ -514,10 +516,13 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                             priceSelling,
                             deliveryCharge1,
                             stock,
-                            1
+                            1,
+                            productReturn,
+                            sellerProfit
                         )
                     )
 
+                    getMyCoin(priceSelling)
 
 
 
@@ -541,14 +546,14 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
                     recommendedList.addAll(queryList)
 
+                    totalAmount = priceSelling.toInt()
+                    totalPrice = priceSelling.toInt()
 
                     if (priceOriginal == 0L) {
                         lay2.productPrice.text = priceSelling.toString()
                         lay2.strikeThroughPrice.visibility = gone
                         lay2.percentOff.visibility = gone
 
-                        totalAmount = priceSelling.toInt()
-                        totalPrice = priceSelling.toInt()
                         discount = 0
 
                     } else {
@@ -559,11 +564,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                         lay2.strikeThroughPrice.text = priceOriginal.toString()
                         lay2.percentOff.text = "${percent}% off"
 
-
-                        totalAmount = priceSelling.toInt()
-                        totalPrice = priceOriginal.toInt()
                         discount = totalPrice - totalAmount
-
                     }
 
 
@@ -657,10 +658,15 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
     private fun getSellerName(seller: String) {
         firebaseFirestore.collection("USERS")
-            .document(seller).get()
+            .document(seller)
+            .collection("SELLER_DATA")
+            .document("BUSINESS_DETAILS")
+            .get()
             .addOnSuccessListener {
-                val sellName: String = it.getString("name")!!
+                val sellName: String = it.getString("Business_name")!!
                 binding.lay51.sellerName.text = sellName
+            }.addOnFailureListener {
+                Log.e("Get seller name", "${it.message}", it.cause)
             }
     }
 
@@ -886,6 +892,40 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
 
     }
+
+    private fun getMyCoin(priceSell:Long){
+
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid).get()
+            .addOnSuccessListener {
+                myCoins = it.getLong("my_donation_coins")!!.toLong()
+                if (myCoins <= 0L){
+                    binding.noCoinText.visibility = visible
+                    binding.priceDiscountWithCoinContainer.visibility = gone
+
+                }else{
+                    binding.noCoinText.visibility = gone
+                    binding.priceDiscountWithCoinContainer.visibility = visible
+                    var discount = 0
+                    when {
+                        priceSell>myCoins -> {
+                            discount = (priceSell - myCoins).toInt()
+                        }
+                        priceSell<myCoins -> {
+                            discount = 0
+                        }
+                    }
+                    binding.coinDisCountPrice.text = discount.toString()
+                    binding.realPrice.text = priceSell.toString()
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Get MyCoin","${it.message}")
+                binding.payWithCoinBtn.visibility = gone
+            }
+
+    }
+
 
 
 

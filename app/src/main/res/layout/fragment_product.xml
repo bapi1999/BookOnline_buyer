@@ -12,6 +12,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         android:theme="@style/Theme.BookOnline">
 
         <androidx.appcompat.widget.Toolbar
@@ -74,6 +75,96 @@
 
                 android:id="@+id/lay_2"
                 layout="@layout/ar_product_detail_lay_2" />
+
+            <LinearLayout
+                android:id="@+id/payWithCoinBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible"
+                android:background="@drawable/s_shape_bg_3"
+                android:backgroundTint="@color/grey_50"
+                android:elevation="5dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:text="Use Donation Coin"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/grey_700"/>
+                    <ImageView
+                        android:id="@+id/imageView14"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/as_coin_selected" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/no_coin_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/no_coin_found"
+                    android:textSize="15sp"
+                    android:textColor="@color/grey_800"/>
+
+                <LinearLayout
+                    android:id="@+id/priceDiscountWithCoinContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/textView42"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:text="Price :"
+                        android:textSize="15sp"
+                        android:textColor="@color/grey_800"/>
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        app:srcCompat="@drawable/ic_baseline_currency_rupee_24"
+                        app:tint="@color/black"/>
+                    <TextView
+                        android:id="@+id/coinDisCountPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey_900"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:textSize="15sp"/>
+
+                    <TextView
+                        android:id="@+id/realPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:background="@drawable/s_strick_through"
+                        android:layout_marginEnd="16dp"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

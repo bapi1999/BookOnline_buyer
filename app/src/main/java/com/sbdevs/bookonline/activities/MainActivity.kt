@@ -60,9 +60,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userName: TextView
     private lateinit var userMail: TextView
     private lateinit var profileText: TextView
-    private lateinit var donorContributedItem: TextView
-    private lateinit var donorCurrentPoint: TextView
-    private lateinit var donorBadge: ImageView
+    private lateinit var donationCoinText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,9 +101,9 @@ class MainActivity : AppCompatActivity() {
         userName = header.findViewById(R.id.nav_header_txt)
         userMail = header.findViewById(R.id.user_mail)
         profileText = header.findViewById(R.id.profile_text)
-        donorContributedItem = header.findViewById(R.id.total_item_count)
-        donorCurrentPoint = header.findViewById(R.id.total_point)
-        donorBadge = header.findViewById(R.id.donor_badge)
+
+        donationCoinText = header.findViewById(R.id.donationCoinText)
+
 
         lifecycleScope.launch(Dispatchers.IO) {
 
@@ -185,18 +183,6 @@ class MainActivity : AppCompatActivity() {
                     closeDrawer()
                     //
                 }
-//                R.id.sell_on_book ->{
-//                    if (isSeller){
-//                        val dashIntent = Intent(this,SellerDashboardActivity::class.java)
-//                        startActivity(dashIntent)
-//                    }else{
-//                        val registerIntent = Intent(this,SellerRegisterActivity::class.java)
-//                        startActivity(registerIntent)
-//                    }
-//
-//                    closeDrawer()
-//                    //
-//                }
 
 
 
@@ -210,7 +196,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        //Toast.makeText(this,"On start",Toast.LENGTH_SHORT).show()
 
         if(SharedDataClass.newLogin){
             user = Firebase.auth.currentUser
@@ -224,9 +209,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.layCart.cartBadgeContainerLay.setOnClickListener {
             if (user != null){
-
-//                navController.navigateUp() // to clear previous navigation history
-//                navController.navigate(R.id.myCartFragment)
 
                 val cartIntent = Intent(this, CartActivity::class.java)
                 startActivity(cartIntent)
@@ -253,7 +235,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        //Toast.makeText(this,"OnResume",Toast.LENGTH_SHORT).show()
         if (user == null){
             cartBadgeText.visibility = gone
         }else{
@@ -276,33 +257,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-//    private suspend fun getTimeStamp(){
-//
-//        if (user != null){
-//            firebaseFirestore.collection("USERS")
-//                .document(user!!.uid)
-//                .collection("USER_DATA")
-//                .document("MY_NOTIFICATION")
-//                .get().addOnSuccessListener {
-//
-//                    //val timeStamp1 = it.getTimestamp("new_notification")!!
-//                    val timeStamp1:Timestamp = (it.get("new_notification") as Timestamp?)!!
-//
-//                    getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
-//                }.addOnFailureListener {
-//                    Log.e("get Notification time","${it.message}")
-//                }.await()
-//        }
-//
-//
-//    }
-
     private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
 
         if (user != null) {
             val ref = firebaseFirestore.collection("USERS")
                 .document(user!!.uid)
-                .collection("NOTIFICATIONS")
+                .collection("USER_NOTIFICATIONS")
                 .whereGreaterThan("date",timeStamp1)
 
             ref.addSnapshotListener { value, error ->
@@ -339,7 +299,7 @@ class MainActivity : AppCompatActivity() {
                 .document(user!!.uid)
 
             val notiMAp: MutableMap<String, Any> = HashMap()
-            notiMAp["new_notification"] = FieldValue.serverTimestamp()
+            notiMAp["new_notification_user"] = FieldValue.serverTimestamp()
             ref.update(notiMAp)
         }
 
@@ -353,14 +313,14 @@ class MainActivity : AppCompatActivity() {
                     val email = it.getString("email").toString()
                     val name = it.getString("name").toString()
                     val profile = it.getString("profile").toString()
-                    val timeStamp1:Timestamp = (it.get("new_notification") as Timestamp?)!!
-                    val totalQty:Long = it.getLong("total_donation_qty")!!.toLong()
-                    val totalPoint = it.getLong("total_donation_point")!!.toLong()
+                    val timeStamp1:Timestamp = (it.get("new_notification_user") as Timestamp?)!!
+                    val donationCoin:Long = it.getLong("my_donation_coins")!!.toLong()
+
 
                     userName.text = name
                     userMail.text = email
-                    donorCurrentPoint.text = totalPoint.toString()
-                    donorContributedItem.text = totalQty.toString()
+
+                    donationCoinText.text = "$donationCoin dc"
 
                     if (profile.isNullOrEmpty()){
                         profileText.visibility = visible
@@ -377,38 +337,6 @@ class MainActivity : AppCompatActivity() {
                     }
 
 
-
-
-                    when {
-                        totalQty <10 -> {
-                            //donor badge image is created
-
-                        }
-                        totalQty in 10..49 -> {
-                            //donor badge image is created
-
-                        }
-                        totalQty in 50..199 -> {
-                            //donor badge image is created
-
-                        }
-                        totalQty in 200..499 -> {
-
-                        }
-                        totalQty in 500..1499 -> {
-
-                        }
-                        totalQty in 1500..4999 -> {
-
-                        }
-                        totalQty in 5000..9999 -> {
-
-                        }
-                        totalQty >10000 -> {
-
-                        }
-
-                    }
 
 
 

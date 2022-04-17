@@ -176,8 +176,6 @@ class OrderDetailsActivity : AppCompatActivity() {
                     productId = productIdDB
 
 
-
-
                     when (status) {
                         "new" -> {
                             binding.cancelOrderBtn.isEnabled = true
@@ -217,6 +215,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                             //orderPacked(packT)
                             orderShipped(shipT)
                         }
+
                         "delivered" -> {
                             binding.cancelOrderBtn.visibility = gone
                             binding.returnOrderBtn.visibility = visible
@@ -368,12 +367,8 @@ class OrderDetailsActivity : AppCompatActivity() {
         cancelMap["order_canceled_by"] = "Customer"
         cancelMap["Time_canceled"] = FieldValue.serverTimestamp()
 
-        val orderRef = firebaseFirestore.collection("USERS")
-            .document(sellerID)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
-            .collection("ORDERS")
-            .document(orderID)
+        val orderRef = firebaseFirestore.collection("ORDERS").document(orderID)
+
         orderRef.update(cancelMap)
             .addOnSuccessListener {
                 sendNotification(productName, imageUrl, "canceled", sellerID, orderID)
@@ -422,11 +417,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         returnMap["status"] = "returned"
         returnMap["Time_returned"] = FieldValue.serverTimestamp()
 
-        val orderRef = firebaseFirestore.collection("USERS")
-            .document(sellerID)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
-            .collection("ORDERS")
+        val orderRef = firebaseFirestore.collection("ORDERS")
             .document(orderID)
 
         orderRef.update(returnMap).addOnSuccessListener {
@@ -443,9 +434,7 @@ class OrderDetailsActivity : AppCompatActivity() {
     ) {
         val ref = firebaseFirestore.collection("USERS")
             .document(sellerID)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
-            .collection("NOTIFICATION")
+            .collection("SELLER_NOTIFICATIONS")
 
         val notificationMap: MutableMap<String, Any> = HashMap()
         notificationMap["date"] = FieldValue.serverTimestamp()
