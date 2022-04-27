@@ -1,18 +1,22 @@
 package com.sbdevs.bookonline.adapters.uiadapter
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.java.SearchFilterJavaActivity
 import com.sbdevs.bookonline.models.uidataclass.TopCategoryModel
 import com.squareup.picasso.Picasso
 
-class TopCategoryAdapter(val list: ArrayList<TopCategoryModel>) :
+class TopCategoryAdapter(var list: ArrayList<TopCategoryModel>) :
     RecyclerView.Adapter<TopCategoryAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -30,15 +34,10 @@ class TopCategoryAdapter(val list: ArrayList<TopCategoryModel>) :
     }
 
     override fun getItemCount(): Int {
-        return if(list.size >4){
-            4
-        }else{
-            list.size
-        }
+        return list.size
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val firebaseFirestore = Firebase.firestore
         val imageView: ImageView = itemView.findViewById(R.id.categoryImage)
         val name: TextView = itemView.findViewById(R.id.categoryName)
 
@@ -47,10 +46,7 @@ class TopCategoryAdapter(val list: ArrayList<TopCategoryModel>) :
 
             val url = item.image
             val categoryName =item.name
-
-//            Glide.with(itemView.context).load(url)
-//                .placeholder(R.drawable.as_square_placeholder)
-//                .into(imageView)
+            val actionString =item.action_string
 
             name.text = categoryName
 
@@ -62,9 +58,12 @@ class TopCategoryAdapter(val list: ArrayList<TopCategoryModel>) :
                 .into(imageView)
 
 
-//            itemView.setOnClickListener {
-//                Toast.makeText(itemView.context, categoryName, Toast.LENGTH_LONG).show()
-//            }
+            itemView.setOnClickListener {
+                Log.e("Clicked","$categoryName")
+                val newIntent = Intent(itemView.context, SearchFilterJavaActivity::class.java)
+                newIntent.putExtra("query",actionString);
+                itemView.context.startActivity(newIntent)
+            }
         }
     }
 

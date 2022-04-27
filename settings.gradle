@@ -5,9 +5,9 @@ dependencyResolutionManagement {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
-//        maven {
-//            url "https://artifactory.paytm.in/libs-release-local"
-//        }
+
+        maven { url "https://artifactory.paytm.in/libs-release-local" }
+
     }
 }
 rootProject.name = "Book Online"

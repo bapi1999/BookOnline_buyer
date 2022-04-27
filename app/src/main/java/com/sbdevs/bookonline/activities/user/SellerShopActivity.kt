@@ -20,6 +20,7 @@ import com.sbdevs.bookonline.adapters.uiadapter.ProductGrid2Adapter
 import com.sbdevs.bookonline.databinding.ActivitySellerShopBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.models.SearchModel
+import com.sbdevs.bookonline.othercalss.MiddleDividerItemDecoration
 
 class SellerShopActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySellerShopBinding
@@ -63,6 +64,7 @@ class SellerShopActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         gridRecycler = lay3.productGridRecycler
+        gridRecycler.addItemDecoration(MiddleDividerItemDecoration(this, MiddleDividerItemDecoration.ALL))
         gridRecycler.layoutManager = GridLayoutManager(this,2)
         gridRecycler.adapter = gridAdapter
         loadingDialog.show(supportFragmentManager,"show")

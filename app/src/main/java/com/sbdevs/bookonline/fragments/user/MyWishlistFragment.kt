@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,6 +34,7 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
     private val loadingDialog = LoadingDialog()
     var list = ArrayList<String>()
     lateinit var wishlistAdapter: WishlistAdapter
+    private lateinit var bannerAdView: AdView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,9 +68,42 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
         recyclerView.adapter = wishlistAdapter
 
 
+        MobileAds.initialize(requireContext()) {}
+        bannerAdView = binding.adView
+        val adRequest = AdRequest.Builder().build()
+        bannerAdView.loadAd(adRequest)
+
+        bannerAdView.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                Log.e("Banner","Ad loaded successfully")
+            }
+
+            override fun onAdFailedToLoad(adError : LoadAdError) {
+                Log.e("Banner load Failed","${adError.message}")
+            }
+
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+        }
 
 
         return binding.root
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bannerAdView.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bannerAdView.resume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bannerAdView.destroy()
     }
 
     private fun getWishListData() {

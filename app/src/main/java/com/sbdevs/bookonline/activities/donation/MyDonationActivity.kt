@@ -1,15 +1,16 @@
 package com.sbdevs.bookonline.activities.donation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.ads.*
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -25,7 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class MyDonationActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMyDonationBinding
@@ -56,11 +57,19 @@ class MyDonationActivity : AppCompatActivity() {
 
     private val loadingDialog = LoadingDialog()
 
+    private var nativeAdLayout: NativeAdLayout? = null
+    private var adView: LinearLayout? = null
+    private var nativeBannerAd: NativeBannerAd? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyDonationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        AudienceNetworkAds.initialize(this);
+        val adId = resources.getString(R.string.fb_native_ad)
+        nativeBannerAd =  NativeBannerAd(this, adId)
 
         recyclerView = binding.myDonationRecycler
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -78,6 +87,8 @@ class MyDonationActivity : AppCompatActivity() {
         loadingDialog.show(supportFragmentManager,"show")
 
         getUsername()
+        loadNativeAd()
+
         lifecycleScope.launch(Dispatchers.IO) {
             getRequestedDonations(orderByString)
 
@@ -111,7 +122,90 @@ class MyDonationActivity : AppCompatActivity() {
         })
 
 
+    }
 
+
+    private fun loadNativeAd() {
+
+
+        val nativeAdListener =object : NativeAdListener {
+            override fun onError(p0: Ad?, p1: AdError?) {
+                Log.e("Ads load error","$p1 \n message: ${p1!!.errorMessage}")
+                loadingDialog.dismiss()
+            }
+
+            override fun onAdLoaded(p0: Ad?) {
+                // Race condition, load() called again before last ad was displayed
+                if (nativeBannerAd == null || nativeBannerAd != p0) {
+                    return;
+                }
+                // Inflate Native Ad into Container
+                inflateAd(nativeBannerAd!!);
+            }
+
+            override fun onAdClicked(p0: Ad?) {
+                Log.d("Ads","Clicked")
+            }
+
+            override fun onLoggingImpression(p0: Ad?) {
+                Log.e("Ads","Log Impression")
+                loadingDialog.dismiss()
+            }
+
+            override fun onMediaDownloaded(p0: Ad?) {
+                Log.d("Ads","MediaDownload")
+            }
+
+
+        }
+
+        // Request an ad
+        nativeBannerAd!!.loadAd(
+            nativeBannerAd!!.buildLoadAdConfig()
+                .withAdListener(nativeAdListener)
+                .build());
+    }
+
+    private fun inflateAd(nativeAd: NativeBannerAd) {
+        nativeAd.unregisterView()
+
+        // Add the Ad view into the ad container.
+        nativeAdLayout = binding.nativeAdContainer
+        val inflater = LayoutInflater.from(this)
+        // Inflate the Ad view.  The layout referenced should be the one you created in the last step.
+        adView = inflater.inflate(R.layout.ad_native_f_2_small, nativeAdLayout, false) as LinearLayout
+
+        nativeAdLayout!!.addView(adView)
+
+        // Add the AdOptionsView
+        val adChoicesContainer = adView!!.findViewById<RelativeLayout>(R.id.ad_choices_container)
+        val adOptionsView = AdOptionsView(this, nativeAd, nativeAdLayout)
+        adChoicesContainer.removeAllViews()
+        adChoicesContainer.addView(adOptionsView, 0)
+
+        // Create native UI using the ad metadata.
+
+        // Create native UI using the ad metadata.
+        val nativeAdIcon: MediaView = adView!!.findViewById(R.id.native_icon_view)
+        val nativeAdTitle = adView!!.findViewById<TextView>(R.id.native_ad_title)
+        val nativeAdSocialContext = adView!!.findViewById<TextView>(R.id.native_ad_social_context)
+        val sponsoredLabel = adView!!.findViewById<TextView>(R.id.native_ad_sponsored_label)
+        val nativeAdCallToAction = adView!!.findViewById<Button>(R.id.native_ad_call_to_action)
+
+        // Set the Text.
+        nativeAdTitle.text = nativeAd.advertiserName
+        nativeAdSocialContext.text = nativeAd.adSocialContext
+        nativeAdCallToAction.visibility = if (nativeAd.hasCallToAction()) View.VISIBLE else View.INVISIBLE
+        nativeAdCallToAction.text = nativeAd.adCallToAction
+        sponsoredLabel.text = nativeAd.sponsoredTranslation
+
+        // Create a list of clickable views
+        val clickableViews: MutableList<View> = ArrayList()
+        clickableViews.add(nativeAdTitle)
+        clickableViews.add(nativeAdCallToAction)
+
+        // Register the Title and CTA button to listen for clicks.
+        nativeAd.registerViewForInteraction(adView, nativeAdIcon,clickableViews)
     }
 
 
@@ -184,11 +278,11 @@ class MyDonationActivity : AppCompatActivity() {
                 }
 
 
-                loadingDialog.dismiss()
+//                loadingDialog.dismiss()
             }
             .addOnFailureListener {
                 Log.e("get my donation", "${it.message}")
-                loadingDialog.dismiss()
+//                loadingDialog.dismiss()
             }.await()
     }
 
@@ -215,6 +309,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 100
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide1)
+                            donorBadge.imageTintList = AppCompatResources.getColorStateList(this,R.color.grey_400)
 
                         }
                         totalPoint in 100..499 -> {
@@ -225,6 +321,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 500
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide1)
+
                         }
                         totalPoint in 500..1999 -> {
                             //donor badge image is created
@@ -234,6 +332,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 2000
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide2)
+
                         }
                         totalPoint in 2000..4999 -> {
                             donorLevel.text = "Level 3"
@@ -242,6 +342,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 5000
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide3)
+
                         }
                         totalPoint in 5000..14999 -> {
                             donorLevel.text = "Level 4"
@@ -250,6 +352,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 15000
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide4)
+
                         }
                         totalPoint in 15000..49990 -> {
                             donorLevel.text = "Level 5"
@@ -258,6 +362,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 50000
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide5)
+
                         }
                         totalPoint in 50000..99999 -> {
                             donorLevel.text = "Level 6"
@@ -266,6 +372,8 @@ class MyDonationActivity : AppCompatActivity() {
                             currentPoint.text = "${totalPoint}/"
                             levelProgress.max = 100000
                             levelProgress.progress = totalPoint.toInt()
+                            donorBadge.setImageResource(R.drawable.ic_slide6)
+
                         }
                         totalPoint >100000 -> {
                             donorLevel.text = "Level 7"

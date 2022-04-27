@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
         homeRecycler = binding.homeRecycler
         homeRecycler.isNestedScrollingEnabled = false
         homeRecycler.layoutManager = LinearLayoutManager(context)
-
+        homeRecycler.isNestedScrollingEnabled = false
         homeRecycler.adapter = homeAdapter
 
 
@@ -143,7 +143,7 @@ class HomeFragment : Fragment() {
                 loadingDialog.dismiss()
             }
             .addOnFailureListener {
-                Log.e("Error in get home ui","${it.message}")
+                Log.e("HomeFragment-Error in get home ui","${it.message}")
                 loadingDialog.dismiss()
             }
     }

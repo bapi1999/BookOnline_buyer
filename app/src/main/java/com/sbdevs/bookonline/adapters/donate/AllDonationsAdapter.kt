@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,11 +34,13 @@ class AllDonationsAdapter (var list: MutableList<MyDonationModel>, ) : RecyclerV
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
         private val donorName: TextView = itemView.findViewById(R.id.donor_name)
         private val badgeBadge: ImageView = itemView.findViewById(R.id.donor_badge)
-        private val donorLevel:TextView = itemView.findViewById(R.id.donor_level)
+        private val donationPoint:TextView = itemView.findViewById(R.id.donation_point)
         private var firebaseFirestore = Firebase.firestore
 
         fun bind(model: MyDonationModel){
             val donorId = model.Donor_Id
+            val points = model.total_point
+            donationPoint.text = "$points Points"
 
             getBadge(donorId)
 
@@ -48,43 +51,45 @@ class AllDonationsAdapter (var list: MutableList<MyDonationModel>, ) : RecyclerV
             firebaseFirestore.collection("USERS").document(donorId)
                 .get().addOnSuccessListener {
                     val name = it.getString("name").toString()
-                    val totalQty:Long = it.getLong("total_donation_qty")!!.toLong()
+//                    val totalQty:Long = it.getLong("total_donation_qty")!!.toLong()
                     val totalPoint = it.getLong("total_donation_point")!!.toLong()
                     donorName.text = name
+
                     when {
-                        totalQty <10 -> {
+                        totalPoint <100 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide1)
+                            badgeBadge.imageTintList = AppCompatResources.getColorStateList(itemView.context,R.color.grey_400)
+
+                        }
+                        totalPoint in 100..499 -> {
                             //donor badge image is created
-                            donorLevel.text = "Level 0"
-
-
+                            badgeBadge.setImageResource(R.drawable.ic_slide1)
+                            badgeBadge.imageTintList = null
                         }
-                        totalQty in 10..49 -> {
-                            //donor badge image is created
-                            donorLevel.text = "Level 1"
-
+                        totalPoint in 500..1999 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide2)
+                            badgeBadge.imageTintList = null
                         }
-                        totalQty in 50..199 -> {
-                            //donor badge image is created
-                            donorLevel.text = "Level 2"
-                        }
-                        totalQty in 200..499 -> {
-                            donorLevel.text = "Level 3"
+                        totalPoint in 2000..4999 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide3)
+                            badgeBadge.imageTintList = null
 
                         }
-                        totalQty in 500..1499 -> {
-                            donorLevel.text = "Level 4"
-
+                        totalPoint in 5000..14999 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide4)
+                            badgeBadge.imageTintList = null
                         }
-                        totalQty in 1500..4999 -> {
-                            donorLevel.text = "Level 5"
+                        totalPoint in 15000..49999 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide5)
+                            badgeBadge.imageTintList = null
                         }
-                        totalQty in 5000..9999 -> {
-                            donorLevel.text = "Level 6"
-
+                        totalPoint in 50000..99999 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide6)
+                            badgeBadge.imageTintList = null
                         }
-                        totalQty >10000 -> {
-                            donorLevel.text = "Level 7"
-
+                        totalPoint >100000 -> {
+                            badgeBadge.setImageResource(R.drawable.ic_slide6)
+                            badgeBadge.imageTintList = null
                         }
 
                     }

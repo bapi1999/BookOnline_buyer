@@ -6,6 +6,7 @@ import com.sbdevs.bookonline.R
 import android.widget.Toast
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.util.Log
@@ -23,6 +24,9 @@ import kotlinx.coroutines.withContext
 
 class SplashActivity : AppCompatActivity() {
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private val myPreference = "ShowLoginPref"
+    private val showLoginScreen = "ShowLoginScreen"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +34,22 @@ class SplashActivity : AppCompatActivity() {
 
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        sharedPreferences = getSharedPreferences(myPreference, MODE_PRIVATE)
+        val show = sharedPreferences.getBoolean(showLoginScreen,true)
+
         val currentUser = Firebase.auth.currentUser
         if (currentUser == null) {
-            val loginintent = Intent(this@SplashActivity, RegisterActivity::class.java)
-            startActivity(loginintent)
-            finish()
+            if (show){
+                val loginintent = Intent(this@SplashActivity, RegisterActivity::class.java)
+                loginintent.putExtra("from",1)// 1 = from splash/ 2 = from other class
+                startActivity(loginintent)
+                finish()
+            }else{
+                val mainintent = Intent(this@SplashActivity, MainActivity::class.java)
+                startActivity(mainintent)
+                finish()
+            }
+
         } else {
 
             lifecycleScope.launch(Dispatchers.IO){
@@ -43,11 +58,6 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(mainintent)
                     finish()
 
-//                    FirebaseFirestore.getInstance().collection("USERS").document(currentUser.uid)
-//                        .update("Last seen", FieldValue.serverTimestamp()).await()
-//                    withContext(Dispatchers.Main){
-//
-//                    }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         Toast.makeText(this@SplashActivity,e.message,Toast.LENGTH_LONG).show()

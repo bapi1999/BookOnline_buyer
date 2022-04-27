@@ -399,7 +399,8 @@ class PaymentFragment : Fragment() {
         productMap["in_stock_quantity"] = newQty
         productMap["number_of_item_sold"] = itemSoldNow
 
-        firebaseFirestore.collection("PRODUCTS").document(productId).update(productMap)
+        firebaseFirestore.collection("PRODUCTS")
+            .document(productId).set(productMap, SetOptions.merge())
     }
 
     private suspend  fun createOrders(
@@ -413,7 +414,7 @@ class PaymentFragment : Fragment() {
         unitSellingPrice: Long,
         shippingCharge:Long,
         productReturnAvailable:String,
-        sellerProfit:Double
+        sellerProfit:String
         ) = CoroutineScope(Dispatchers.IO).launch {
         val productMap: MutableMap<String, Any> = HashMap()
         productMap["productThumbnail"] = thumbnail

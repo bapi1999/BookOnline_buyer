@@ -22,6 +22,7 @@ import com.sbdevs.bookonline.activities.user.CartActivity
 import com.sbdevs.bookonline.activities.user.MyAddressActivity
 import com.sbdevs.bookonline.activities.user.RegisterActivity
 import com.sbdevs.bookonline.databinding.FragmentMyAccountBinding
+import com.sbdevs.bookonline.fragments.register.LoginDialogFragment
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
@@ -35,15 +36,15 @@ class MyAccountFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    val firebaseAuth = Firebase.auth
-    private val user = firebaseAuth.currentUser
     lateinit var userImage:CircleImageView
 
     var profilePicture:String = ""
     var buyerName:String =""
 
-
+    private val loginDialog = LoginDialogFragment()
     private var loadingDialog = LoadingDialog()
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
 
 
     override fun onCreateView(
@@ -56,12 +57,13 @@ class MyAccountFragment : Fragment() {
 
         loadingDialog.show(childFragmentManager,"Show")
 
-        if(user != null){
+        if( Firebase.auth.currentUser != null){
             binding.myAccountScroll.visibility = View.VISIBLE
             binding.notLoginContainer.visibility = View.GONE
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
                 getMyAccount()
+                getAddress()
             }
 
         }else{
@@ -84,9 +86,9 @@ class MyAccountFragment : Fragment() {
         binding.lay1.editProfileBtn.setOnClickListener{
            goToEditdFragment()
         }
+
         binding.notLoginLay.loginOrSignupBtn.setOnClickListener {
-            val registerIntent = Intent(requireContext(), RegisterActivity::class.java)
-            startActivity(registerIntent)
+            loginDialog.show(childFragmentManager,"inside my account")
         }
 
 
@@ -122,14 +124,11 @@ class MyAccountFragment : Fragment() {
 
         binding.logout.setOnClickListener {
 
-//            Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
-//            val action = MyAccountFragmentDirections.actionMyAccountFragmentToHomeFragment()
-//            findNavController().navigate(action)
 
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
                     logOutUser()
-                    ///SharedDataClass.dbCartList.clear()
+
                 }
                 withContext(Dispatchers.Main){
 
@@ -137,11 +136,9 @@ class MyAccountFragment : Fragment() {
                     SharedDataClass.cartNumber = 0
                     Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
 
-                    val registerActivityIntent = Intent(requireContext(), RegisterActivity::class.java)
-                    startActivity(registerActivityIntent)
+                    binding.myAccountScroll.visibility = View.GONE
+                    binding.notLoginContainer.visibility = View.VISIBLE
 
-
-                    activity?.finish()
                 }
             }
         }
@@ -153,7 +150,7 @@ class MyAccountFragment : Fragment() {
 
 
 
-    fun goToEditdFragment(){
+    private fun goToEditdFragment(){
         val action = MyAccountFragmentDirections.actionMyAccountFragmentToEditAccountFragment(profilePicture,buyerName,"00")
         findNavController().navigate(action)
     }
@@ -163,7 +160,7 @@ class MyAccountFragment : Fragment() {
 
     private suspend fun getMyAccount(){
         val lay1 = binding.lay1
-        val userRef = firebaseFirestore.collection("USERS").document(user!!.uid).get()
+        val userRef = firebaseFirestore.collection("USERS").document(Firebase.auth.currentUser!!.uid).get()
 
         userRef.addOnSuccessListener {
                 val title = it.getString("name").toString()
@@ -185,12 +182,9 @@ class MyAccountFragment : Fragment() {
 
 
                 if (profile!=""){
-                    //binding.lay1.textView57.visibility = View.GONE
                     Glide.with(requireContext()).load(profile).placeholder(R.drawable.as_user_placeholder).into(userImage)
                 }
-            //else{
-//                    binding.lay1.textView57.visibility = View.VISIBLE
-//                }
+
 
             loadingDialog.dismiss()
             }.addOnFailureListener {
@@ -200,11 +194,87 @@ class MyAccountFragment : Fragment() {
     }
 
 
+    private fun getAddress(){
+
+        val lay2 =  binding.lay2
+
+        firebaseFirestore.collection("USERS").document(Firebase.auth.currentUser!!.uid).collection("USER_DATA")
+            .document("MY_ADDRESSES").addSnapshotListener { value, error ->
+                error?.let {
+                    Log.e("Get address","${it.message}")
+
+                    lay2.haveAddressContainer.visibility = gone
+                    lay2.editAddressBtn.visibility = gone
+                    lay2.noAddressContainer.visibility = visible
+
+
+                    return@addSnapshotListener
+                }
+
+                value?.let {
+                    val position: Long = it.getLong("select_No")!!
+                    val x = it.get("address_list")
+
+
+                    if (x != null){
+
+                        var addressList = x as ArrayList<MutableMap<String, Any>>
+
+                        if (addressList.size != 0){
+
+                            val group:MutableMap<String,Any> = addressList[position.toInt()]
+
+                            val buyerName:String = group["name"].toString()
+                            val buyerAddress1:String = group["address1"].toString()
+                            val buyerAddress2:String = group["address2"].toString()
+                            val buyerAddressType:String = group["address_type"].toString()
+                            val buyerTown:String = group["city_vill"].toString()
+                            val buyerPinCode:String = group["pincode"].toString()
+                            val buyerState:String = group["state"].toString()
+                            val buyerPhone:String = group["phone"].toString()
+
+                            val addressBuilder  = StringBuilder()
+                            addressBuilder.append(buyerAddress1).append(", ").append(buyerAddress2)
+
+                            val townPinBuilder  = StringBuilder()
+                            townPinBuilder.append(buyerTown).append(", ").append(buyerPinCode)
+
+                            lay2.buyerName.text = buyerName
+                            lay2.buyerAddress.text = addressBuilder.toString()
+                            lay2.buyerTownAndPin.text =townPinBuilder.toString()
+                            lay2.buyerState.text = buyerState
+                            lay2.buyerPhone.text = buyerPhone
+
+                            lay2.haveAddressContainer.visibility = visible
+                            lay2.editAddressBtn.visibility = visible
+                            lay2.noAddressContainer.visibility = gone
+
+                        }else{
+                            lay2.haveAddressContainer.visibility = gone
+                            lay2.editAddressBtn.visibility = gone
+                            lay2.noAddressContainer.visibility = visible
+                        }
+
+                    }else{
+                        lay2.haveAddressContainer.visibility = gone
+                        lay2.editAddressBtn.visibility = gone
+                        lay2.noAddressContainer.visibility = visible
+
+                    }
+
+
+                }
+            }
+
+    }
+
+
     private fun logOutUser(){
         val userId = FirebaseAuth.getInstance().currentUser
         if (userId != null){
-            firebaseAuth.signOut()
             deleteToken(userId.uid)
+            Firebase.auth.signOut()
+
         }
     }
     private fun deleteToken(uid:String){

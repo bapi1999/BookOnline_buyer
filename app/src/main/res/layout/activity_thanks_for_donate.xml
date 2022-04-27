@@ -90,6 +90,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -104,18 +105,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
             android:text="Donation points will be added after the donation is accepted by BooksOnline" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imageView10"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/as_admob_ads" />
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <include android:id="@+id/lay_ads"
+            layout="@layout/ad_native_g_1"/>
+
+<!--        <com.google.android.gms.ads.nativead.NativeAdView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/nativeAdView" />-->
+
+    </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

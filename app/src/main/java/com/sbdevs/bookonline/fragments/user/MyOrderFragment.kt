@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.*
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -43,6 +44,7 @@ class MyOrderFragment : Fragment() {
     private var isReachLast: Boolean = false
     private val gone = View.GONE
     private val visible = View.VISIBLE
+    private lateinit var bannerAdView:AdView
 
 
     override fun onCreateView(
@@ -70,6 +72,25 @@ class MyOrderFragment : Fragment() {
         orderRecycler.adapter = adapter
 
         //paginateData()
+
+        MobileAds.initialize(requireContext()) {}
+        bannerAdView = binding.adView
+        val adRequest = AdRequest.Builder().build()
+        bannerAdView.loadAd(adRequest)
+
+        bannerAdView.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                Log.e("Banner","Ad loaded successfully")
+            }
+
+            override fun onAdFailedToLoad(adError : LoadAdError) {
+                Log.e("Banner load Failed","${adError.message}")
+            }
+
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+        }
 
         return binding.root
     }
@@ -102,6 +123,21 @@ class MyOrderFragment : Fragment() {
 
         })
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bannerAdView.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bannerAdView.resume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bannerAdView.destroy()
     }
 
     private fun getMyOrders() {

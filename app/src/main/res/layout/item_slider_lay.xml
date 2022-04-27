@@ -5,35 +5,25 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:elevation="4dp"
+    android:layout_marginBottom="3dp"
     android:background="@color/white">
 
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/imageSliderNew"
+    <com.denzcoskun.imageslider.ImageSlider
+        android:id="@+id/image_slider"
         android:layout_width="match_parent"
         android:layout_height="220dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/grey_400"
+        app:iss_auto_cycle="true"
+        app:iss_delay="0"
+        app:iss_period="3000"
+        app:iss_placeholder="@drawable/as_rectangle_placeholder"
+        app:iss_error_image="@drawable/as_rectangle_placeholder"
+        app:iss_selected_dot="@drawable/default_selected_dot"
+        app:iss_unselected_dot="@drawable/default_unselected_dot"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
-        android:id="@+id/dots_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        app:dotsColor="@color/grey_50"
 
-        app:dotsCornerRadius="8dp"
-        app:dotsSize="9dp"
-        app:dotsSpacing="3dp"
-        app:dotsWidthFactor="2.5"
-        app:layout_constraintBottom_toBottomOf="@+id/imageSliderNew"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progressMode="true"
-        app:selectedDotColor="@color/grey_50" />
 </androidx.constraintlayout.widget.ConstraintLayout>

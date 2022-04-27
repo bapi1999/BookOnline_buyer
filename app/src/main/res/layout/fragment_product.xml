@@ -83,87 +83,191 @@
                 android:orientation="vertical"
                 android:visibility="visible"
                 android:background="@drawable/s_shape_bg_3"
-                android:backgroundTint="@color/grey_50"
+                android:backgroundTint="@color/amber_100"
                 android:elevation="5dp">
+
                 <LinearLayout
+                    android:id="@+id/have_dc_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                        android:text="Use Donation Coin"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/grey_700"/>
-                    <ImageView
-                        android:id="@+id/imageView14"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/as_coin_selected" />
+                        <ImageView
+                            android:id="@+id/imageView14"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/as_coin_selected" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Use Gold Coins in payment and get"
+                            android:textColor="@color/grey_700"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/coinDisCount1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/amber_900"
+                            android:text="0%"
+                            android:layout_marginStart="4dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="Off"
+                            android:textStyle="bold"
+                            android:textColor="@color/amber_900"
+                            android:background="@drawable/s_strick_through"
+                            android:textSize="15sp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="36dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+
+
+                        <TextView
+                            android:id="@+id/textView42"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:text="Price :"
+                            android:textSize="15sp"
+                            android:textColor="@color/grey_800"/>
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            app:srcCompat="@drawable/ic_baseline_currency_rupee_24"
+                            app:tint="@color/black"/>
+                        <TextView
+                            android:id="@+id/coinDisCountPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/grey_900"
+                            android:text="0"
+                            android:textStyle="bold"
+                            android:textSize="15sp"/>
+
+                        <TextView
+                            android:id="@+id/realPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="0"
+                            android:textStyle="bold"
+                            android:background="@drawable/s_strick_through"
+                            android:layout_marginEnd="16dp"
+                            android:textSize="13sp"/>
+
+
+                        <TextView
+                            android:id="@+id/coinDisCount2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/grey_900"
+                            android:text="0%"
+                            android:layout_marginStart="4dp"
+                            android:textStyle="bold"
+                            android:textSize="13sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="Off"
+                            android:textColor="@color/grey_900"
+                            android:background="@drawable/s_strick_through"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/no_coin_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/no_coin_found"
-                    android:textSize="15sp"
-                    android:textColor="@color/grey_800"/>
 
                 <LinearLayout
-                    android:id="@+id/priceDiscountWithCoinContainer"
+                    android:id="@+id/no_dc_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:srcCompat="@drawable/as_coin_selected" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Pay with gold coins and get up to 100 % off"
+                            android:textColor="@color/grey_700"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
 
 
                     <TextView
-                        android:id="@+id/textView42"
+                        android:id="@+id/no_coin_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:text="Price :"
-                        android:textSize="15sp"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/no_coin_found"
+                        android:textSize="13sp"
                         android:textColor="@color/grey_800"/>
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        app:srcCompat="@drawable/ic_baseline_currency_rupee_24"
-                        app:tint="@color/black"/>
-                    <TextView
-                        android:id="@+id/coinDisCountPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/grey_900"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:textSize="15sp"/>
 
-                    <TextView
-                        android:id="@+id/realPrice"
+                    <Button
+                        android:id="@+id/donate_Btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:background="@drawable/s_strick_through"
-                        android:layout_marginEnd="16dp"
-                        android:textSize="13sp"/>
+                        android:text="Donate"
+                        app:cornerRadius="20dp"
+                        android:textSize="12sp"
+                        android:textAllCaps="false"
+                        android:backgroundTint="@color/amber_900"/>
+
+
                 </LinearLayout>
+
+
+
+
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -253,9 +357,15 @@
                 android:id="@+id/lay_rating"
                 layout="@layout/ar_rating_lay" />
 
-            <include
-                android:id="@+id/lay_ads"
-                layout="@layout/item_big_ads_layout" />
+
+            <com.facebook.ads.NativeAdLayout
+                android:id="@+id/native_ad_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -282,6 +392,16 @@
                     layout="@layout/ar_product_detail_lay_7" />
 
             </LinearLayout>
+
+<!--            <ImageView-->
+<!--                android:id="@+id/strip_image"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="90dp"-->
+<!--                android:background="@color/purple_50"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:srcCompat="@drawable/as_facebook_banner_ads" />-->
 
 
 

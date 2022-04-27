@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/s_shape_bg_2"
+    android:backgroundTint="@color/white"
     tools:context=".fragments.register.SignUpFragment">
 
     <ScrollView
@@ -13,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <include android:id="@+id/signup_lay"
-                layout="@layout/ar_register_layout_2"/>
+                layout="@layout/ar_register_lay_2"/>
         </LinearLayout>
     </ScrollView>
 

@@ -27,7 +27,7 @@
                 android:id="@+id/shop_name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/agency_fb"
+                android:fontFamily="@font/smoochsans_medium"
                 android:gravity="center_vertical"
                 android:text="Techno World"
                 android:textAllCaps="true"
@@ -59,28 +59,11 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <LinearLayout
-        android:id="@+id/linearLayout32"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:orientation="vertical"
-        android:background="@color/grey_200"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/as_google_ads_logo" />
-    </LinearLayout>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout32"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
@@ -90,8 +73,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
+
+
             <include android:id="@+id/lay1"
                 layout="@layout/ar_seller_shop_lay_1"/>
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -102,6 +89,15 @@
                 <include android:id="@+id/lay2"
                     layout="@layout/item_product_horizon_lay"/>
             </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/strip_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@color/purple_50"
+                app:srcCompat="@drawable/as_facebook_native_ads"
+                />
 
 
             <LinearLayout

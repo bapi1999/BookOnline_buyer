@@ -13,6 +13,8 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -22,6 +24,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.AdListener;
+import com.facebook.ads.AdSize;
+import com.facebook.ads.AdView;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -39,6 +46,7 @@ public class SearchActivity2 extends AppCompatActivity {
     SearchView searchView;
     RecyclerView searchRecycler;
     FirebaseAdapter2 adapter2;
+    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,40 @@ public class SearchActivity2 extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        String adId = getResources().getString(R.string.fb_banner);
+        adView = new AdView(this, adId, AdSize.BANNER_HEIGHT_50);
+// Find the Ad Container
+        LinearLayout adContainer = (LinearLayout) findViewById(R.id.banner_container);
+// Add the ad view to your activity layout
+        adContainer.addView(adView);
+// Request an ad
+        AdListener adListener = new AdListener() {
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                // Ad error callback
+                Log.e("Load F Banner Failed",adError.getErrorMessage());
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                Log.e("Load F Banner","Success");
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                Log.e("Load F Banner","Clicked");
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                Log.e("Load F Banner","Impression");
+            }
+        };
+
+// Request an ad
+        adView.loadAd(adView.buildLoadAdConfig().withAdListener(adListener).build());
 
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -105,6 +147,14 @@ public class SearchActivity2 extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 
     @Override

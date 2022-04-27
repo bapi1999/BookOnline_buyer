@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.facebook.ads.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -33,11 +34,13 @@ import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.user.CartActivity
 import com.sbdevs.bookonline.activities.user.ProceedOrderActivity
 import com.sbdevs.bookonline.activities.SearchActivity
+import com.sbdevs.bookonline.activities.donation.AllDonationActivity
 import com.sbdevs.bookonline.activities.user.SellerShopActivity
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import com.sbdevs.bookonline.adapters.ProductReviewAdapter
 import com.sbdevs.bookonline.adapters.RecommendedProductAdapter
 import com.sbdevs.bookonline.databinding.FragmentProductBinding
+import com.sbdevs.bookonline.fragments.register.LoginDialogFragment
 import com.sbdevs.bookonline.fragments.user.AllReviewFragment
 import com.sbdevs.bookonline.models.user.CartModel
 import com.sbdevs.bookonline.models.ProductReviewModel
@@ -53,7 +56,6 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     private val binding get() = _binding!!
 
     private var firebaseFirestore = Firebase.firestore
-    private var user = Firebase.auth.currentUser
 
     private lateinit var addToCartBtn: LinearLayout
     lateinit var buyNowBtn: Button
@@ -102,6 +104,10 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     private var sellerId = ""
     private var myCoins = 0L
 
+    private var nativeAdLayout: NativeAdLayout? = null
+    private var adView: LinearLayout? = null
+    private var nativeAd: NativeAd? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -109,13 +115,16 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     ): View {
         _binding = FragmentProductBinding.inflate(inflater, container, false)
 
-//        Toast.makeText(requireContext(),"On CreateView",Toast.LENGTH_SHORT).show()
-
+        // Initialize the Audience Network SDK
+        AudienceNetworkAds.initialize(requireContext());
+        val adId = resources.getString(R.string.fb_native_ad)
+        nativeAd =  NativeAd(requireContext(), adId)
 
         addToCartBtn = binding.lay3.addToCartBtn
 
         buyNowBtn = binding.lay3.buyNowBtn
         productImgViewPager = binding.lay1.productImgViewPager
+
 
 
         val intent = requireActivity().intent
@@ -131,10 +140,11 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
         lifecycleScope.launch(Dispatchers.IO) {
 
+            loadNativeAd()
 
             getProductData(productId)
 
-            if (user != null) {
+            if (Firebase.auth.currentUser != null) {
                 getWishList1()
                 getCartList()
             }
@@ -206,7 +216,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         }
 
         binding.layCart.cartBadgeContainerLay.setOnClickListener {
-            if (user != null) {
+            if (Firebase.auth.currentUser != null) {
 
                 val cartIntent = Intent(requireContext(), CartActivity::class.java)
                 startActivity(cartIntent)
@@ -252,6 +262,11 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
             startActivity(sellerIntent)
         }
 
+        binding.donateBtn.setOnClickListener {
+            val donationIntent = Intent(requireContext(), AllDonationActivity::class.java)
+            startActivity(donationIntent)
+        }
+
 
     }
 
@@ -259,7 +274,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
         super.onStart()
         val cartNum = SharedDataClass.dbCartList
-        if (user != null) {
+        if (Firebase.auth.currentUser != null) {
             if (cartNum.size == 0) {
                 cartBadgeText.visibility = gone
             } else {
@@ -276,8 +291,8 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
 
         fabBtn.setOnClickListener {
-
-            if (user == null) {
+            val  currentUser= Firebase.auth.currentUser
+            if (currentUser == null) {
                 loginDialog.show(childFragmentManager, "custom login dialog")
             } else {
                 if (!ALREADY_ADDED_TO_WISHLIST) {
@@ -286,7 +301,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     SharedDataClass.dbWishList.add(productId)
                     val wishmap: MutableMap<String, Any> = HashMap()
                     wishmap["wish_list"] = wishList
-                    firebaseFirestore.collection("USERS").document(user!!.uid)
+                    firebaseFirestore.collection("USERS").document(currentUser.uid)
                         .collection("USER_DATA")
                         .document("MY_WISHLIST").update(wishmap)
 
@@ -302,7 +317,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     SharedDataClass.dbWishList.remove(productId)
                     val cartmap: MutableMap<String, Any> = HashMap()
                     cartmap["wish_list"] = wishList
-                    firebaseFirestore.collection("USERS").document(user!!.uid)
+                    firebaseFirestore.collection("USERS").document(currentUser.uid)
                         .collection("USER_DATA")
                         .document("MY_WISHLIST").update(cartmap)
 
@@ -320,8 +335,8 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
 
         addToCartBtn.setOnClickListener { it1 ->
-
-            if (user == null) {
+            val currentUser= Firebase.auth.currentUser
+            if (currentUser == null) {
                 loginDialog.show(childFragmentManager, "custom login dialog")
             } else {
                 if (ALREADY_ADDED_TO_CART) {
@@ -351,7 +366,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
                         val snack =
                             Snackbar.make(it1, "Successfully added to cart", Snackbar.LENGTH_SHORT)
-                        firebaseFirestore.collection("USERS").document(user!!.uid)
+                        firebaseFirestore.collection("USERS").document(currentUser.uid)
                             .collection("USER_DATA")
                             .document("MY_CART").update(cartmap).addOnSuccessListener {
                                 snack.show()
@@ -369,10 +384,10 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         }
 
         buyNowBtn.setOnClickListener {
-
+            val currentUser= Firebase.auth.currentUser
             val quantityString = enterQuantityInput.editText!!.text.toString().trim()
             var qty: Long
-            if (user != null) {
+            if (currentUser != null) {
 
                 if (quantityString.isEmpty()) {
                     qty = 1L
@@ -442,6 +457,90 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     }
 
 
+    private fun loadNativeAd() {
+
+
+        val nativeAdListener =object : NativeAdListener {
+            override fun onError(p0: Ad?, p1: AdError?) {
+                Log.e("Ads load error","$p1 \n message: ${p1!!.errorMessage}")
+            }
+
+            override fun onAdLoaded(p0: Ad?) {
+                // Race condition, load() called again before last ad was displayed
+                if (nativeAd == null || nativeAd != p0) {
+                    return;
+                }
+                // Inflate Native Ad into Container
+                inflateAd(nativeAd!!);
+            }
+
+            override fun onAdClicked(p0: Ad?) {
+                Log.d("Ads","Clicked")
+            }
+
+            override fun onLoggingImpression(p0: Ad?) {
+                Log.d("Ads","Log Impression")
+            }
+
+            override fun onMediaDownloaded(p0: Ad?) {
+                Log.d("Ads","MediaDownload")
+            }
+
+
+        }
+
+        // Request an ad
+        nativeAd!!.loadAd(
+            nativeAd!!.buildLoadAdConfig()
+                .withAdListener(nativeAdListener)
+                .build());
+    }
+
+    private fun inflateAd(nativeAd: NativeAd) {
+        nativeAd.unregisterView()
+
+        nativeAdLayout = binding.nativeAdContainer
+        val inflater = LayoutInflater.from(requireContext())
+        adView = inflater.inflate(R.layout.ad_native_f_1, nativeAdLayout, false) as LinearLayout
+
+        nativeAdLayout!!.addView(adView)
+
+        // Add the AdOptionsView
+        val adChoicesContainer:LinearLayout = adView!!.findViewById(R.id.ad_choices_container)
+        val adOptionsView = AdOptionsView(requireContext(), nativeAd, nativeAdLayout)
+        adChoicesContainer.removeAllViews()
+        adChoicesContainer.addView(adOptionsView, 0)
+
+        // Create native UI using the ad metadata.
+
+        // Create native UI using the ad metadata.
+        val nativeAdIcon: MediaView = adView!!.findViewById(R.id.native_ad_icon)
+        val nativeAdTitle = adView!!.findViewById<TextView>(R.id.native_ad_title)
+        val nativeAdMedia: MediaView = adView!!.findViewById(R.id.native_ad_media)
+        val nativeAdSocialContext = adView!!.findViewById<TextView>(R.id.native_ad_social_context)
+        val nativeAdBody = adView!!.findViewById<TextView>(R.id.native_ad_body)
+//        val sponsoredLabel = adView!!.findViewById<TextView>(R.id.native_ad_sponsored_label)
+        val nativeAdCallToAction = adView!!.findViewById<Button>(R.id.native_ad_call_to_action)
+
+        // Set the Text.
+        nativeAdTitle.text = nativeAd.advertiserName
+        nativeAdBody.text = nativeAd.adBodyText
+        nativeAdSocialContext.text = nativeAd.adSocialContext
+        nativeAdCallToAction.visibility = if (nativeAd.hasCallToAction()) View.VISIBLE else View.INVISIBLE
+        nativeAdCallToAction.text = nativeAd.adCallToAction
+//        sponsoredLabel.text = nativeAd.sponsoredTranslation
+
+        // Create a list of clickable views
+        val clickableViews: MutableList<View> = ArrayList()
+        clickableViews.add(nativeAdTitle)
+        clickableViews.add(nativeAdCallToAction)
+
+        // Register the Title and CTA button to listen for clicks.
+        nativeAd.registerViewForInteraction(adView, nativeAdMedia, nativeAdIcon,clickableViews)
+    }
+
+
+
     private suspend fun getProductData(productId: String) {
         val lay2 = binding.lay2
         val lay4 = binding.lay4
@@ -466,7 +565,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()
 
-                    val sellerProfit = it.getDouble("SELLER_PROFIT")!!
+                    val sellerProfit = it.getString("SELLER_PROFIT")!!
                     avgRating = it.getString("rating_avg")!!
                     sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     totalRating = it.getLong("rating_total")!!.toInt()
@@ -894,35 +993,49 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     }
 
     private fun getMyCoin(priceSell:Long){
+        val currentUser= Firebase.auth.currentUser
+        if (currentUser != null){
+            firebaseFirestore.collection("USERS")
+                .document(currentUser.uid).get()
+                .addOnSuccessListener {
+                    myCoins = it.getLong("my_donation_coins")!!.toLong()
+                    if (myCoins <= 0L){
 
-        firebaseFirestore.collection("USERS")
-            .document(user!!.uid).get()
-            .addOnSuccessListener {
-                myCoins = it.getLong("my_donation_coins")!!.toLong()
-                if (myCoins <= 0L){
-                    binding.noCoinText.visibility = visible
-                    binding.priceDiscountWithCoinContainer.visibility = gone
+                        binding.noDcContainer.visibility = visible
+                        binding.haveDcContainer.visibility = gone
 
-                }else{
-                    binding.noCoinText.visibility = gone
-                    binding.priceDiscountWithCoinContainer.visibility = visible
-                    var discount = 0
-                    when {
-                        priceSell>myCoins -> {
-                            discount = (priceSell - myCoins).toInt()
+                    }else{
+                        binding.noDcContainer.visibility = gone
+                        binding.haveDcContainer.visibility = visible
+                        var discount = 0
+                        var discountPrice = 0
+                        when {
+                            priceSell>myCoins -> {
+                                discountPrice = (priceSell - myCoins).toInt()
+                                discount = ((myCoins *100)/priceSell).toInt()
+                            }
+                            priceSell<myCoins -> {
+                                discountPrice = 0
+                                discount = 100
+                            }
                         }
-                        priceSell<myCoins -> {
-                            discount = 0
-                        }
+                        binding.coinDisCountPrice.text = discountPrice.toString()
+                        binding.realPrice.text = priceSell.toString()
+                        binding.coinDisCount1.text = "$discount%"
+                        binding.coinDisCount2.text = "$discount%"
                     }
-                    binding.coinDisCountPrice.text = discount.toString()
-                    binding.realPrice.text = priceSell.toString()
                 }
-            }
-            .addOnFailureListener {
-                Log.e("Get MyCoin","${it.message}")
-                binding.payWithCoinBtn.visibility = gone
-            }
+                .addOnFailureListener {
+                    Log.e("Get MyCoin","${it.message}")
+                    binding.payWithCoinBtn.visibility = gone
+                }
+        }
+        else{
+            binding.noDcContainer.visibility = visible
+            binding.haveDcContainer.visibility = gone
+        }
+
+
 
     }
 

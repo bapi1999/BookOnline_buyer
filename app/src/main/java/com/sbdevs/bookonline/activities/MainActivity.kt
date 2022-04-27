@@ -2,8 +2,6 @@ package com.sbdevs.bookonline.activities
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.graphics.Color
-import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +20,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.ActivityMainBinding
-import com.sbdevs.bookonline.fragments.LoginDialogFragment
+import com.sbdevs.bookonline.fragments.register.LoginDialogFragment
 import com.sbdevs.bookonline.models.NotificationModel
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +30,9 @@ import com.sbdevs.bookonline.activities.donation.AllDonationActivity
 import com.sbdevs.bookonline.activities.donation.MyDonationActivity
 import com.sbdevs.bookonline.activities.java.SearchActivity2
 import com.sbdevs.bookonline.activities.user.CartActivity
-import com.sbdevs.bookonline.activities.user.SellerShopActivity
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -45,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var firebaseFirestore = Firebase.firestore
-    private var user = Firebase.auth.currentUser
 
     private var notificationList:List<NotificationModel> = ArrayList()
     lateinit var cartBadgeText: TextView
@@ -130,29 +128,48 @@ class MainActivity : AppCompatActivity() {
                 R.id.homeFragment ->{
                     //navController.navigateUp() // to clear previous navigation history
                     navController.navigate(R.id.homeFragment)
-                    binding.drawerLayout.closeDrawers()
-                    //closeDrawer()
+                    closeDrawer()
                 }
                 R.id.myWishlistFragment ->{
-                    navController.navigate(R.id.myWishlistFragment)
-                    binding.drawerLayout.closeDrawers()
+                    if (Firebase.auth.currentUser != null){
+                        navController.navigate(R.id.myWishlistFragment)
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
+                    closeDrawer()
                 }
                 R.id.myCartFragment ->{
-
-                    val cartIntent = Intent(this, CartActivity::class.java)
-                    startActivity(cartIntent)
+                    if (Firebase.auth.currentUser != null){
+                        val cartIntent = Intent(this, CartActivity::class.java)
+                        startActivity(cartIntent)
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
                     closeDrawer()
                 }
                 R.id.myAccountFragment ->{
+//                    if (Firebase.auth.currentUser != null){
+//
+//                    }else{
+//                        loginDialog.show(supportFragmentManager, "custom login dialog")
+//                    }
                     navController.navigate(R.id.myAccountFragment)
-                    binding.drawerLayout.closeDrawers()
+                    closeDrawer()
                 }
                 R.id.myOrderFragment ->{
-                    navController.navigate(R.id.myOrderFragment)
+                    if (Firebase.auth.currentUser != null){
+                        navController.navigate(R.id.myOrderFragment)
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
                     closeDrawer()
                 }
                 R.id.notificationFragment ->{
-                    navController.navigate(R.id.notificationFragment)
+                    if (Firebase.auth.currentUser != null){
+                        navController.navigate(R.id.notificationFragment)
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
                     closeDrawer()
                 }
 
@@ -163,28 +180,41 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.my_donations ->{
-                    val myDonationIntent = Intent(this, MyDonationActivity::class.java)
-                    startActivity(myDonationIntent)
+                    if (Firebase.auth.currentUser != null){
+                        val myDonationIntent = Intent(this, MyDonationActivity::class.java)
+                        startActivity(myDonationIntent)
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
                     closeDrawer()
                 }
 
                 R.id.termCondition ->{
+                    val myIntent = Intent(this, WebViewActivity::class.java)
+                    myIntent.putExtra("PolicyCode",1)// 1 = Terms and services
+                    startActivity(myIntent)
                     closeDrawer()
                 }
                 R.id.privacy_policy ->{
-
+                    val myIntent = Intent(this, WebViewActivity::class.java)
+                    myIntent.putExtra("PolicyCode",2)// 2 = Privacy Policy
+                    startActivity(myIntent)
                     closeDrawer()
                 }
                 R.id.return_policy ->{
+                    val myIntent = Intent(this, WebViewActivity::class.java)
+                    myIntent.putExtra("PolicyCode",3)//3 = Return Policy
+                    startActivity(myIntent)
                     closeDrawer()
-                    //
                 }
                 R.id.help ->{
+                    if (Firebase.auth.currentUser != null){
+
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
                     closeDrawer()
-                    //
                 }
-
-
 
             }
             true
@@ -198,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         if(SharedDataClass.newLogin){
-            user = Firebase.auth.currentUser
+            val user = Firebase.auth.currentUser
             SharedDataClass.newLogin = false
         }
 
@@ -208,19 +238,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.layCart.cartBadgeContainerLay.setOnClickListener {
-            if (user != null){
-
+            if (Firebase.auth.currentUser != null){
                 val cartIntent = Intent(this, CartActivity::class.java)
                 startActivity(cartIntent)
-
             }else{
                 loginDialog.show(supportFragmentManager, "custom login dialog")
-
             }
         }
 
         binding.layNotify.notificationBadgeContainerLay.setOnClickListener {
-            if (user != null){
+            if (Firebase.auth.currentUser != null){
                 updateNotificationForOptionMenu()
                 navController.navigateUp() // to clear previous navigation history
                 navController.navigate(R.id.notificationFragment)
@@ -235,16 +262,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (user == null){
-            cartBadgeText.visibility = gone
-        }else{
-            if (SharedDataClass.dbCartList.size == 0){
+        lifecycleScope.launch(Dispatchers.Main) {
+
+            if (Firebase.auth.currentUser == null){
                 cartBadgeText.visibility = gone
             }else{
-                cartBadgeText.visibility = visible
-                cartBadgeText.text = SharedDataClass.dbCartList.size.toString()
+                if (SharedDataClass.dbCartList.size == 0){
+                    cartBadgeText.visibility = gone
+                    delay(3000)
+                    withContext(Dispatchers.Main){
+                        if (SharedDataClass.dbCartList.size == 0){
+                            cartBadgeText.visibility = gone
+                        }else{
+                            cartBadgeText.visibility = visible
+                            cartBadgeText.text = SharedDataClass.dbCartList.size.toString()
+                        }
+                    }
+                }else{
+                    cartBadgeText.visibility = visible
+                    cartBadgeText.text = SharedDataClass.dbCartList.size.toString()
+                }
             }
+
+
         }
+
 
         SharedDataClass.currentACtivity = 1
         SharedDataClass.product_id = ""
@@ -258,10 +300,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
-
-        if (user != null) {
+        val currentUser = Firebase.auth.currentUser
+        if (currentUser != null) {
             val ref = firebaseFirestore.collection("USERS")
-                .document(user!!.uid)
+                .document(currentUser.uid)
                 .collection("USER_NOTIFICATIONS")
                 .whereGreaterThan("date",timeStamp1)
 
@@ -294,9 +336,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateNotificationForOptionMenu() {
-        if (user!= null){
+        val currentUser = Firebase.auth.currentUser
+        if (currentUser!= null){
             val ref = firebaseFirestore.collection("USERS")
-                .document(user!!.uid)
+                .document(currentUser.uid)
 
             val notiMAp: MutableMap<String, Any> = HashMap()
             notiMAp["new_notification_user"] = FieldValue.serverTimestamp()
@@ -307,8 +350,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUsername(textView: TextView) {
-        if (user != null){
-            firebaseFirestore.collection("USERS").document(user!!.uid)
+        val currentUser = Firebase.auth.currentUser
+        if (currentUser != null){
+            firebaseFirestore.collection("USERS").document(currentUser.uid)
                 .get().addOnSuccessListener {
                     val email = it.getString("email").toString()
                     val name = it.getString("name").toString()

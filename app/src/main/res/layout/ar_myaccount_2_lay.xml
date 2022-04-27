@@ -10,75 +10,141 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:text="Shop details"
+        android:layout_marginTop="16dp"
+        android:text="Business details"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/grey_600"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/shop_name"
+    <View
+        android:id="@+id/divider19"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Dealbill enterprise Pvt. ltd."
-        android:textColor="@color/light_black"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView33" />
 
-    <TextView
-        android:id="@+id/shop_address"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/have_address_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/lorem_ipsum"
-        android:textColor="@color/light_black"
-        android:textSize="16sp"
-        android:maxLines="5"
-        android:ellipsize="end"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shop_name" />
+        app:layout_constraintTop_toBottomOf="@+id/divider19">
+        <TextView
+            android:id="@+id/buyer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Jai sri ram"
+            android:textColor="@color/grey_800"
+            android:textSize="18sp"
+            android:textStyle="bold"
+             />
 
-    <TextView
-        android:id="@+id/textView39"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Seller Id: "
-        android:textColor="@color/light_black"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shop_address" />
+        <TextView
+            android:id="@+id/buyer_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/fake_address"
+            android:textColor="@color/grey_900"
+            android:textSize="15sp"
+            />
 
-    <TextView
-        android:id="@+id/seller_id"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="2352u-523u5-u23pu"
-        android:textColor="@color/light_black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView39"
-        app:layout_constraintTop_toTopOf="@+id/textView39" />
+        <TextView
+            android:id="@+id/buyer_TownAndPin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="kolkata, 700028"
+            android:textSize="15sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/black"
+            />
+
+        <TextView
+            android:id="@+id/buyer_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textSize="15sp"
+            android:text="westbengal"
+            android:textColor="@color/black"
+           />
+
+        <TextView
+            android:id="@+id/buyer_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/phone"
+            android:textColor="@color/grey_800"
+            android:textSize="18sp"
+            android:textStyle="bold"
+           />
+    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/edit_address_btn"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seller_id"
         app:srcCompat="@drawable/i_edit" />
+
+
+    <LinearLayout
+        android:id="@+id/no_address_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/have_address_container"
+        >
+
+        <TextView
+            android:id="@+id/textView39"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:background="@drawable/s_shape_bg_3"
+            android:backgroundTint="@color/red_50"
+            android:text="@string/no_address_error"
+            android:textColor="@color/red_500"/>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primaryColor"
+            android:textColor="@color/amber_600"
+            android:text="Add new address"
+            android:textAllCaps="false"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

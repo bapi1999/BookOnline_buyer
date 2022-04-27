@@ -144,7 +144,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/as_admob_ads" />
+                android:src="@drawable/as_admob_native_ads" />
 
         </LinearLayout>
     </ScrollView>

@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
+import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,8 +39,8 @@ class LoginFragment : Fragment() {
     lateinit var errorTxt:TextView
 
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
-
-    lateinit var loadingDialog : Dialog
+    private var fromIntent = 0
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -54,6 +55,7 @@ class LoginFragment : Fragment() {
             findNavController().navigate(action)
         }
 
+        fromIntent = requireActivity().intent.getIntExtra("from",0)
 
 
         return binding.root
@@ -63,20 +65,14 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.loginLay.loginBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"Show")
             checkAllDetails()
+
         }
 
         binding.loginLay.forgotPassword.setOnClickListener {
             val action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment()
             findNavController().navigate(action1)
-        }
-
-        binding.loginLay.skipBtn.setOnClickListener{
-
-            val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
-            startActivity(mainActivityIntent)
-
-            activity?.finish()
         }
 
     }
@@ -124,6 +120,7 @@ class LoginFragment : Fragment() {
     private fun checkAllDetails() {
         if (!checkMail() or !checkPassword()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
             return
         } else {
             lifecycleScope.launch(Dispatchers.IO){
@@ -131,19 +128,21 @@ class LoginFragment : Fragment() {
                     firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
                     withContext(Dispatchers.Main){
                         retrieveUserToken()
-                        Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(context,MainActivity::class.java)
-                        startActivity(intent)
+                        loadingDialog.dismiss()
+                        if(fromIntent==1){
+                            val intent = Intent(context, MainActivity::class.java)
+                            startActivity(intent)
+                            activity?.finish()
+                        }else{
+                            activity?.finish()
+                        }
 
-//                        val v = SharedDataClass
-//                        v.getCartListForOptionMenu()
-
-                        activity?.finish()
                     }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         errorTxt.visibility = View.VISIBLE
                         Toast.makeText(context,e.message,Toast.LENGTH_LONG).show()
+                        loadingDialog.dismiss()
                     }
                 }
             }

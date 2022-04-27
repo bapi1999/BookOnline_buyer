@@ -191,7 +191,7 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
                     val sellerId = it.getString("PRODUCT_SELLER_ID").toString()
                     val title = it.getString("book_title")!!
                     val stockQuantity = it.getLong("in_stock_quantity")!!
-                    val sellerProfit = it.getDouble("SELLER_PROFIT")!!
+                    val sellerProfit = it.getString("SELLER_PROFIT")!!
 
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()

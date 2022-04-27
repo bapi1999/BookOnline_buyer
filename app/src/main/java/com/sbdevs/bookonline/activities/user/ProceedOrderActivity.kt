@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.adapters.user.OrderSummaryAdapter
@@ -302,7 +303,7 @@ class ProceedOrderActivity : AppCompatActivity() {
         productMap["in_stock_quantity"] = newQty
         productMap["number_of_item_sold"] = itemSoldNow
 
-        firebaseFirestore.collection("PRODUCTS").document(productId).update(productMap)
+        firebaseFirestore.collection("PRODUCTS").document(productId).set(productMap, SetOptions.merge())
             .addOnSuccessListener { Log.e("updateProductStock ","Success") }
             .addOnFailureListener { Log.e("updateProductStock error","${it.message}") }
     }

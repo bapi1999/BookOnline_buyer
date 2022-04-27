@@ -44,10 +44,10 @@ class SignUpFragment : Fragment() {
     lateinit var email: TextInputLayout
 
     lateinit var pass: TextInputLayout
-    lateinit var confirmPass:TextInputLayout
     lateinit var errorTxt: TextView
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
     private val loadingDialog = LoadingDialog()
+    private var fromIntent = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
@@ -55,9 +55,10 @@ class SignUpFragment : Fragment() {
 
         nameInput = binding.signupLay.emailInput
         email = binding.signupLay.emailInput
-
+        errorTxt = binding.signupLay.errorMessageText
         pass = binding.signupLay.passwordInput
-        confirmPass = binding.signupLay.confirmPassInput
+
+        fromIntent = requireActivity().intent.getIntExtra("from",0)
 
         binding.signupLay.loginText.setOnClickListener {
             val action = SignUpFragmentDirections.actionSignUpFragmentToLoginFragment()
@@ -74,12 +75,6 @@ class SignUpFragment : Fragment() {
         binding.signupLay.signupBtn.setOnClickListener {
             loadingDialog.show(childFragmentManager,"show")
             checkAllDetails()
-        }
-
-        binding.signupLay.skipBtn.setOnClickListener{
-            val mainActivityIntent = Intent(requireContext(),MainActivity::class.java)
-            startActivity(mainActivityIntent)
-            activity?.finish()
         }
 
     }
@@ -119,26 +114,6 @@ class SignUpFragment : Fragment() {
     }
 
 
-//    private fun checkPhome(): Boolean {
-//        val phoneInput: String = phone.editText?.text.toString().trim()
-//        return if (phoneInput.isEmpty()) {
-//            phone.isErrorEnabled = true
-//            phone.error = "Field can't be empty"
-//            false
-//        } else {
-//            if(phoneInput.length==10){
-//                phone.isErrorEnabled = false
-//                phone.error = null
-//                true
-//            }else{
-//                phone.isErrorEnabled = true
-//                phone.error = "Must be 10 digit number"
-//                false
-//            }
-//
-//        }
-//    }
-
 
     private fun checkPassword(): Boolean {
         val passInput: String = pass.editText?.text.toString().trim()
@@ -159,29 +134,9 @@ class SignUpFragment : Fragment() {
 
         }
     }
-    private fun checkConfirmPassword(): Boolean {
-        val passInput: String = pass.editText?.text.toString().trim()
-        val confirmPassInput: String = confirmPass.editText?.text.toString().trim()
-        return if (passInput.isEmpty()) {
-            confirmPass.isErrorEnabled = true
-            confirmPass.error = "Field can't be empty"
-            false
-        } else {
-            if (confirmPassInput == passInput){
-                confirmPass.isErrorEnabled = false
-                confirmPass.error = null
-                true
-            }else{
-                confirmPass.isErrorEnabled = true
-                confirmPass.error = "Doesn't match with password"
-                false
-            }
-
-        }
-    }
 
     private fun checkAllDetails() {
-        if (!checkName() or !checkMail() or !checkPassword() or !checkConfirmPassword()) {
+        if (!checkName() or !checkMail() or !checkPassword()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             return
@@ -196,6 +151,9 @@ class SignUpFragment : Fragment() {
                     }
                 }
                 .addOnFailureListener {
+                    loadingDialog.dismiss()
+                    errorTxt.text = "${it.message}"
+                    errorTxt.visibility = View.VISIBLE
                     Log.e("login user","${it.message}")
                 }
 
@@ -248,11 +206,14 @@ class SignUpFragment : Fragment() {
             userRef.document("MY_WISHLIST").set(listSizeMap).await()
 
             withContext(Dispatchers.Main){
-                val intent = Intent(context, MainActivity::class.java)
-                startActivity(intent)
-                Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
+                if(fromIntent==1){
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+                    activity?.finish()
+                }else{
+                    activity?.finish()
+                }
                 loadingDialog.dismiss()
-                activity?.finish()
             }
 
         }

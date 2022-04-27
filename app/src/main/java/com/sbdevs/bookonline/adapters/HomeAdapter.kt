@@ -1,34 +1,48 @@
 package com.sbdevs.bookonline.adapters
 
+
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Color.parseColor
+import android.os.Handler
 import android.util.Log
+import android.util.TimingLogger
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.sbdevs.bookonline.models.HomeModel
-import android.view.LayoutInflater
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.denzcoskun.imageslider.ImageSlider
+import com.denzcoskun.imageslider.constants.ScaleTypes
+import com.denzcoskun.imageslider.interfaces.ItemClickListener
+import com.denzcoskun.imageslider.models.SlideModel
 import com.google.firebase.firestore.Query
-
-
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.ProductActivity
+import com.sbdevs.bookonline.activities.ViewAllProductActivity
+import com.sbdevs.bookonline.activities.donation.AllDonationActivity
+import com.sbdevs.bookonline.activities.java.SearchFilterJavaActivity
+import com.sbdevs.bookonline.activities.user.SellerShopActivity
 import com.sbdevs.bookonline.adapters.uiadapter.*
+import com.sbdevs.bookonline.models.HomeModel
 import com.sbdevs.bookonline.models.SearchModel
 import com.sbdevs.bookonline.models.uidataclass.SliderModel
 import com.sbdevs.bookonline.models.uidataclass.TopCategoryModel
+import com.sbdevs.bookonline.othercalss.HomeCacheClass
+import com.sbdevs.bookonline.othercalss.MiddleDividerItemDecoration
 import com.sbdevs.bookonline.othercalss.SharedDataClass
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 private const val SLIDER: Int = 0
@@ -38,6 +52,7 @@ private const val STRIP_LAYOUT:Int = 3
 private const val PROMOTED_LAYOUT:Int = 4
 private const val BIG_ADS_LINK:Int = 5
 private const val PRODUCT_GRID:Int = 6
+private const val Tag = "HomeAdapter-"
 
 class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -118,59 +133,99 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
     class SliderViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         private val firebaseDatabase = SharedDataClass.database
 
-        private val sliderView:ViewPager2 = itemView.findViewById(R.id.imageSliderNew)
+        val imageSlider: ImageSlider = itemView.findViewById<ImageSlider>(R.id.image_slider)
         private var sliderModelList = ArrayList<SliderModel>()
-        private val dotsIndicator = itemView.findViewById<DotsIndicator>(R.id.dots_indicator)
-        lateinit var adapter: SliderAdapter
+        val imageList = ArrayList<SlideModel>()
 
         fun bind(homeModel: HomeModel){
 
             val uiId:String = homeModel.ui_VIEW_ID.trim()
             sliderModelList.clear()
-            val pos:String = absoluteAdapterPosition.toString()
-            getSliderUi(uiId)
 
-            adapter = SliderAdapter(sliderModelList)
+            if(HomeCacheClass.isSliderImageAvailable){
+                if (imageList.size == 0){
 
-            sliderView.adapter = adapter
-            dotsIndicator.setViewPager2(sliderView)
-
-            GlobalScope.launch(Dispatchers.Main) {
-
-                while (true){
-                    for (i in 0..sliderModelList.size ){
-                        delay(3000)
-                        if (i==0){
-                            sliderView.setCurrentItem(i,false)
-                        }else{
-                            sliderView.setCurrentItem(i,true)
-                        }
+                    for (item in HomeCacheClass.sliderModelList){
+                        imageList.add(SlideModel(item.image , ScaleTypes.CENTER_CROP))
                     }
+                    imageSlider.setImageList(imageList)
+                }else{
+                    imageSlider.setImageList(imageList)
                 }
+
+                Log.e("slider list size","${imageList.size}")
+                setClickInSlider(HomeCacheClass.sliderModelList)
+
+            }else{
+                getSliderUi(uiId)
             }
 
 
         }
 
+
         private fun getSliderUi(uiId:String )  {
-            Log.e("SLIDER take of", " now")
+            val resultList = ArrayList<SliderModel>()
+
             firebaseDatabase.child("Sliders").child(uiId).get()
                 .addOnSuccessListener {
 
                     for (snapShot in it.children){
                         val element = snapShot.getValue(SliderModel::class.java)
                         if (element != null) {
-                            sliderModelList.add(element)
+                            resultList.add(element)
+                            imageList.add(SlideModel(element.image , ScaleTypes.CENTER_CROP))
                         }
                     }
 
-                    adapter.picList = sliderModelList
-                    adapter.notifyDataSetChanged()
+                    HomeCacheClass.sliderModelList.addAll(resultList)
+                    HomeCacheClass.isSliderImageAvailable = true
+
+
+                    imageSlider.setImageList(imageList)
+                    setClickInSlider(resultList)
+
                 }
                 .addOnFailureListener {
-                    Log.e("Error in get home ui","${it.message}")
+                    Log.e("$Tag Error in get Slider","${it.message}")
                 }
         }
+
+        private fun setClickInSlider(itemList: ArrayList<SliderModel>){
+            imageSlider.setItemClickListener(object : ItemClickListener {
+                override fun onItemSelected(position: Int) {
+                    val actionType = itemList[position].action_type
+                    val actionString = itemList[position].action_string
+                    Log.e("Action","$actionType")
+
+                    when(actionType){
+                        101L->{
+                            val newIntent = Intent(itemView.context,ProductActivity::class.java)
+                            newIntent.putExtra("productId",actionString)
+                            itemView.context.startActivity(newIntent)
+                        }
+                        102L->{
+                            val newIntent = Intent(itemView.context,SellerShopActivity::class.java)
+                            newIntent.putExtra("sellerId",actionString)
+                            itemView.context.startActivity(newIntent)
+                        }
+                        109L->{
+                            val newIntent = Intent(itemView.context,SearchFilterJavaActivity::class.java)
+                            newIntent.putExtra("query",actionString)
+                            itemView.context.startActivity(newIntent)
+                        }
+                        111L->{
+                            val newIntent = Intent(itemView.context,AllDonationActivity::class.java)
+                            itemView.context.startActivity(newIntent)
+                        }
+
+                    }
+                }
+            })
+        }
+
+
+
 
     }
 
@@ -179,42 +234,52 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
         private val firebaseDatabase = SharedDataClass.database
         private val categoryRecycler:RecyclerView = itemView.findViewById(R.id.topCategoryRecycler)
         private var categoryList: ArrayList<TopCategoryModel> = ArrayList()
-        private lateinit var categoryAdapter: TopCategoryAdapter
+        private var categoryAdapter: TopCategoryAdapter = TopCategoryAdapter(categoryList)
         fun bind(homeModel: HomeModel){
 
-            categoryRecycler.layoutManager = GridLayoutManager(itemView.context,2)
-            categoryAdapter = TopCategoryAdapter(categoryList)
-            val uiId= homeModel.ui_VIEW_ID
-            getTopCategoryUi(uiId)
+            categoryRecycler.layoutManager = LinearLayoutManager(itemView.context,LinearLayoutManager.HORIZONTAL,false)
 
+            categoryAdapter = TopCategoryAdapter(categoryList)
+
+            val uiId= homeModel.ui_VIEW_ID
+            if (HomeCacheClass.isCategoryAvailable){
+                categoryList.addAll(HomeCacheClass.categoryList)
+                Log.e("Category size ", "${categoryList.size}")
+                categoryAdapter.list = categoryList
+
+            }else{
+                getTopCategoryUi(uiId)
+            }
+
+            categoryRecycler.adapter = categoryAdapter
 
 
         }
 
 
 
-        private fun getTopCategoryUi(uiId:String) = CoroutineScope(Dispatchers.IO).launch {
-            Log.e("CATEGORY take of", " now")
-            withContext(Dispatchers.IO){
+        private fun getTopCategoryUi(uiId:String) {
+            val resultList = ArrayList<TopCategoryModel>()
+            firebaseDatabase.child("UI_TOP_4_CATEGORY").child(uiId).get()
+                .addOnSuccessListener {
 
-                firebaseDatabase.child("UI_TOP_4_CATEGORY").child(uiId).get()
-                    .addOnSuccessListener {
-
-
-                        for (snapShot in it.children){
-                            val element = snapShot.getValue(TopCategoryModel::class.java)
-                            if (element != null) {
-                                categoryList.add(element)
-                            }
+                    for (snapShot in it.children){
+                        val element = snapShot.getValue(TopCategoryModel::class.java)
+                        if (element != null) {
+                            resultList.add(element)
                         }
+                    }
 
-                        categoryRecycler.adapter = categoryAdapter
-                        categoryAdapter.notifyDataSetChanged()
-                    }
-                    .addOnFailureListener {
-                        Log.e("Error in get Top Category ui","${it.message}")
-                    }
-            }
+                    HomeCacheClass.isCategoryAvailable = true
+                    HomeCacheClass.categoryList.addAll(resultList)
+
+                    categoryList.addAll(resultList)
+                    categoryAdapter.list = categoryList
+                    categoryAdapter.notifyDataSetChanged()
+                }
+                .addOnFailureListener {
+                    Log.e("$Tag Error in Category ui","${it.message}")
+                }
 
         }
     }
@@ -269,21 +334,27 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
         private val batchHeader:TextView = itemView.findViewById(R.id.batch_header)
         private var productList= ArrayList<SearchModel>()
         private lateinit var adapter1: ProductGridAdapter
+        private val viewAllBtn:ImageView = itemView.findViewById(R.id.view_all_button)
         fun bind(homeModel: HomeModel){
 
             val uiId:String = homeModel.ui_VIEW_ID.trim()
             getGridQuery(uiId)
 
+            productRecycler.addItemDecoration(MiddleDividerItemDecoration(itemView.context, MiddleDividerItemDecoration.ALL))
             productRecycler.layoutManager = GridLayoutManager(itemView.context,2)
             adapter1 = ProductGridAdapter(productList)
             productRecycler.adapter = adapter1
 //            batchHeader.text = uiId
 
+            viewAllBtn.setOnClickListener {
+                val viewAllIntent = Intent(itemView.context,ViewAllProductActivity::class.java)
+                itemView.context.startActivity(viewAllIntent)
+            }
+
 
         }
 
         private fun getGridQuery(uiId:String) = CoroutineScope(Dispatchers.IO).launch {
-            Log.e("GRID take of", " now")
             withContext(Dispatchers.IO){
 
                 firebaseDatabase.child("UI_PRODUCT_GRID").child(uiId).get()
