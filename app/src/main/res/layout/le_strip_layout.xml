@@ -18,5 +18,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/as_banner_placeholder" />
+        app:srcCompat="@drawable/as_rectangle_placeholder" />
 </androidx.constraintlayout.widget.ConstraintLayout>

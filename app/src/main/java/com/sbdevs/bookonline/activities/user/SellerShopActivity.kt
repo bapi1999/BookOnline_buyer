@@ -20,6 +20,7 @@ import com.sbdevs.bookonline.adapters.uiadapter.ProductGrid2Adapter
 import com.sbdevs.bookonline.databinding.ActivitySellerShopBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
 import com.sbdevs.bookonline.models.SearchModel
+import com.sbdevs.bookonline.models.uidataclass.GridModel
 import com.sbdevs.bookonline.othercalss.MiddleDividerItemDecoration
 
 class SellerShopActivity : AppCompatActivity() {
@@ -30,7 +31,7 @@ class SellerShopActivity : AppCompatActivity() {
     private lateinit var horizontalRecycler:RecyclerView
 
     private lateinit var gridRecycler:RecyclerView
-    private val gridList:ArrayList<SearchModel> = ArrayList()
+    private val gridList:ArrayList<GridModel> = ArrayList()
     private val gridAdapter:ProductGrid2Adapter= ProductGrid2Adapter(gridList)
 
     private val visible = View.VISIBLE
@@ -124,22 +125,13 @@ class SellerShopActivity : AppCompatActivity() {
                 for (documentSnapshot in allDocumentSnapshot) {
                     val productId = documentSnapshot.id
                     val productName = documentSnapshot.getString("book_title").toString()
-
                     val productImgList:ArrayList<String> = documentSnapshot.get("productImage_List") as ArrayList<String>
-                    val stockQty: Long = documentSnapshot.getLong("in_stock_quantity")!!.toLong()
-                    val avgRating = documentSnapshot.getString("rating_avg")!!
-                    val totalRatings: Long = documentSnapshot.getLong("rating_total")!!
-
                     val priceOriginal = documentSnapshot.getLong("price_original")!!.toLong()
                     val priceSelling = documentSnapshot.getLong("price_selling")!!.toLong()
-
-                    val printedYear = documentSnapshot.getLong("book_printed_ON")!!
-                    val bookCondition = documentSnapshot.getString("book_condition").toString()
-                    val bookType = documentSnapshot.getString("book_type")!!
+                    val productAddedOn = documentSnapshot.getTimestamp("PRODUCT_UPDATE_ON")!!
 
                     gridList.add(
-                        SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                        stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                        GridModel(productId, productName, productImgList, priceOriginal, priceSelling,productAddedOn.toDate())
                     )
                 }
 

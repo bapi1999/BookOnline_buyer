@@ -9,22 +9,19 @@
     <string name="lorem_ipsum">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release333 of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</string>
     <string name="view_all">View All</string>
     <string name="seller">Seller:</string>
-    <string name="book_stall">Techno world book center</string>
-    <string name="fake_address">23 bidon street, near mShop, walington, kolkata</string>
-    <string name="phone">9876543210</string>
     <string name="search_hint">Search here…</string>
     <string name="refresh_hint">Swipe refresh…</string>
     <string name="reset_password">Reset password</string>
     <string name="reset_password_hint">Enter the email associated with your account and we\'ll send an email with instruction to reset your password</string>
     <string name="forgot_instruction">Don\'t worry, we just need your registered email address and its done</string>
     <string name="recovaryEmail">Recovery email sent successfully! Check your inbox </string>
-    <string name="email">Email</string>
     <string name="e_g_tags">e.g. school,geography</string>
     <string name="add_bank_account">Add bank account</string>
 
     <string name="addressline_1">Home No,Building Name, Apartment</string>
     <string name="addressline_2">Road, Street, Area, Locality</string>
     <string name="terms_condition"><![CDATA[Terms & Condition]]></string>
+    <string name="agree_terms_condition">I agree to BooksOnline Terms and Conditions, Privacy policy and Return policy.</string>
     <string name="out_of_stock_now">Some products were out of stock just a few seconds agoPlease contact the Help Center for further assistance </string>
     <string name="out_of_stock_just_now">Some products were out of stock just a few seconds ago. We apologize for not processing your order properly. Please contact the Help Center for further assistance</string>
     <string name="order_will_delivered">Your order will be delivered within 7 to 10 working days</string>
@@ -62,7 +59,6 @@
     <string name="no_bank_account_linked">no bank account is linked to this account. Add bank account to receive payment</string>
     <string name="product_is_visible_to_user">this product is visible to user</string>
     <string name="read_instruction">Read instruction</string>
-    <string name="i_agree_to_the_terms_of_service">I agree to the Terms of Service and Privacy Policy</string>
     <string name="updated_successfully">Updated successfully</string>
     <string name="failed_to_update">Failed to update</string>
     <string name="order_warning_1">Unable to fetch buyer address.Please reject/cancel this order.</string>

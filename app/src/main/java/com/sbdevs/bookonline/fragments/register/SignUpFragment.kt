@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
@@ -21,6 +23,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.MainActivity
+import com.sbdevs.bookonline.activities.WebViewActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
 import com.sbdevs.bookonline.databinding.FragmentSignUpBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
@@ -37,9 +40,6 @@ class SignUpFragment : Fragment() {
     private val firebaseFirestore = Firebase.firestore
     val firebaseAuth = Firebase.auth
 
-    // do not use this
-    //val user = firebaseAuth.currentUser
-
     lateinit var nameInput: TextInputLayout
     lateinit var email: TextInputLayout
 
@@ -48,6 +48,7 @@ class SignUpFragment : Fragment() {
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
     private val loadingDialog = LoadingDialog()
     private var fromIntent = 0
+    private lateinit var termAndPolicyBox: CheckBox
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
@@ -57,12 +58,33 @@ class SignUpFragment : Fragment() {
         email = binding.signupLay.emailInput
         errorTxt = binding.signupLay.errorMessageText
         pass = binding.signupLay.passwordInput
+        termAndPolicyBox = binding.signupLay.checkBox5
 
         fromIntent = requireActivity().intent.getIntExtra("from",0)
 
         binding.signupLay.loginText.setOnClickListener {
             val action = SignUpFragmentDirections.actionSignUpFragmentToLoginFragment()
             findNavController().navigate(action)
+        }
+
+        termAndPolicyBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
+        }
+
+        binding.signupLay.termsConditionText.setOnClickListener {
+            val myIntent = Intent(requireContext(), WebViewActivity::class.java)
+            myIntent.putExtra("PolicyCode",1)// 1 = Terms and services
+            startActivity(myIntent)
+        }
+        binding.signupLay.privacyPolicyText.setOnClickListener {
+            val myIntent = Intent(requireContext(), WebViewActivity::class.java)
+            myIntent.putExtra("PolicyCode",2)// 2 = Privacy Policy
+            startActivity(myIntent)
+        }
+        binding.signupLay.returnPolicyText.setOnClickListener {
+            val myIntent = Intent(requireContext(), WebViewActivity::class.java)
+            myIntent.putExtra("PolicyCode",3)//3 = Return Policy
+            startActivity(myIntent)
         }
 
 
@@ -135,8 +157,18 @@ class SignUpFragment : Fragment() {
         }
     }
 
+    private fun checkTermsAndPolicyBox(): Boolean {
+        return if (termAndPolicyBox.isChecked) {
+            termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
+            true
+        } else {
+            termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
+            false
+        }
+    }
+
     private fun checkAllDetails() {
-        if (!checkName() or !checkMail() or !checkPassword()) {
+        if (!checkName() or !checkMail() or !checkPassword() or !checkTermsAndPolicyBox()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             return

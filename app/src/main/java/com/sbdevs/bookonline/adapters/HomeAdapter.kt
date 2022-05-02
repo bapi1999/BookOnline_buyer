@@ -34,6 +34,7 @@ import com.sbdevs.bookonline.activities.user.SellerShopActivity
 import com.sbdevs.bookonline.adapters.uiadapter.*
 import com.sbdevs.bookonline.models.HomeModel
 import com.sbdevs.bookonline.models.SearchModel
+import com.sbdevs.bookonline.models.uidataclass.GridModel
 import com.sbdevs.bookonline.models.uidataclass.SliderModel
 import com.sbdevs.bookonline.models.uidataclass.TopCategoryModel
 import com.sbdevs.bookonline.othercalss.HomeCacheClass
@@ -52,6 +53,7 @@ private const val STRIP_LAYOUT:Int = 3
 private const val PROMOTED_LAYOUT:Int = 4
 private const val BIG_ADS_LINK:Int = 5
 private const val PRODUCT_GRID:Int = 6
+private const val NEW_ARRIVAL_GRID:Int = 7
 private const val Tag = "HomeAdapter-"
 
 class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -65,6 +67,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
             4L -> PROMOTED_LAYOUT
             5L-> BIG_ADS_LINK
             6L-> PRODUCT_GRID
+            7L-> NEW_ARRIVAL_GRID
 
             else -> -5
         }
@@ -102,6 +105,10 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_grid_lay, parent, false)
                 return GridViewHolder(view)
             }
+            NEW_ARRIVAL_GRID -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_grid_lay, parent, false)
+                return NewArrivalViewHolder(view)
+            }
             else->{
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.le_loading_progress_dialog, parent, false)
                 return NillViewHolder(view)
@@ -121,6 +128,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
             PROMOTED_LAYOUT->(holder as PromotedViewHolder).bind(homeModelList[position])
             BIG_ADS_LINK->(holder as BigAdsLinkViewHolder).bind(homeModelList[position])
             PRODUCT_GRID->(holder as GridViewHolder).bind(homeModelList[position])
+            NEW_ARRIVAL_GRID->(holder as NewArrivalViewHolder).bind(homeModelList[position])
         }
     }
 
@@ -243,8 +251,12 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
 
             val uiId= homeModel.ui_VIEW_ID
             if (HomeCacheClass.isCategoryAvailable){
-                categoryList.addAll(HomeCacheClass.categoryList)
-                Log.e("Category size ", "${categoryList.size}")
+                if (categoryList.size == 0){
+                    categoryList.addAll(HomeCacheClass.categoryList)
+                    Log.e("Category size ", "${categoryList.size}")
+                }else{
+                    categoryList = HomeCacheClass.categoryList
+                }
                 categoryAdapter.list = categoryList
 
             }else{
@@ -260,6 +272,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
 
         private fun getTopCategoryUi(uiId:String) {
             val resultList = ArrayList<TopCategoryModel>()
+            Log.e("CATEGORY take of", " now")
             firebaseDatabase.child("UI_TOP_4_CATEGORY").child(uiId).get()
                 .addOnSuccessListener {
 
@@ -332,13 +345,17 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
         val firebaseFirestore = Firebase.firestore
         private val productRecycler:RecyclerView = itemView.findViewById(R.id.product_grid_recycler)
         private val batchHeader:TextView = itemView.findViewById(R.id.batch_header)
-        private var productList= ArrayList<SearchModel>()
+        private var productList= ArrayList<GridModel>()
         private lateinit var adapter1: ProductGridAdapter
         private val viewAllBtn:ImageView = itemView.findViewById(R.id.view_all_button)
+        private val loadMoreBtn:Button = itemView.findViewById(R.id.load_more)
+
         fun bind(homeModel: HomeModel){
 
             val uiId:String = homeModel.ui_VIEW_ID.trim()
             getGridQuery(uiId)
+
+            loadMoreBtn.visibility = View.GONE
 
             productRecycler.addItemDecoration(MiddleDividerItemDecoration(itemView.context, MiddleDividerItemDecoration.ALL))
             productRecycler.layoutManager = GridLayoutManager(itemView.context,2)
@@ -356,6 +373,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
 
         private fun getGridQuery(uiId:String) = CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO){
+
 
                 firebaseDatabase.child("UI_PRODUCT_GRID").child(uiId).get()
                     .addOnSuccessListener {
@@ -381,9 +399,9 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
 
         }
 
+
         private fun getFirebaeData(orderByString:String,direction:Query.Direction ) = CoroutineScope(Dispatchers.IO).launch {
-
-
+            Log.e("GRID $orderByString take of", " now")
             firebaseFirestore.collection("PRODUCTS")
                 .orderBy(orderByString,direction).limit(4L)
                 .get().addOnSuccessListener {
@@ -392,24 +410,116 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
                         val productId = documentSnapshot.id
                         val productName = documentSnapshot.getString("book_title").toString()
                         val productImgList:ArrayList<String> = documentSnapshot.get("productImage_List") as ArrayList<String>
-                        val stockQty: Long = documentSnapshot.getLong("in_stock_quantity")!!.toLong()
-                        val avgRating = documentSnapshot.getString("rating_avg")!!
-                        val totalRatings: Long = documentSnapshot.getLong("rating_total")!!
                         val priceOriginal = documentSnapshot.getLong("price_original")!!.toLong()
                         val priceSelling = documentSnapshot.getLong("price_selling")!!.toLong()
-                        val printedYear = documentSnapshot.getLong("book_printed_ON")!!
-                        val bookCondition = documentSnapshot.getString("book_condition").toString()
-                        val bookType = documentSnapshot.getString("book_type")!!
+                        val productAddedOn = documentSnapshot.getTimestamp("PRODUCT_ADDED_ON")!!
 
                         productList.add(
-                            SearchModel(productId, productName, productImgList, priceOriginal, priceSelling,
-                                stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear)
+                            GridModel(productId, productName, productImgList, priceOriginal, priceSelling,productAddedOn.toDate())
                         )
                     }
 
 
                     adapter1.list = productList
                 adapter1.notifyDataSetChanged()
+
+            }.addOnFailureListener {
+                Log.e("HorizontalViewModel","${it.message}")
+            }.await()
+
+        }
+    }
+
+
+
+
+    class NewArrivalViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+        val firebaseFirestore = Firebase.firestore
+        private val productRecycler:RecyclerView = itemView.findViewById(R.id.product_grid_recycler)
+        private val loadMoreBtn:Button = itemView.findViewById(R.id.load_more)
+        private val batchHeader:TextView = itemView.findViewById(R.id.batch_header)
+//        private var productList= ArrayList<GridModel>()
+        private var adapter1: ProductGrid2Adapter =ProductGrid2Adapter(HomeCacheClass.newArrivalProductList)
+        private val viewAllBtn:ImageView = itemView.findViewById(R.id.view_all_button)
+        fun bind(homeModel: HomeModel){
+            productRecycler.addItemDecoration(MiddleDividerItemDecoration(itemView.context, MiddleDividerItemDecoration.ALL))
+            productRecycler.layoutManager = GridLayoutManager(itemView.context,2)
+
+            if (HomeCacheClass.isNewArrivalExist){
+                adapter1.list = HomeCacheClass.newArrivalProductList
+            }else {
+                getFirebaeData()
+            }
+
+            batchHeader.text = "New Arrival"
+
+            productRecycler.adapter = adapter1
+
+            loadMoreBtn.visibility = View.VISIBLE
+
+            viewAllBtn.setOnClickListener {
+                val viewAllIntent = Intent(itemView.context,ViewAllProductActivity::class.java)
+                itemView.context.startActivity(viewAllIntent)
+            }
+
+            loadMoreBtn.setOnClickListener {
+                if (HomeCacheClass.isNewArrivalReachLast){
+                   Log.e("New arrival","already reach last")
+                }else{
+                    getFirebaeData()
+                }
+            }
+
+
+        }
+
+
+        private fun getFirebaeData( ) = CoroutineScope(Dispatchers.IO).launch {
+            Log.e("NEW ARRIVAL take of", " now")
+
+            var resultList:ArrayList<GridModel> = ArrayList()
+
+            val query:Query = if(HomeCacheClass.lastResult == null){
+                firebaseFirestore.collection("PRODUCTS")
+                    .orderBy("PRODUCT_ADDED_ON",Query.Direction.DESCENDING)
+            }else{
+                firebaseFirestore.collection("PRODUCTS")
+                    .orderBy("PRODUCT_ADDED_ON",Query.Direction.DESCENDING)
+                    .startAfter()
+            }
+                query.limit(16).get().addOnSuccessListener {
+                    val allDocumentSnapshot = it.documents
+
+                    for (documentSnapshot in allDocumentSnapshot) {
+
+                        val productId = documentSnapshot.id
+                        val productName = documentSnapshot.getString("book_title").toString()
+                        val productImgList:ArrayList<String> = documentSnapshot.get("productImage_List") as ArrayList<String>
+                        val priceOriginal = documentSnapshot.getLong("price_original")!!.toLong()
+                        val priceSelling = documentSnapshot.getLong("price_selling")!!.toLong()
+                        val productAddedOn = documentSnapshot.getTimestamp("PRODUCT_ADDED_ON")!!
+                        resultList.add(GridModel(productId, productName, productImgList, priceOriginal, priceSelling,productAddedOn.toDate()))
+
+                    }
+                    HomeCacheClass.isNewArrivalReachLast = allDocumentSnapshot.size < 16 // limit is 10
+
+                    HomeCacheClass.newArrivalProductList.addAll(resultList)
+                    HomeCacheClass.isNewArrivalExist = true
+                    adapter1.list = HomeCacheClass.newArrivalProductList
+
+                    if (resultList == null ){
+                        adapter1.notifyItemRangeInserted(0,resultList.size)
+                    }else{
+                        adapter1.notifyItemRangeInserted(HomeCacheClass.newArrivalProductList.size-1,resultList.size)
+                    }
+
+
+                    if (allDocumentSnapshot.isNotEmpty()){
+                        val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                        HomeCacheClass.lastResult = lastR
+                        HomeCacheClass.times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                    }
+
 
             }.addOnFailureListener {
                 Log.e("HorizontalViewModel","${it.message}")

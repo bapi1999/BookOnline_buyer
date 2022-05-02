@@ -68,14 +68,13 @@ class HomeFragment : Fragment() {
         homeRecycler.adapter = homeAdapter
 
 
-
         getHomeUiList()
 
-        swipeRefreshLayout.setOnRefreshListener {
+//        swipeRefreshLayout.setOnRefreshListener {
 //            swipeRefreshLayout.isRefreshing = true
 //            loadUi()
 //            refreshFragment()
-        }
+//        }
 
 
 
@@ -99,7 +98,8 @@ class HomeFragment : Fragment() {
                         binding.progressBar2.visibility = View.GONE
 
                     }else{
-                       paginateData(uiViewLIst,totalCount,mod)
+                        Log.e("List","last item reached")
+                        paginateData(uiViewLIst,totalCount,mod)
                         binding.progressBar2.visibility = View.VISIBLE
                     }
 
@@ -112,14 +112,6 @@ class HomeFragment : Fragment() {
 
 
     }
-
-//    private fun refreshFragment(){
-//        val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
-//        navController.run {
-//            popBackStack()
-//            navigate(R.id.homeFragment)
-//        }
-//    }
 
     private fun getHomeUiList() {
         firebaseDatabase.child("HomeUI").get()

@@ -95,6 +95,7 @@
                 android:id="@+id/strip_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:visibility="gone"
                 android:background="@color/purple_50"
                 app:srcCompat="@drawable/as_facebook_native_ads"
                 />

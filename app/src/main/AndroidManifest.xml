@@ -21,6 +21,12 @@
         android:theme="@style/Theme.BookOnline"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".activities.HelpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.donation.SpecialGiftsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ViewAllProductActivity"
             android:exported="false" />
         <activity

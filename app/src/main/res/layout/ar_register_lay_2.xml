@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
+
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -57,8 +58,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_input"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -82,6 +81,13 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
+        <CheckBox
+            android:id="@+id/checkBox5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/agree_terms_condition"
+            android:textSize="12sp" />
+
     </LinearLayout>
 
 
@@ -90,15 +96,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:text="Email or Password is incorrect"
+        android:text="error"
         android:textColor="@color/red_a700"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
 
     <Button
@@ -119,6 +123,7 @@
         app:layout_constraintTop_toBottomOf="@+id/error_message_text" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
@@ -146,6 +151,66 @@
             android:textColor="@color/viewAll"
             android:textSize="17sp"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/terms_condition_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/terms_condition"
+            android:textSize="12sp"
+            android:textColor="@color/viewAll"
+            android:gravity="center"
+            android:padding="@dimen/dimen_4dp"/>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/grey_400"
+            />
+
+        <TextView
+            android:id="@+id/privacy_policy_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Privacy policy"
+            android:textSize="12sp"
+            android:textColor="@color/viewAll"
+            android:gravity="center"
+            android:padding="@dimen/dimen_4dp"/>
+
+        <View
+            android:id="@+id/divider5"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/grey_400" />
+
+        <TextView
+            android:id="@+id/return_policy_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Return policy"
+            android:textSize="12sp"
+            android:textColor="@color/viewAll"
+            android:gravity="center"
+            android:padding="@dimen/dimen_4dp"/>
     </LinearLayout>
 
 
