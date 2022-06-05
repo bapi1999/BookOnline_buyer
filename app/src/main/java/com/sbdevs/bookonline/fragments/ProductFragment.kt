@@ -33,8 +33,8 @@ import com.google.firebase.dynamiclinks.ktx.component2
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.user.CartActivity
 import com.sbdevs.bookonline.activities.user.ProceedOrderActivity
-import com.sbdevs.bookonline.activities.SearchActivity
 import com.sbdevs.bookonline.activities.donation.AllDonationActivity
+import com.sbdevs.bookonline.activities.java.SearchActivity2
 import com.sbdevs.bookonline.activities.user.SellerShopActivity
 import com.sbdevs.bookonline.adapters.ProductImgAdapter
 import com.sbdevs.bookonline.adapters.ProductReviewAdapter
@@ -54,10 +54,8 @@ import kotlinx.coroutines.tasks.await
 class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     private var _binding: FragmentProductBinding? = null
     private val binding get() = _binding!!
-
     private var firebaseFirestore = Firebase.firestore
-
-    private lateinit var addToCartBtn: LinearLayout
+    private lateinit var addToCartBtn: Button
     lateinit var buyNowBtn: Button
     lateinit var fabBtn: FloatingActionButton
     private val gone = View.GONE
@@ -70,7 +68,6 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     lateinit var cartBadgeText: TextView
 
     private var wishList: ArrayList<String> = ArrayList()
-    private var fbWishList: ArrayList<String> = ArrayList()
 
     private var sendingList: ArrayList<CartModel> = ArrayList()
     private var totalPrice: Int = 0
@@ -116,7 +113,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         _binding = FragmentProductBinding.inflate(inflater, container, false)
 
         // Initialize the Audience Network SDK
-        AudienceNetworkAds.initialize(requireContext());
+        AudienceNetworkAds.initialize(requireContext())
         val adId = resources.getString(R.string.fb_native_ad)
         nativeAd =  NativeAd(requireContext(), adId)
 
@@ -126,8 +123,6 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         productImgViewPager = binding.lay1.productImgViewPager
 
 
-
-        val intent = requireActivity().intent
 //        productId ="2022_01_06T22_50_02_682LgDXu4pnoRfxNJgF8bQrhN8Faxt2"
 //        productId ="5VtYiOejv8ZRaLjDJwCN"
         productId = arguments?.getString("productId").toString().trim()
@@ -210,8 +205,12 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.backBtn2.setOnClickListener {
+            requireActivity().finish()
+        }
+
         binding.searchBtn.setOnClickListener {
-            val intent = Intent(requireContext(), SearchActivity::class.java)
+            val intent = Intent(requireContext(), SearchActivity2::class.java)
             startActivity(intent)
         }
 
@@ -225,6 +224,22 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
             } else {
                 loginDialog.show(childFragmentManager, "custom login dialog")
 
+            }
+        }
+
+        binding.lay3.qtyPlusBtn.setOnClickListener {
+            val qty =  binding.lay3.enterQuantityInput.editText?.text.toString().toInt()
+            val newQty = qty+1
+            binding.lay3.enterQuantityInput.editText?.setText("$newQty")
+        }
+
+        binding.lay3.qtyMinesBtn.setOnClickListener {
+            val qty =  binding.lay3.enterQuantityInput.editText?.text.toString().toInt()
+            val newQty = qty-1
+            if (newQty<1){
+                binding.lay3.enterQuantityInput.editText?.setText("1")
+            }else{
+                binding.lay3.enterQuantityInput.editText?.setText("$newQty")
             }
         }
 
@@ -256,11 +271,11 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         })
 
 
-        binding.lay51.gotoSellerShop.setOnClickListener {
-            val sellerIntent = Intent(requireContext(), SellerShopActivity::class.java)
-            sellerIntent.putExtra("sellerId", sellerId)
-            startActivity(sellerIntent)
-        }
+//        binding.lay51.gotoSellerShop.setOnClickListener {
+//            val sellerIntent = Intent(requireContext(), SellerShopActivity::class.java)
+//            sellerIntent.putExtra("sellerId", sellerId)
+//            startActivity(sellerIntent)
+//        }
 
         binding.donateBtn.setOnClickListener {
             val donationIntent = Intent(requireContext(), AllDonationActivity::class.java)
@@ -335,22 +350,22 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
 
         addToCartBtn.setOnClickListener { it1 ->
+            addToCartBtn.isEnabled = false
             val currentUser= Firebase.auth.currentUser
             if (currentUser == null) {
                 loginDialog.show(childFragmentManager, "custom login dialog")
             } else {
                 if (ALREADY_ADDED_TO_CART) {
                     Snackbar.make(it1, "Already added to cart", Snackbar.LENGTH_SHORT).show()
+                    addToCartBtn.isEnabled = true
 
                 } else {
                     val dbcart = SharedDataClass.dbCartList
 
                     if (dbcart.size == 12) {
-                        Snackbar.make(
-                            it1,
-                            "Only 12 product can be added to cart",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        Snackbar.make(it1, "Only 12 product can be added to cart", Snackbar.LENGTH_SHORT).show()
+                        addToCartBtn.isEnabled = true
+
                     } else {
 
                         val listMap: MutableMap<String, Any> = HashMap()
@@ -364,12 +379,14 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                         cartBadgeText.visibility = visible
                         cartBadgeText.text = dbcart.size.toString()
 
-                        val snack =
-                            Snackbar.make(it1, "Successfully added to cart", Snackbar.LENGTH_SHORT)
+                        val snack = Snackbar.make(it1, "Successfully added to cart", Snackbar.LENGTH_SHORT)
+
                         firebaseFirestore.collection("USERS").document(currentUser.uid)
-                            .collection("USER_DATA")
-                            .document("MY_CART").update(cartmap).addOnSuccessListener {
+                            .collection("USER_DATA").document("MY_CART")
+                            .update(cartmap).addOnSuccessListener {
                                 snack.show()
+                                ALREADY_ADDED_TO_CART = true
+                                addToCartBtn.isEnabled = true
 
                             }.addOnFailureListener {
                                 Log.e("AddToCart", "${it.message}", it.cause)
@@ -386,7 +403,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         buyNowBtn.setOnClickListener {
             val currentUser= Firebase.auth.currentUser
             val quantityString = enterQuantityInput.editText!!.text.toString().trim()
-            var qty: Long
+            val qty: Long
             if (currentUser != null) {
 
                 if (quantityString.isEmpty()) {
@@ -403,8 +420,8 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                 }
 
                 val intentProceedOrderActivity =
-                    Intent(requireContext(), ProceedOrderActivity::class.java);
-                intentProceedOrderActivity.putExtra("From_To", 2);
+                    Intent(requireContext(), ProceedOrderActivity::class.java)
+                intentProceedOrderActivity.putExtra("From_To", 2)
                 //todo: 1=> MyCart / 2=> BuyNow
                 intentProceedOrderActivity.putParcelableArrayListExtra("productList", sendingList)
                 intentProceedOrderActivity.putExtra("total_price", (totalPrice * qty.toInt()))
@@ -451,8 +468,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
     override fun onResume() {
         super.onResume()
-        SharedDataClass.currentACtivity = 2
-        SharedDataClass.product_id = productId
+
 
     }
 
@@ -468,10 +484,10 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
             override fun onAdLoaded(p0: Ad?) {
                 // Race condition, load() called again before last ad was displayed
                 if (nativeAd == null || nativeAd != p0) {
-                    return;
+                    return
                 }
                 // Inflate Native Ad into Container
-                inflateAd(nativeAd!!);
+                inflateAd(nativeAd!!)
             }
 
             override fun onAdClicked(p0: Ad?) {
@@ -493,7 +509,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         nativeAd!!.loadAd(
             nativeAd!!.buildLoadAdConfig()
                 .withAdListener(nativeAdListener)
-                .build());
+                .build())
     }
 
     private fun inflateAd(nativeAd: NativeAd) {
@@ -543,7 +559,6 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
 
     private suspend fun getProductData(productId: String) {
         val lay2 = binding.lay2
-        val lay4 = binding.lay4
         val lay5 = binding.lay5
         val lay6 = binding.lay6
         val layR = binding.layRating
@@ -589,13 +604,13 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     dbStockQty = stock.toInt()
 
                     if (productReturn == "No Replacement Policy") {
-                        val imgview = binding.replacementPolicyImg
+                        val imgview = binding.lay21.replacementPolicyImg
                         imgview.imageTintList =
                             AppCompatResources.getColorStateList(requireContext(), R.color.red_700)
                         Glide.with(requireContext()).load(R.drawable.ic_outline_cancel_24)
                             .into(imgview)
                     }
-                    binding.replacementPolicyText.text = productReturn
+                    binding.lay21.replacementPolicyText.text = productReturn
 
                     val deliveryCharge1 = if (priceSelling >= 500) {
                         0L
@@ -603,7 +618,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                         40L
                     }
 
-                    getSellerName(sellerId)
+//                    getSellerName(sellerId)
 
                     sendingList.add(
                         CartModel(
@@ -644,6 +659,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     val queryList: List<String> = productName.lowercase().split(" ")
 
                     recommendedList.addAll(queryList)
+                    recommendedList.remove("")
 
                     totalAmount = priceSelling.toInt()
                     totalPrice = priceSelling.toInt()
@@ -677,6 +693,8 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                         stock > 5 -> {
                             lay2.stockState.visibility = gone
                             lay2.stockQuantity.visibility = gone
+                            lay2.stockState.text = "available"
+                            lay2.stockState.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.grey_600))
                         }
                         stock in 1..5 -> {
                             lay2.stockState.visibility = visible
@@ -686,6 +704,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                         }
                         stock == 0L -> {
                             lay2.stockState.text = "out of stock"
+                            lay2.stockState.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.red_500))
                             lay2.stockQuantity.visibility = gone
                             addToCartBtn.isEnabled = false
                             addToCartBtn.backgroundTintList =
@@ -697,8 +716,12 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     }
 
 // todo layout 2
+                    if (description.isEmpty()){
+                        lay5.productDescriptionText.text = "No Description"
+                    }else{
+                        lay5.productDescriptionText.text = description
+                    }
 
-                    lay4.productDetailsText.text = description
 
                     //todo layout 3
                     lay5.writerName.text = bookWriter
@@ -710,8 +733,38 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     } else {
                         lay5.printDate.text = bookPrintDate.toString()
                     }
-                    lay5.bookType.text = bookType
-                    lay5.bookCondition.text = bookCondition
+                    when(bookType){
+                        "new_printed"->{
+                            lay5.bookType.text = "New Book"
+                        }
+                        "old_printed"->{
+                            lay5.bookType.text = "New Book"
+                        }
+                        "used"->{
+                            lay5.bookType.text = "Used Book"
+                        }
+                        "refurbished"->{
+                            lay5.bookType.text = "Refurbished"
+                        }
+                    }
+
+                    when(bookCondition){
+                        "new_condition"->{
+                            lay5.bookCondition.text = "Good"
+                        }
+                        "almost_new"->{
+                            lay5.bookCondition.text = "Almost New"
+                        }
+                        "slightly_damaged"->{
+                            lay5.bookCondition.text = "Slightly Damaged"
+                        }
+                        "fully_damaged"->{
+                            lay5.bookCondition.text = "Fully Damaged"
+                        }
+                    }
+
+
+
                     lay5.pageCount.text = bookPageCount
                     lay5.isbnNumber.text = isbnNumber
                     lay5.bookDimension.text = bookDimension
@@ -755,19 +808,24 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
             }.await()
     }
 
-    private fun getSellerName(seller: String) {
-        firebaseFirestore.collection("USERS")
-            .document(seller)
-            .collection("SELLER_DATA")
-            .document("BUSINESS_DETAILS")
-            .get()
-            .addOnSuccessListener {
-                val sellName: String = it.getString("Business_name")!!
-                binding.lay51.sellerName.text = sellName
-            }.addOnFailureListener {
-                Log.e("Get seller name", "${it.message}", it.cause)
-            }
-    }
+
+
+//todo this seller shop is being disabled to reduce database cost================================
+//    private fun getSellerName(seller: String) {
+//        firebaseFirestore.collection("USERS")
+//            .document(seller)
+//            .collection("SELLER_DATA")
+//            .document("BUSINESS_DETAILS")
+//            .get()
+//            .addOnSuccessListener {
+//                val sellName: String = it.getString("Business_name")!!
+//                binding.lay51.sellerName.text = sellName
+//            }.addOnFailureListener {
+//                Log.e("Get seller name", "${it.message}", it.cause)
+//            }
+//    }
+
+
 
     private fun getReview(productID: String) {
         firebaseFirestore.collection("PRODUCTS").document(productID)
@@ -853,7 +911,7 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
         productImageFragment.arguments = args
 
 
-        val fragmentManager =
+
             parentFragmentManager.commit {
                 setReorderingAllowed(true)
                 add(R.id.fragment_container, productImageFragment)
@@ -913,37 +971,42 @@ class ProductFragment : Fragment(), ProductImgAdapter.MyOnItemClickListener {
                     )
                 }
 
+                allSearchList.addAll(searchList)
+
+                if (allSearchList.isEmpty()) {
+                    binding.lay7.container.visibility = gone
+
+                } else {
+                    binding.lay7.container.visibility = visible
+
+                    recommendedProductAdapter.list = allSearchList
+
+                    if (lastResult == null) {
+
+                        recommendedProductAdapter.notifyItemRangeInserted(0, searchList.size)
+                    } else {
+                        recommendedProductAdapter.notifyItemRangeInserted(
+                            allSearchList.size - 1,
+                            searchList.size
+                        )
+                    }
+
+
+                }
+
                 val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
                 lastResult = lastR
                 times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
 
             } else {
                 isRecyclerEnd = true
+                if (allSearchList.isEmpty()) {
+                    binding.lay7.container.visibility = gone
 
-            }
-
-            allSearchList.addAll(searchList)
-
-            if (allSearchList.isEmpty()) {
-                binding.lay7.container.visibility = gone
-
-            } else {
-                binding.lay7.container.visibility = visible
-
-                recommendedProductAdapter.list = allSearchList
-
-                if (lastResult == null) {
-
-                    recommendedProductAdapter.notifyItemRangeInserted(0, searchList.size)
-                } else {
-                    recommendedProductAdapter.notifyItemRangeInserted(
-                        allSearchList.size - 1,
-                        searchList.size
-                    )
                 }
-
-
             }
+
+
             loadingDialog.dismiss()
             binding.progressBar2.visibility = gone
 

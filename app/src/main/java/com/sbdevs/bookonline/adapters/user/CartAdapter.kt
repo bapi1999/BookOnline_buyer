@@ -4,6 +4,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,8 +23,8 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
 
 
     interface MyOnItemClickListener{
-        fun onItemClick(position: Int)
-        fun onQuantityChange(position: Int,textView: TextView)
+        fun onItemRemoveClick(position: Int)
+        fun onQuantityChange(position: Int,textView: TextView,quantity:Long,type:String)
     }
 
 
@@ -57,8 +58,10 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
         private val quantitiesTxt:TextView = itemView.findViewById(R.id.quantity)
         private val deliveryChargeText:TextView = itemView.findViewById(R.id.delivery_charge)
         private val outofstockIcon:ImageView = itemView.findViewById(R.id.outofstock_icon)
-        private val viewBtn:AppCompatButton = itemView.findViewById(R.id.view_details)
-        private val removeBtn:LinearLayout = itemView.findViewById(R.id.remove_btn)
+        private val viewBtn:Button = itemView.findViewById(R.id.view_details)
+        private val removeBtn:Button = itemView.findViewById(R.id.remove_btn)
+        private val qtyPlusBtn:ImageView = itemView.findViewById(R.id.qtyPlusBtn)
+        private val qtyMinusBtn:ImageView = itemView.findViewById(R.id.qtyMinesBtn)
         private val quantityContainer:LinearLayout = itemView.findViewById(R.id.quantity_container)
         private val warningsAndStockContainer:LinearLayout = itemView.findViewById(R.id.warningAndStockContainer)
         private val stockQuantityText:TextView = itemView.findViewById(R.id.stock_quantity)
@@ -76,12 +79,16 @@ class CartAdapter(var list:ArrayList<CartModel>, val listener: MyOnItemClickList
 
 
             removeBtn.setOnClickListener {
-                listener.onItemClick(absoluteAdapterPosition)
+                listener.onItemRemoveClick(absoluteAdapterPosition)
 
             }
 
-            quantityContainer.setOnClickListener {
-                listener.onQuantityChange(absoluteAdapterPosition,quantitiesTxt)
+            qtyPlusBtn.setOnClickListener {
+                listener.onQuantityChange(absoluteAdapterPosition,quantitiesTxt,quantity,"+ve",)
+            }
+
+            qtyMinusBtn.setOnClickListener {
+                listener.onQuantityChange(absoluteAdapterPosition,quantitiesTxt,quantity,"-ve")
             }
 
             deliveryChargeText.text = deliveryCharge.toString()

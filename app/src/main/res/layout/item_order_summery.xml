@@ -61,7 +61,7 @@
         <ImageView
             android:layout_width="17dp"
             android:layout_height="17sp"
-            android:src="@drawable/ic_baseline_currency_rupee_24"
+            android:src="@drawable/ic_rupee_24"
             app:tint="@color/grey_900" />
         <TextView
             android:id="@+id/product_price"

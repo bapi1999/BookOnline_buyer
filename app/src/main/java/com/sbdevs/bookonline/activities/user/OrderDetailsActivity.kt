@@ -1,15 +1,18 @@
 package com.sbdevs.bookonline.activities.user
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.Toast
+import android.view.ViewGroup
+import android.widget.*
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -39,7 +42,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     private lateinit var productId: String
 
-    private lateinit var orderID: String
+    private lateinit var documentId: String
     private var sellerID: String = ""
 
     private lateinit var productName: String
@@ -66,22 +69,42 @@ class OrderDetailsActivity : AppCompatActivity() {
 
 
     private val loadingDialog = LoadingDialog()
+    lateinit var cancelDialog : Dialog
+    private lateinit var refundText:TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrderDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        orderID = intent.getStringExtra("orderID")!!
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        documentId = intent.getStringExtra("orderID")!!
 
         loadingDialog.show(supportFragmentManager, "show")
 
+
+        cancelDialog = Dialog(this)
+        cancelDialog.setContentView(R.layout.le_order_cancel_dialog)
+        cancelDialog.setCancelable(true)
+//        cancelDialog.window!!.setBackgroundDrawable(AppCompatResources.getDrawable(this,R.drawable.s_shape_bg_2))
+        cancelDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        refundText = cancelDialog.findViewById(R.id.refund_message_text)
+        cancelDialogFunction(cancelDialog)
+
+
         lifecycleScope.launch(Dispatchers.IO) {
-            getMyOrder(orderID)
+            getMyOrder(documentId)
 
 
         }
 
+
+        val actionBar = binding.toolbar
+        setSupportActionBar(actionBar)
+//        supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.title = "Order details"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         productImage = binding.lay1.productImage
 
@@ -98,20 +121,50 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun cancelDialogFunction(dialog: Dialog){
+        val yesBtn:Button = dialog.findViewById(R.id.yesBtn)
+        val noBtn:Button = dialog.findViewById(R.id.noBtn)
+
+
+
+
+        noBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        yesBtn.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                dialog.dismiss()
+                loadingDialog.show(supportFragmentManager, "show")
+                cancelOrder(documentId, sellerID)
+
+            }
+        }
+
+    }
+
     override fun onStart() {
         super.onStart()
 
         binding.cancelOrderBtn.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                cancelOrder(orderID, sellerID)
-            }
+
+            cancelDialog.show()
+
+
 
         }
         binding.returnOrderBtn.setOnClickListener {
-            returnOrder(orderID, sellerID)
+            returnOrder(documentId, sellerID)
         }
 
-        binding.lay1.viewDetails.setOnClickListener {
+        binding.lay1.viewProductBtn.setOnClickListener {
             val productIntent = Intent(this, ProductActivity::class.java)
             productIntent.putExtra("productId", productId)
             startActivity(productIntent)
@@ -126,13 +179,13 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     }
 
-    private suspend fun getMyOrder(orderID: String) {
+    private suspend fun getMyOrder(orderId: String) {
 
         val lay1 = binding.lay1
         val lay2 = binding.lay2
 
 
-        val orderRef = firebaseFirestore.collection("ORDERS").document(orderID)
+        val orderRef = firebaseFirestore.collection("ORDERS").document(orderId)
 
         orderRef.get()
             .addOnSuccessListener {
@@ -151,10 +204,17 @@ class OrderDetailsActivity : AppCompatActivity() {
                     val orderedQty = it.getLong("ordered_Qty")!!
                     val status = it.get("status").toString()
                     onlinePayment = it.getBoolean("Online_payment")!!
+                    if (onlinePayment){
+                        refundText.visibility = visible
+                    }else{
+                        refundText.visibility = gone
+                    }
+
 
                     val productIdDB = it.get("productId").toString()
                     val tracKingId = it.get("ID_Of_Tracking").toString()
                     sellerID = it.get("ID_Of_SELLER").toString()
+                    val idOfOrder = it.get("ID_Of_ORDER").toString()
 
                     val isOrderCanceled = it.getBoolean("is_order_canceled")!!
                     val orderCanceledBy = it.get("order_canceled_by").toString()
@@ -241,6 +301,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                             val returnT = returnedTime!!.toDate()
                             binding.cancelOrderBtn.visibility = gone
                             binding.returnOrderBtn.visibility = gone
+                            binding.orderRatingContainer.visibility = visible
                         }
                         else -> {
 
@@ -254,6 +315,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                         binding.cancelOrderBtn.visibility = gone
                         binding.returnOrderBtn.visibility = gone
                         binding.orderTrackContainer.visibility = gone
+                        binding.orderRatingContainer.visibility = gone
                         orderCanceled(cancelT, orderCanceledBy, cancellationReason)
                         binding.statusTxt.text = "Canceled"
                         binding.cancellationContainer.visibility = visible
@@ -263,7 +325,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     }
 
 
-                    binding.orderIdTxt.text = orderID
+                    binding.orderIdTxt.text = idOfOrder
                     binding.trakingIdTxt.text = tracKingId
                     binding.orderedDateText.text = daysAgo
 
@@ -364,6 +426,11 @@ class OrderDetailsActivity : AppCompatActivity() {
         val cancelMap: MutableMap<String, Any> = HashMap()
         cancelMap["status"] = "canceled"
         cancelMap["is_order_canceled"] = true
+        if (onlinePayment){
+            cancelMap["refund_online_payment"] = false
+        }else{
+            Log.i("this order is","COD")
+        }
         cancelMap["order_canceled_by"] = "Customer"
         cancelMap["Time_canceled"] = FieldValue.serverTimestamp()
 
@@ -371,22 +438,26 @@ class OrderDetailsActivity : AppCompatActivity() {
 
         orderRef.update(cancelMap)
             .addOnSuccessListener {
+                val cancelT = Date()
+                binding.cancelOrderBtn.visibility = gone
+                binding.returnOrderBtn.visibility = gone
+                binding.orderTrackContainer.visibility = gone
+                binding.statusTxt.text = "Canceled"
+
+                binding.lay0.cancellationTime.text = TimeDateAgo().msToTimeAgo(this, cancelT)
+                binding.lay0.cancellationText.text = "Order is canceled by customer"
+
                 sendNotification(productName, imageUrl, "canceled", sellerID, orderID)
                 if (onlinePayment){
                     sendRefundRequest()
                 }
 
+                loadingDialog.dismiss()
+            }
+            .addOnFailureListener{
+                Log.e("Order cancel error","${it.message}")
+                loadingDialog.dismiss()
             }.await()
-
-
-        val cancelT = Date()
-        binding.cancelOrderBtn.visibility = gone
-        binding.returnOrderBtn.visibility = gone
-        binding.orderTrackContainer.visibility = gone
-        binding.statusTxt.text = "Canceled"
-
-        binding.lay0.cancellationTime.text = TimeDateAgo().msToTimeAgo(this, cancelT)
-        binding.lay0.cancellationText.text = "Order is canceled by customer"
 
     }
 
@@ -395,10 +466,14 @@ class OrderDetailsActivity : AppCompatActivity() {
         refundMap["Buyer_Id"] = user!!.uid
         refundMap["Time"] = FieldValue.serverTimestamp()
         refundMap["Money_refunded"]=false
-        refundMap["Order_id"] = orderID
+        refundMap["Order_id"] = documentId
 
         firebaseFirestore.collection("REFUND_REQUEST").add(refundMap)
-            .addOnSuccessListener {  }
+            .addOnSuccessListener {
+                Log.e("sendRefundRequest","Success")
+            }.addOnFailureListener {
+                Log.e("sendRefundRequest error","${it.message}")
+            }
     }
 
     private fun sendProductReturnRequest(){
@@ -406,10 +481,15 @@ class OrderDetailsActivity : AppCompatActivity() {
         refundMap["Buyer_Id"] = user!!.uid
         refundMap["Time"] = FieldValue.serverTimestamp()
         refundMap["requested_to_delivery_partner"]=false
-        refundMap["Order_id"] = orderID
+        refundMap["Order_id"] = documentId
 
         firebaseFirestore.collection("PRODUCT_RETURN_REQUEST").add(refundMap)
-            .addOnSuccessListener {  }
+            .addOnSuccessListener {
+                Log.e("sendProductReturnRequest","Success")
+            }.addOnFailureListener{
+                Log.e("sendRefundRequest error","${it.message}")
+
+            }
     }
 
     private fun returnOrder(orderID: String, sellerID: String) {
@@ -508,8 +588,8 @@ class OrderDetailsActivity : AppCompatActivity() {
                     rating1 = it.getLong("rating_Star_1")!!
                     totalRatingsNumber = it.getLong("rating_total")!!
                 } else {
-                    binding.lay1.viewDetails.isEnabled = false
-                    binding.lay1.viewDetails.backgroundTintList =
+                    binding.lay1.viewProductBtn.isEnabled = false
+                    binding.lay1.viewProductBtn.backgroundTintList =
                         AppCompatResources.getColorStateList(this, R.color.grey_600)
                 }
 

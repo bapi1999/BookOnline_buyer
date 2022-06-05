@@ -51,9 +51,9 @@ class AllReviewFragment : Fragment() {
 
         productID = arguments?.getString("productId").toString()
 
-        avgRating = arguments!!.getString("avgRating").toString()
-        totalRating = arguments!!.getInt("totalRating").toInt()
-        ratingNum = arguments!!.getStringArrayList("ratingCount") as ArrayList<String>
+        avgRating = requireArguments().getString("avgRating").toString()
+        totalRating = requireArguments().getInt("totalRating").toInt()
+        ratingNum = requireArguments().getStringArrayList("ratingCount") as ArrayList<String>
 
 
         if (productID != null) {

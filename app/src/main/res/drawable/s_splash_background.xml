@@ -2,13 +2,17 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="@color/splash"/>
+            <gradient
+                android:startColor="@color/white"
+
+                android:endColor="@color/white"
+                android:angle="270"/>
         </shape>
     </item>
     <item android:gravity="center"
         android:height="200dp"
-        android:width="355dp"
-        android:drawable="@drawable/book_online_buyer_splash">
+        android:width="200dp"
+        android:drawable="@drawable/ic_splash">
 
     </item>
 

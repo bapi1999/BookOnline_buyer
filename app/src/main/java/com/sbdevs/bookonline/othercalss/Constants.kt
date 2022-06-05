@@ -1,5 +1,8 @@
 package com.sbdevs.bookonline.othercalss
 
+import androidx.annotation.Keep
+
+@Keep
 class Constants {
     companion object {
         const val BASE_URL = "https://fcm.googleapis.com/fcm/send"

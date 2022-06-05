@@ -277,7 +277,7 @@
             <ImageView
                 android:layout_width="17dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_baseline_currency_rupee_24"
+                android:src="@drawable/ic_rupee_24"
                 app:tint="@color/grey_900" />
 
         </LinearLayout>
@@ -357,7 +357,7 @@
                 android:maxLines="1"
                 android:text="0.0"
                 android:textSize="17sp"
-                app:drawableStartCompat="@drawable/ic_baseline_currency_rupee_24" />
+                app:drawableStartCompat="@drawable/ic_rupee_24" />
 
             <View
                 android:id="@+id/divider15"
@@ -378,7 +378,7 @@
                 android:maxLines="1"
                 android:text="1000.0"
                 android:textSize="17sp"
-                app:drawableStartCompat="@drawable/ic_baseline_currency_rupee_24" />
+                app:drawableStartCompat="@drawable/ic_rupee_24" />
         </LinearLayout>
 
 

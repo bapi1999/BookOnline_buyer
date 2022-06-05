@@ -3,12 +3,11 @@ package com.sbdevs.bookonline.fragments.user
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.sbdevs.bookonline.activities.MainActivity
 import com.sbdevs.bookonline.databinding.FragmentCongratulationBinding
@@ -52,9 +51,9 @@ class CongratulationFragment : Fragment() {
             override fun handleOnBackPressed() {
 
                 val intent = Intent(context,MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
                 activity!!.finish()
-//                Toast.makeText(requireContext(),"from congratulation fragment", Toast.LENGTH_SHORT).show()
 
             }
         })

@@ -27,6 +27,7 @@ import com.sbdevs.bookonline.activities.WebViewActivity
 import com.sbdevs.bookonline.databinding.FragmentLoginBinding
 import com.sbdevs.bookonline.databinding.FragmentSignUpBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
+import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,7 +55,7 @@ class SignUpFragment : Fragment() {
         savedInstanceState: Bundle?): View {
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
-        nameInput = binding.signupLay.emailInput
+        nameInput = binding.signupLay.nameInput
         email = binding.signupLay.emailInput
         errorTxt = binding.signupLay.errorMessageText
         pass = binding.signupLay.passwordInput
@@ -178,8 +179,8 @@ class SignUpFragment : Fragment() {
                 .addOnSuccessListener {
                     lifecycleScope.launch(Dispatchers.IO){
                         retrieveUserToken()
-                        createPaths()
-
+                        createPaths(it.user!!.uid)
+                        SharedDataClass.newLogin2 = true
                     }
                 }
                 .addOnFailureListener {
@@ -187,13 +188,14 @@ class SignUpFragment : Fragment() {
                     errorTxt.text = "${it.message}"
                     errorTxt.visibility = View.VISIBLE
                     Log.e("login user","${it.message}")
+                    SharedDataClass.newLogin2 = false
                 }
 
 
 
         }
     }
-    private suspend fun createPaths(){
+    private suspend fun createPaths(userId:String){
 
         val timstamp1 = FieldValue.serverTimestamp()
 
@@ -214,6 +216,10 @@ class SignUpFragment : Fragment() {
         userMap["signup_date"] = timstamp1
         userMap["profile"] = ""
         userMap["new_notification_user"] = timstamp1
+        userMap["userId"] = userId
+        userMap["my_donation_coins"] = 0
+        userMap["total_donation_point"] = 0
+        userMap["total_donation_qty"] = 0
 
         if (firebaseAuth.currentUser!=null){
             val currentUser = firebaseAuth.currentUser!!.uid
@@ -261,7 +267,7 @@ class SignUpFragment : Fragment() {
                 val token:String = task.result
                 val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
 
-                FirebaseDatabase.getInstance().getReference("Buyer_Tokens")
+                FirebaseDatabase.getInstance().getReference("Tokens")
                     .child(userId)
                     .setValue(token)
 

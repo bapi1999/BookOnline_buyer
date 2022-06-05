@@ -185,7 +185,7 @@ class EditAccountFragment : Fragment() {
 
     private fun uploadThumbnail() {
         val mRef: StorageReference =
-            storageReference1.child("image/" + user!!.uid + "/").child(generateImageName())
+            storageReference1.child("image/" + user!!.uid + "/"+"profile/").child(generateImageName())
         fileUri?.let {
             mRef.putFile(it)
                 .addOnCompleteListener {
@@ -207,28 +207,6 @@ class EditAccountFragment : Fragment() {
 
         }
     }
-
-//    fun GetFileName(uri: Uri): String? { // for image names
-//        var result: String? = null
-//        if (uri.scheme == "content") {
-//            val cursor: Cursor = getContentResolver().query(uri, null, null, null, null)
-//            try {
-//                if (cursor != null && cursor.moveToFirst()) {
-//                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-//                }
-//            } finally {
-//                cursor.close()
-//            }
-//        }
-//        if (result == null) {
-//            result = uri.path
-//            val cut = result!!.lastIndexOf('/')
-//            if (cut != -1) {
-//                result = result.substring(cut + 1)
-//            }
-//        }
-//        return result
-//    }
 
     private fun generateImageName(): String {
 

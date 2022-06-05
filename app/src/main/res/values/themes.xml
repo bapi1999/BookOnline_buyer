@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.BookOnline" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.BookOnline" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
@@ -13,13 +13,13 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-<!--        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>-->
+        <item name="android:statusBarColor" >@color/statusBarColor</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+
     </style>
 
-    <style name="Theme.BookOnline.Donate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.BookOnline.Donate" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/orange_400</item>
         <item name="colorPrimaryVariant">@color/orange_800</item>
@@ -31,13 +31,26 @@
         <item name="colorOnSecondary">@color/grey_500</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-<!--        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>-->
-        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:statusBarColor" >@color/orange_800</item>
     </style>
 
+
+    <style name="Theme.BookOnline.Seller" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/teal_600</item>
+        <item name="colorPrimaryVariant">@color/teal_900</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_500</item>
+        <item name="colorSecondaryVariant">@color/teal_500</item>
+        <item name="colorOnSecondary">@color/grey_500</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:statusBarColor" >@color/teal_900</item>
+    </style>
 
 
 
@@ -45,9 +58,17 @@
 
     <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="android:statusBarColor" >@color/white</item>
         <item name="android:windowBackground">@drawable/s_splash_background</item>
-        <!-- Customize your theme here. -->
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
+    <style name="SellerSplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimaryVariant">@color/teal_500</item>
+        <item name="android:statusBarColor" >@color/teal_500</item>
+        <item name="android:windowBackground">@drawable/sl_splash_background</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
 
@@ -77,6 +98,11 @@
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
         <item name="color">@color/white</item>
+    </style>
+
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_box_stroke_color</item>
+        <item name="boxStrokeWidth">2dp</item>
     </style>
 
 </resources>

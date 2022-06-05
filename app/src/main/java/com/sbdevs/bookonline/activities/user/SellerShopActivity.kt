@@ -1,6 +1,7 @@
 package com.sbdevs.bookonline.activities.user
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,10 @@ class SellerShopActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySellerShopBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         val lay1 = binding.lay1
         val lay2 = binding.lay2
         val lay3 = binding.lay3
@@ -89,6 +95,7 @@ class SellerShopActivity : AppCompatActivity() {
             val searchIntent = Intent(this,
                 SearchActivity2::class.java)
             startActivity(searchIntent)
+
         }
     }
 

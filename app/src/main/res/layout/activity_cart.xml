@@ -21,30 +21,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/Theme.BookOnline" >
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/books_online_buyer_logo"
-                app:tint="@color/white" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="end"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/search_btn"
-                    android:layout_width="45dp"
-                    android:layout_height="match_parent"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:src="@drawable/ic_search_24"
-                    app:tint="@color/white" />
-
-
-            </LinearLayout>
+            app:popupTheme="@style/Theme.BookOnline"
+            app:titleTextColor="@color/white">
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -162,7 +140,7 @@
         <ImageView
             android:layout_width="23dp"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_baseline_currency_rupee_24"
+            android:src="@drawable/ic_rupee_24"
             app:tint="@color/grey_900" />
 
         <TextView

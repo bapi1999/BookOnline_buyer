@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Business details"
+        android:text="Shipping address"
         android:textSize="15sp"
         android:textStyle="bold"
         android:textColor="@color/grey_600"
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="kolkata, 700028"
+            android:text="town, pin code"
             android:textSize="15sp"
             android:maxLines="1"
             android:ellipsize="end"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:textSize="15sp"
-            android:text="westbengal"
+            android:text="state"
             android:textColor="@color/black"
            />
 

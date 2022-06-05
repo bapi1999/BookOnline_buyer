@@ -324,6 +324,7 @@
         android:background="@drawable/s_shape_bg_1"
         android:backgroundTint="@color/purple_500"
         android:gravity="center"
+        android:visibility="invisible"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

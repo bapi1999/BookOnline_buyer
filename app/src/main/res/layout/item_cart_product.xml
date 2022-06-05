@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="6dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +59,7 @@
             android:layout_width="15dp"
             android:layout_height="match_parent"
             android:layout_marginStart="4dp"
-            android:src="@drawable/ic_baseline_currency_rupee_24"
+            android:src="@drawable/ic_rupee_24"
             app:tint="@color/grey_900" />
 
         <TextView
@@ -92,8 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/s_border_1"
-        android:backgroundTint="@color/purple_500"
+
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,16 +111,38 @@
             android:textColor="@color/black"
             android:textSize="14sp" />
 
+        <ImageView
+            android:id="@+id/qtyMinesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_baseline_horizontal_rule_24"
+            app:tint="@color/purple_500" />
+
         <TextView
             android:id="@+id/quantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:background="@drawable/s_border_1"
+            android:backgroundTint="@color/purple_500"
             android:text="1"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/qtyPlusBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            app:tint="@color/purple_500"
+            app:srcCompat="@drawable/ic_add_24" />
     </LinearLayout>
 
     <ImageView
@@ -130,7 +151,7 @@
         android:layout_height="100dp"
         android:background="#77FFFFFF"
         android:padding="10dp"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/product_image"
         app:layout_constraintEnd_toEndOf="@+id/product_image"
         app:layout_constraintStart_toStartOf="@+id/product_image"
@@ -144,21 +165,22 @@
         android:layout_marginBottom="1dp"
         android:background="@color/white"
         android:orientation="horizontal"
+        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider14">
 
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/view_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/grey_50"
+            android:background="#00000000"
             android:padding="5dp"
             android:text="View Product"
             android:textAllCaps="false"
-            android:textColor="@color/grey_600"
+            android:textColor="@color/indigo_900"
             android:textSize="14sp" />
 
         <View
@@ -166,32 +188,22 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             android:background="?android:attr/listDivider" />
 
-        <LinearLayout
+        <Button
             android:id="@+id/remove_btn"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/grey_50"
-            android:gravity="center">
+            android:background="#00000000"
+            android:padding="5dp"
+            android:text="Remove"
+            android:textAllCaps="false"
+            android:textColor="@color/red_a700"
+            android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/textView38"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="6dp"
-                android:drawablePadding="4dp"
-                android:padding="5dp"
-                android:text="@string/remove"
-                android:textColor="@color/red_700"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:drawableStartCompat="@drawable/ic_remove_24"
-                app:drawableTint="@color/red_700" />
-        </LinearLayout>
+
     </LinearLayout>
 
     <View
@@ -213,7 +225,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
@@ -229,7 +241,7 @@
             android:layout_width="15dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
-            android:src="@drawable/ic_baseline_currency_rupee_24"
+            android:src="@drawable/ic_rupee_24"
             app:tint="@color/grey_700" />
 
         <TextView
@@ -261,7 +273,7 @@
             android:layout_height="wrap_content"
             android:text="Order quantity exceeds Stock Quantity"
             android:textColor="@color/red_600"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/stock_quantity"
@@ -269,7 +281,7 @@
             android:layout_height="wrap_content"
             android:text="Only 1 left in stock"
             android:textColor="@color/grey_700"
-            android:textSize="14sp"
+            android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent" />
 
 

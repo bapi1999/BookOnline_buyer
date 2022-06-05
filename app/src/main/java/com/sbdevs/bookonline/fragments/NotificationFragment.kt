@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 import kotlin.collections.ArrayList
 
 class NotificationFragment : Fragment() {
@@ -92,33 +90,16 @@ class NotificationFragment : Fragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                //direction integers: -1 for up, 1 for down, 0 will always return false.
-
-
-//                if (!recyclerView.canScrollVertically(1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-//                    Toast.makeText(requireContext(), "Last", Toast.LENGTH_SHORT).show()
-//
-//                }
-
-
                 if (!recyclerView.canScrollVertically(RecyclerView.FOCUS_RIGHT) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // end scrolling: do what you want here and after calling the function change the value of boolean
-//                        Toast.makeText(requireContext(),"bottom reached",Toast.LENGTH_SHORT).show()
                     if (isReachLast) {
                         Log.e("Query item", "Last item is reached already")
-
                     } else {
-
                         Log.e("last query", "${lastResult.toString()}")
                         binding.progressBar.visibility = View.VISIBLE
                         getNotificationFormDB()
                     }
-
                 }
             }
-
-
-
         })
 
     }
@@ -130,11 +111,11 @@ class NotificationFragment : Fragment() {
 
         val query = if (lastResult == null) {
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("NOTIFICATIONS")
+                .collection("USER_NOTIFICATIONS")
                 .orderBy("date", Query.Direction.DESCENDING)
         } else {
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("NOTIFICATIONS")
+                .collection("USER_NOTIFICATIONS")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .startAfter(times)
         }
@@ -153,7 +134,7 @@ class NotificationFragment : Fragment() {
                     val date = item.getTimestamp("date")!!.toDate()
                     val description: String = item.getString("description").toString()
                     val image: String = item.getString("image").toString()
-                    val order_id: String = item.getString("order_id")!!
+                    val orderId: String = item.getString("order_id")!!
                     val seen: Boolean = item.getBoolean("seen")!!
 
                     newNotiList.add(
@@ -162,35 +143,18 @@ class NotificationFragment : Fragment() {
                             date,
                             description,
                             image,
-                            order_id,
+                            orderId,
                             seen
                         )
                     )
 
 
                 }
-                isReachLast = allDocumentSnapshot.size < 10 // limit is 10
+                notificationList.addAll(newNotiList)
 
-
-            } else {
-                isReachLast = true
-            }
-
-
-
-
-
-            notificationList.addAll(newNotiList)
-
-            if (notificationList.isEmpty()) {
-                binding.emptyContainer.visibility = View.VISIBLE
-                binding.notificationRecycler.visibility = View.GONE
-            } else {
                 binding.emptyContainer.visibility = View.GONE
                 binding.notificationRecycler.visibility = View.VISIBLE
-
                 notificationAdapter.list = notificationList
-
 
                 if (lastResult == null) {
                     notificationAdapter.notifyItemRangeInserted(0, newNotiList.size)
@@ -198,11 +162,19 @@ class NotificationFragment : Fragment() {
                     notificationAdapter.notifyItemRangeInserted(notificationList.size - 1, newNotiList.size)
                 }
 
-//Todo- new approach =================================================================
                 val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
                 lastResult = lastR
                 times = lastR.getTimestamp("date")!!
 
+                isReachLast = allDocumentSnapshot.size < 10 // limit is 10
+
+
+            } else {
+                isReachLast = true
+                if (notificationList.isEmpty()) {
+                    binding.emptyContainer.visibility = View.VISIBLE
+                    binding.notificationRecycler.visibility = View.GONE
+                }
             }
 
             loadingDialog.dismiss()

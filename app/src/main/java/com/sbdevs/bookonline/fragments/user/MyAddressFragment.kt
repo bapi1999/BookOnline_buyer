@@ -6,12 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.adapters.user.MyAddressAddapter
 import com.sbdevs.bookonline.databinding.FragmentMyAddressBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
@@ -62,12 +64,25 @@ class MyAddressFragment : Fragment(), MyAddressAddapter.MyonItemClickListener {
 
 
         binding.addNewAddress.setOnClickListener {
-            val action = MyAddressFragmentDirections.actionMyAddressFragmentToAddAddressFragment()
-            findNavController().navigate(action)
+//            val action = MyAddressFragmentDirections.actionMyAddressFragmentToAddAddressFragment()
+//            findNavController().navigate(action)
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                add(R.id.fragment_container, AddAddressFragment())
+                addToBackStack("addAddress")
+            }
         }
 
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.continueBtn.setOnClickListener {
+            requireActivity().finish()
+        }
     }
 
 

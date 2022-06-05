@@ -7,14 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.activities.java.SearchFilterJavaActivity
 import com.sbdevs.bookonline.models.uidataclass.TopCategoryModel
 import com.squareup.picasso.Picasso
+import java.util.*
+import java.util.stream.Collectors
 
 class TopCategoryAdapter(var list: ArrayList<TopCategoryModel>) :
     RecyclerView.Adapter<TopCategoryAdapter.ViewHolder>() {
@@ -57,11 +56,20 @@ class TopCategoryAdapter(var list: ArrayList<TopCategoryModel>) :
                 .centerCrop()
                 .into(imageView)
 
+            val splitList= Arrays.asList<String>(
+                *actionString.lowercase(Locale.getDefault()).split(",").toTypedArray()
+            )
+            val queryList:ArrayList<String> = ArrayList()
+            queryList.addAll(splitList)
+
+
 
             itemView.setOnClickListener {
                 Log.e("Clicked","$categoryName")
                 val newIntent = Intent(itemView.context, SearchFilterJavaActivity::class.java)
-                newIntent.putExtra("query",actionString);
+                newIntent.putStringArrayListExtra("queryList",queryList)
+                newIntent.putExtra("from","ActionString");
+                newIntent.putExtra("queryTitle",categoryName);
                 itemView.context.startActivity(newIntent)
             }
         }

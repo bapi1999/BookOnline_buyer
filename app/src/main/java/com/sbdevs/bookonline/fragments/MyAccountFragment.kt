@@ -41,7 +41,6 @@ class MyAccountFragment : Fragment() {
     var profilePicture:String = ""
     var buyerName:String =""
 
-    private val loginDialog = LoginDialogFragment()
     private var loadingDialog = LoadingDialog()
     private val gone = View.GONE
     private val visible = View.VISIBLE
@@ -83,12 +82,15 @@ class MyAccountFragment : Fragment() {
         binding.lay1.imageView20.setOnClickListener {
             goToEditdFragment()
         }
-        binding.lay1.editProfileBtn.setOnClickListener{
-           goToEditdFragment()
+        binding.lay1.editProfileBtn.setOnClickListener {
+            goToEditdFragment()
         }
 
         binding.notLoginLay.loginOrSignupBtn.setOnClickListener {
-            loginDialog.show(childFragmentManager,"inside my account")
+            val registerIntent = Intent(requireContext(), RegisterActivity::class.java)
+            registerIntent.putExtra("from", 2)// 1 = from splash/ 2 = from other class
+            startActivity(registerIntent)
+            SharedDataClass.newLogin1 = true
         }
 
 
@@ -134,7 +136,8 @@ class MyAccountFragment : Fragment() {
 
                     SharedDataClass.dbCartList.clear()
                     SharedDataClass.cartNumber = 0
-                    Toast.makeText(context,"logout",Toast.LENGTH_SHORT).show()
+                    SharedDataClass.dbWishList.clear()
+                    SharedDataClass.isSeller = false
 
                     binding.myAccountScroll.visibility = View.GONE
                     binding.notLoginContainer.visibility = View.VISIBLE

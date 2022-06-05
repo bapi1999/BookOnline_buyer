@@ -16,7 +16,6 @@
         app:contentInsetStartWithNavigation="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,15 +78,15 @@
                 layout="@layout/ar_seller_shop_lay_1"/>
 
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:visibility="gone"
-                >
-                <include android:id="@+id/lay2"
-                    layout="@layout/item_product_horizon_lay"/>
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/lay2"
+                    layout="@layout/item_product_horizon_lay" />
             </LinearLayout>
 
 
@@ -95,10 +94,9 @@
                 android:id="@+id/strip_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:visibility="gone"
                 android:background="@color/purple_50"
-                app:srcCompat="@drawable/as_facebook_native_ads"
-                />
+                android:visibility="gone"
+                app:srcCompat="@drawable/as_facebook_native_ads" />
 
 
             <LinearLayout

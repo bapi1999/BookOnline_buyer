@@ -10,9 +10,8 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.util.Log
-
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
-
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
@@ -27,18 +26,25 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private val myPreference = "ShowLoginPref"
     private val showLoginScreen = "ShowLoginScreen"
+    private  var show = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         sharedPreferences = getSharedPreferences(myPreference, MODE_PRIVATE)
-        val show = sharedPreferences.getBoolean(showLoginScreen,true)
+        show = sharedPreferences.getBoolean(showLoginScreen,true)
 
-        val currentUser = Firebase.auth.currentUser
-        if (currentUser == null) {
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (Firebase.auth.currentUser == null) {
             if (show){
                 val loginintent = Intent(this@SplashActivity, RegisterActivity::class.java)
                 loginintent.putExtra("from",1)// 1 = from splash/ 2 = from other class
@@ -59,9 +65,11 @@ class SplashActivity : AppCompatActivity() {
                     finish()
 
                 }catch (e:Exception){
+
                     withContext(Dispatchers.Main){
                         Toast.makeText(this@SplashActivity,e.message,Toast.LENGTH_LONG).show()
                     }
+
                 }
 
 
@@ -69,11 +77,6 @@ class SplashActivity : AppCompatActivity() {
 
         }
 
-
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
 }

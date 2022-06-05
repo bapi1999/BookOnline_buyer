@@ -5,9 +5,14 @@ import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -26,10 +31,16 @@ import com.sbdevs.bookonline.othercalss.SharedDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import com.sbdevs.bookonline.activities.donation.AllDonationActivity
 import com.sbdevs.bookonline.activities.donation.MyDonationActivity
 import com.sbdevs.bookonline.activities.java.SearchActivity2
 import com.sbdevs.bookonline.activities.user.CartActivity
+import com.sbdevs.bookonline.fragments.HomeFragment
+import com.sbdevs.bookonline.fragments.ProductFragment
+import com.sbdevs.bookonline.seller.activities.SellerMainActivity
+import com.sbdevs.bookonline.seller.activities.SellerRegisterActivity
+import com.sbdevs.bookonline.seller.activities.SlSplashActivity
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -49,27 +60,30 @@ class MainActivity : AppCompatActivity() {
     lateinit var cartBadgeText: TextView
     lateinit var notificationBadgeText: TextView
     private val loginDialog = LoginDialogFragment()
-    private lateinit var timeStamp:Timestamp
     private val gone = View.GONE
     private val visible = View.VISIBLE
-    private var isSeller = false
 
     private lateinit var userImage: ImageView
     private lateinit var userName: TextView
     private lateinit var userMail: TextView
     private lateinit var profileText: TextView
     private lateinit var donationCoinText: TextView
+    private lateinit var donateBtn:LinearLayout
+    private lateinit var sellBtn:LinearLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         val actionBar = binding.toolbar
-
+        setSupportActionBar(actionBar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -85,39 +99,53 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
 
-        setSupportActionBar(actionBar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
 
         setupActionBarWithNavController(navController, appBarConfiguration)
 //        (this as AppCompatActivity?)!!.supportActionBar!!.show()
         binding.navView.setupWithNavController(navController)
-        val header = binding.navView.getHeaderView(0)
 
+
+
+        val header = binding.navView.getHeaderView(0)
         userImage = header.findViewById(R.id.user_image)
         userName = header.findViewById(R.id.nav_header_txt)
         userMail = header.findViewById(R.id.user_mail)
         profileText = header.findViewById(R.id.profile_text)
-
         donationCoinText = header.findViewById(R.id.donationCoinText)
+        donateBtn = header.findViewById(R.id.donate_Btn)
+        sellBtn = header.findViewById(R.id.seller_btn)
+        donateBtn.setOnClickListener{
+            val newIntent = Intent(this,AllDonationActivity::class.java)
+            startActivity(newIntent)
+            closeDrawer()
+        }
+        sellBtn.setOnClickListener{
+
+            if (Firebase.auth.currentUser != null){
+                val newIntent = Intent(this,SlSplashActivity::class.java)
+                startActivity(newIntent)
+            }else{
+                loginDialog.show(supportFragmentManager, "custom login dialog")
+            }
+
+            closeDrawer()
+
+        }
 
 
         lifecycleScope.launch(Dispatchers.IO) {
-
-            getUsername(userName)
-
+            getUsername()
         }
 
 
         notificationBadgeText = binding.layNotify.notificationBadgeCounter
         cartBadgeText = binding.layCart.cartBadgeCounter
-        val v = SharedDataClass
 
+
+        val v = SharedDataClass
         v.getCartListForOptionMenu()
         v.getWishList()
-
-        //Toast.makeText(this,"OnCreate",Toast.LENGTH_SHORT).show()
 
 
 
@@ -148,12 +176,11 @@ class MainActivity : AppCompatActivity() {
                     closeDrawer()
                 }
                 R.id.myAccountFragment ->{
-//                    if (Firebase.auth.currentUser != null){
-//
-//                    }else{
-//                        loginDialog.show(supportFragmentManager, "custom login dialog")
-//                    }
-                    navController.navigate(R.id.myAccountFragment)
+                    if (Firebase.auth.currentUser != null){
+                        navController.navigate(R.id.myAccountFragment)
+                    }else{
+                        loginDialog.show(supportFragmentManager, "custom login dialog")
+                    }
                     closeDrawer()
                 }
                 R.id.myOrderFragment ->{
@@ -167,22 +194,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.notificationFragment ->{
                     if (Firebase.auth.currentUser != null){
                         navController.navigate(R.id.notificationFragment)
-                    }else{
-                        loginDialog.show(supportFragmentManager, "custom login dialog")
-                    }
-                    closeDrawer()
-                }
-
-                R.id.donate_menu ->{
-                    val donationIntent = Intent(this, AllDonationActivity::class.java)
-                    startActivity(donationIntent)
-                    closeDrawer()
-                }
-
-                R.id.my_donations ->{
-                    if (Firebase.auth.currentUser != null){
-                        val myDonationIntent = Intent(this, MyDonationActivity::class.java)
-                        startActivity(myDonationIntent)
                     }else{
                         loginDialog.show(supportFragmentManager, "custom login dialog")
                     }
@@ -209,7 +220,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.help ->{
                     if (Firebase.auth.currentUser != null){
-
+                        val myIntent = Intent(this, HelpActivity::class.java)
+                        startActivity(myIntent)
                     }else{
                         loginDialog.show(supportFragmentManager, "custom login dialog")
                     }
@@ -227,10 +239,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        if(SharedDataClass.newLogin){
-            val user = Firebase.auth.currentUser
-            SharedDataClass.newLogin = false
-        }
 
         binding.searchBtn.setOnClickListener {
             val intent = Intent(this, SearchActivity2::class.java)
@@ -262,9 +270,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        if ( SharedDataClass.newLogin1 && SharedDataClass.newLogin2){
+
+            SharedDataClass.getCartListForOptionMenu()
+            SharedDataClass.getWishList()
+            getUsername()
+            SharedDataClass.newLogin1 = false
+            SharedDataClass.newLogin2 = false
+        }else{
+            Log.e("not new","Login")
+        }
+
+
         lifecycleScope.launch(Dispatchers.Main) {
 
             if (Firebase.auth.currentUser == null){
+                userName.text = getString(R.string.you_aren_t_logged_in)
+                userMail.text = getString(R.string.you_aren_t_logged_in)
+                profileText.text = "A"
+
                 cartBadgeText.visibility = gone
             }else{
                 if (SharedDataClass.dbCartList.size == 0){
@@ -288,15 +313,13 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        SharedDataClass.currentACtivity = 1
-        SharedDataClass.product_id = ""
-
     }
 
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
 
     private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
@@ -349,47 +372,47 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getUsername(textView: TextView) {
+    private fun getUsername() {
         val currentUser = Firebase.auth.currentUser
         if (currentUser != null){
             firebaseFirestore.collection("USERS").document(currentUser.uid)
                 .get().addOnSuccessListener {
-                    val email = it.getString("email").toString()
-                    val name = it.getString("name").toString()
-                    val profile = it.getString("profile").toString()
-                    val timeStamp1:Timestamp = (it.get("new_notification_user") as Timestamp?)!!
-                    val donationCoin:Long = it.getLong("my_donation_coins")!!.toLong()
+
+                        val email = it.getString("email").toString()
+                        val name = it.getString("name").toString()
+                        val profile = it.getString("profile").toString()
+                        SharedDataClass.isSeller = it.getBoolean("Is_seller")!!
+                        val timeStamp1:Timestamp = (it.get("new_notification_user") as Timestamp?)!!
+                        val donationCoin:Long = it.getLong("my_donation_coins")!!.toLong()
 
 
-                    userName.text = name
-                    userMail.text = email
+                        userName.text = name
+                        userMail.text = email
 
-                    donationCoinText.text = "$donationCoin dc"
+                        donationCoinText.text = "$donationCoin C"
 
-                    if (profile.isNullOrEmpty()){
-                        profileText.visibility = visible
-                        val firstLetter = name.substring( 0 , 1 ).uppercase(Locale.getDefault())
-                        profileText.text = firstLetter
-                    }else{
-                        profileText.visibility = View.INVISIBLE
-                        Picasso.get()
-                            .load(profile)
-                            .placeholder(R.drawable.as_square_placeholder)
-                            .resize(100, 100)
-                            .centerCrop()
-                            .into(userImage)
+                        if (profile.isNullOrEmpty()){
+                            profileText.visibility = visible
+                            val firstLetter = name.substring( 0 , 1 ).uppercase(Locale.getDefault())
+                            profileText.text = firstLetter
+                        }else{
+                            profileText.visibility = View.INVISIBLE
+                            Picasso.get()
+                                .load(profile)
+                                .placeholder(R.drawable.as_square_placeholder)
+                                .resize(100, 100)
+                                .centerCrop()
+                                .into(userImage)
+                        }
+
+                        getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
                     }
 
 
-
-
-
-                    getNotificationForOptionMenu(timeStamp1,notificationBadgeText)
-
-
-                }
         }else{
-            textView.text = getString(R.string.you_aren_t_logged_in)
+            userName.text = getString(R.string.you_aren_t_logged_in)
+            userMail.text = getString(R.string.you_aren_t_logged_in)
+            profileText.text = "A"
         }
 
     }

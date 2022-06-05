@@ -2,13 +2,16 @@ package com.sbdevs.bookonline.activities.user
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -60,12 +63,20 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
         binding = ActivityCartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         loadingDialog.show(supportFragmentManager,"Show")
 
         recyclerView = binding.cartRecycler
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.isNestedScrollingEnabled = false
+
+        val actionBar = binding.toolbar
+        setSupportActionBar(actionBar)
+//        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.title = "My Cart"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
 
@@ -100,6 +111,13 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
         }
 
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
@@ -247,17 +265,50 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
 
     }
 
-    override fun onItemClick(position: Int) {
+    override fun onItemRemoveClick(position: Int) {
+        removeItemFromCart(position)
+
+    }
+
+    override fun onQuantityChange(position: Int, textView: TextView, quantity: Long, type: String) {
+
+        val cartModelAtIndex = sendingList[position]
+        val stockQty = cartModelAtIndex.stockQty
+        if (type=="-ve"){
+            val newQty = quantity-1
+            if(newQty<1){
+                removeItemFromCart(position)
+            }else{
+                updateProductQuantityInsideDB(cartModelAtIndex.productId,newQty,position,textView)
+            }
+
+        }else{
+            //+ve
+
+            val newQty = quantity+1
+            if(newQty>stockQty){
+                Toast.makeText(this,"Order quantity exceeds Stock quantity", Toast.LENGTH_LONG).show()
+            }else{
+                updateProductQuantityInsideDB(cartModelAtIndex.productId,newQty,position,textView)
+            }
+        }
+
+    }
+
+
+    private fun removeItemFromCart(position: Int){
         cartList.removeAt(position)
         sendingList.removeAt(position)
         SharedDataClass.dbCartList.removeAt(position)
-
         adapter.notifyItemRemoved(position)
 
         val cartmap:MutableMap<String,Any> = HashMap()
         cartmap["cart_list"] = cartList
-        firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
-            .document("MY_CART").update(cartmap).addOnSuccessListener {
+
+        firebaseFirestore.collection("USERS").document(user!!.uid)
+            .collection("USER_DATA")
+            .document("MY_CART").update(cartmap)
+            .addOnSuccessListener {
 
                 Log.i("product remover from cart","successful")
 
@@ -273,52 +324,6 @@ class CartActivity : AppCompatActivity(), CartAdapter.MyOnItemClickListener {
             }.addOnFailureListener {
                 Log.e("product remover from cart","Failed: ${it.message}")
             }
-
-
-
-    }
-
-    override fun onQuantityChange(position: Int, textView: TextView) {
-
-        val qtyDialog : Dialog = Dialog(this)
-        qtyDialog.setContentView(R.layout.ar_qualtity_dialog)
-        qtyDialog.setCancelable(false)
-        val cartModelAtIndex = sendingList[position]
-        qtyDialog.window!!.setBackgroundDrawable(AppCompatResources.getDrawable(this, R.drawable.s_shape_bg_2)
-        )
-        qtyDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        qtyDialog.show()
-
-        val enterQuantity: TextInputLayout = qtyDialog.findViewById(R.id.enter_quantity_input)
-        val cancelBtn: TextView = qtyDialog.findViewById(R.id.cancel_button)
-        val continueBtn: TextView = qtyDialog.findViewById(R.id.continue_to_cart)
-
-
-        cancelBtn.setOnClickListener {
-            qtyDialog.dismiss()
-        }
-
-
-        continueBtn.setOnClickListener {
-
-            val qty = enterQuantity.editText!!.text.toString().trim()
-
-            if (qty.isNotEmpty() && qty.toInt() != 0 ){
-                if(qty.toInt()>cartModelAtIndex.stockQty){
-                    Toast.makeText(this,"Order quantity exceeds Stock quantity", Toast.LENGTH_LONG).show()
-
-                }else{
-
-                    updateProductQuantityInsideDB(cartModelAtIndex.productId,qty.toLong(),position,textView)
-                    qtyDialog.dismiss()
-
-
-
-                }
-
-                //Todo- only change the orderQty and all other field remain same
-            }
-        }
 
     }
 

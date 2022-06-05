@@ -99,7 +99,7 @@
         <ImageView
             android:layout_width="17dp"
             android:layout_height="17sp"
-            android:src="@drawable/ic_baseline_currency_rupee_24"
+            android:src="@drawable/ic_rupee_24"
             app:tint="@color/grey_900"
             android:layout_marginEnd="2dp"/>
 
@@ -154,7 +154,7 @@
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/white"
+        android:background="@color/red_50"
         android:elevation="2dp"
         android:gravity="center"
         android:orientation="horizontal"
@@ -165,17 +165,22 @@
         app:layout_constraintTop_toBottomOf="@+id/product_image"
         app:layout_constraintVertical_bias="0.499">
 
+
+        <ImageView
+            android:id="@+id/imageView22"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:srcCompat="@drawable/ic_remove_24"
+            app:tint="@color/red_500"/>
+
         <TextView
             android:id="@+id/textView38"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:drawablePadding="4dp"
             android:padding="5dp"
             android:text="@string/remove"
-            android:textColor="@color/grey_700"
-            android:textSize="17sp"
-            app:drawableTint="@color/grey_700"
-            app:drawableStartCompat="@drawable/ic_remove_24" />
+            android:textColor="@color/red_500"
+            android:textSize="17sp"/>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

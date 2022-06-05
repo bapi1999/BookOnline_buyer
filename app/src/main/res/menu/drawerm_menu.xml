@@ -39,7 +39,7 @@
             android:title="Orders" />
         <item
             android:id="@+id/myAccountFragment"
-            android:icon="@drawable/ic_outline_account_circle_24"
+            android:icon="@drawable/ic_account_circle_outline_24"
             android:title="My Account" />
 
 
@@ -51,19 +51,19 @@
 
     </group>
 
-    <group>
+<!--    <group>-->
 
-        <item
-            android:id="@+id/donate_menu"
-            android:icon="@drawable/as_donate"
-            android:title="Donate" />
+<!--        <item-->
+<!--            android:id="@+id/donate_menu"-->
+<!--            android:icon="@drawable/as_donate"-->
+<!--            android:title="Donate" />-->
 
-        <item
-            android:id="@+id/my_donations"
-            android:icon="@drawable/ic_baseline_how_to_vote_24"
-            android:title="My Donations" />
+<!--        <item-->
+<!--            android:id="@+id/my_donations"-->
+<!--            android:icon="@drawable/ic_baseline_how_to_vote_24"-->
+<!--            android:title="My Donations" />-->
 
-    </group>
+<!--    </group>-->
     <group android:id="@+id/group2">
 
         <item

@@ -17,7 +17,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="Product Name"
-        android:textColor="@color/grey_900"
+        android:textColor="@color/textNormalDeep"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -31,14 +31,14 @@
         android:layout_gravity="center"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:drawableLeft="@drawable/ic_label_important_24"
         android:drawablePadding="5dp"
-        android:drawableTint="@color/purple_500"
         android:text="Type"
         android:textColor="@color/purple_500"
         android:textSize="17sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout13" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout13"
+        app:drawableTint="@color/purple_500"
+        app:drawableLeftCompat="@drawable/ic_label_important_24" />
 
     <LinearLayout
         android:id="@+id/linearLayout13"
@@ -55,7 +55,7 @@
             android:id="@+id/imageView13"
             android:layout_width="17dp"
             android:layout_height="20dp"
-            app:srcCompat="@drawable/ic_baseline_currency_rupee_24"
+            app:srcCompat="@drawable/ic_rupee_24"
             app:tint="@color/black" />
 
         <TextView
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1213"
-            android:textColor="@color/black"
+            android:textColor="@color/textNormalDeep"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -120,7 +120,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="5dp"
             android:text="ratings"
-            android:textColor="@color/grey_700"
+            android:textColor="@color/textNormalSlight"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -144,7 +144,7 @@
             android:layout_height="wrap_content"
             android:text="Stock Qty:"
             android:textAllCaps="false"
-            android:textColor="@color/grey_900"
+            android:textColor="@color/textNormalDeep"
             android:textSize="14sp"
             />
 
@@ -165,7 +165,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="(0 product in stock)"
-            android:textColor="@color/light_black" />
+            android:textColor="@color/textNormalDeep" />
     </LinearLayout>
 
 

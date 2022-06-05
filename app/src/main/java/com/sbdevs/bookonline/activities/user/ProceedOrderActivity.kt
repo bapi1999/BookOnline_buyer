@@ -1,6 +1,7 @@
 package com.sbdevs.bookonline.activities.user
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.sbdevs.bookonline.R
@@ -10,6 +11,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -74,7 +76,8 @@ class ProceedOrderActivity : AppCompatActivity() {
         binding = ActivityProceedOrderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         recyclerView = binding.summerRecycler
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -128,11 +131,8 @@ class ProceedOrderActivity : AppCompatActivity() {
             val intent = Intent(this, PaymentMethodActivity::class.java)
 
             if (thereIsAddressError){
-
-                continueToPaymentBtn.isEnabled = false
-                continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.grey_600)
+                Toast.makeText(this,"Add a nw address before continue",Toast.LENGTH_LONG).show()
             }else{
-                continueToPaymentBtn.isEnabled = true
                 continueToPaymentBtn.backgroundTintList = AppCompatResources.getColorStateList(this,R.color.purple_500)
                 loadingDialog.show(supportFragmentManager,"Show")
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -140,7 +140,7 @@ class ProceedOrderActivity : AppCompatActivity() {
                     delay(1000L)
                     withContext(Dispatchers.Main){
                         intent.putExtra("total_amount",amountToPay2)
-                        intent.putExtra("deliveryCharge",deliveryCharge)
+                        intent.putExtra("deliveryCharge",deliveryCharge.toInt())
                         intent.putExtra("netSellingPrice",netSellingPrice)
                         intent.putParcelableArrayListExtra("productList",newReceivedList)
                         intent.putParcelableArrayListExtra("OutOfStockProductList",outOfStockItemList)

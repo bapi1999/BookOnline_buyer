@@ -1,16 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.BookOnline" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.BookOnline" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primaryLightColor</item>
-        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorOnPrimary">@color/light_black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryColor</item>
         <item name="colorOnSecondary">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >@color/statusBarColor</item>
         <!-- Customize your theme here. -->
     </style>
+
+<!--    <style name="Theme.BookOnline.Donate" parent="Theme.MaterialComponents.Light.NoActionBar">-->
+<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/orange_400</item>-->
+<!--        <item name="colorPrimaryVariant">@color/orange_800</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
+
+<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
+<!--        <item name="colorSecondary">@color/orange_400</item>-->
+<!--        <item name="colorSecondaryVariant">@color/orange_400</item>-->
+<!--        <item name="colorOnSecondary">@color/grey_500</item>-->
+<!--        <item name="colorControlNormal">@color/white</item>-->
+<!--        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+<!--    </style>-->
+
 </resources>

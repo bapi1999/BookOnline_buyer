@@ -2,6 +2,8 @@ package com.sbdevs.bookonline.othercalss
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.ImageView
+import android.widget.TextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
@@ -18,26 +20,26 @@ class SharedDataClass {
         val database = Firebase.database("https://ecommerceapp2-ui-db-home.asia-southeast1.firebasedatabase.app/").reference
 
 
+        var newLogin1 = false// when clicked on loginDialog or MyAccount login/signupBtn
+        var newLogin2 = false// when login or signup
+
+
+
         var orderCameFrom = 0
         //1 = buy now / 2 = cart
-
         var cartNumber:Int = 0
         @SuppressLint("StaticFieldLeak")
         private val firebaseFirestore = Firebase.firestore
-        private val user = Firebase.auth.currentUser
-        var currentACtivity = 1 // 1 -> MainActivity, 2->ProductActivity
-        var product_id = ""
-        var newLogin = false
 
         var dbCartList:ArrayList<MutableMap<String, Any>> = ArrayList()
-        private var counter1 = 0
 
-
+        var isSeller:Boolean = false
         var dbWishList:ArrayList<String> = ArrayList()
 
 
 
         fun getCartListForOptionMenu() {
+            val user = Firebase.auth.currentUser
             if(user != null){
                 firebaseFirestore.collection("USERS").document(user.uid)
                     .collection("USER_DATA")
@@ -48,24 +50,18 @@ class SharedDataClass {
                             dbCartList = x as ArrayList<MutableMap<String, Any>>
                             if (dbCartList.isEmpty()) {
                                 Log.w("CartList","empty")
-                                //textView.visibility = View.GONE
                             } else {
-                                //textView.visibility = View.VISIBLE
                                 cartNumber = dbCartList.size
-                                //textView.text = dbCartList.size.toString()
                             }
                         }
-//                        else {
-//                            textView.visibility = View.GONE
-//                        }
+
 
                     }.addOnFailureListener {
                         Log.w("CartList","${it.message}")
                     }
 
             }else{
-                //textView.visibility = View.GONE
-                Log.w("CartList","User not logged in")
+                Log.e("CartList","User not logged in")
             }
 
         }
@@ -77,8 +73,10 @@ class SharedDataClass {
 
 
         fun getWishList(){
+            val user = Firebase.auth.currentUser
             if (user!= null){
-                firebaseFirestore.collection("USERS").document(user!!.uid).collection("USER_DATA")
+                firebaseFirestore.collection("USERS").document(user.uid)
+                    .collection("USER_DATA")
                     .document("MY_WISHLIST")
                     .get().addOnSuccessListener {
 
@@ -100,7 +98,7 @@ class SharedDataClass {
                         Log.e("WishList", "${it.message}",it.cause)
                     }
             }else{
-                Log.w("WishList","User not logged in")
+                Log.e("WishList","User not logged in")
             }
 
 

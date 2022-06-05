@@ -156,7 +156,7 @@ class PaymentFragment : Fragment() {
 
         Log.e("size of ","RL-${receivedList.size} / OOSL-${outOfStockItemList.size}")
         if (outOfStockItemList.size !=0){
-            st += "${outOfStockItemList.size} product is Out Of Stock \n"
+            st += "${outOfStockItemList.size} product(s) is/are Out Of Stock \n"
 
         }
 
@@ -498,12 +498,11 @@ class PaymentFragment : Fragment() {
     }
 
     private fun generateOrderID(): String {
-        val timeString = LocalDateTime.now().toString()
-        val userString = user!!.uid
-        val randomString: String = UUID.randomUUID().toString().substring(0, 2)
+        val userString = user!!.uid.substring(0, 3)
+        val randomId = (100000 until 1000000).random()
         val docBuilder: StringBuilder = StringBuilder()
-        docBuilder.append(timeString).append(userString).append(randomString)
-        val docName = docBuilder.toString().replace(".", "").replace("-", "").replace(":", "")
+        docBuilder.append(userString).append(randomId)
+        val docName = docBuilder.toString()
         return docName
     }
 
@@ -581,7 +580,7 @@ class PaymentFragment : Fragment() {
         val description = "($orderQuantity) product named ( $productName ) has been ordered"
         val title = "New Order"
 
-        database.getReference("Seller_Tokens").child(sellerId).get()
+        database.getReference("Tokens").child(sellerId).get()
             .addOnSuccessListener {snapShot ->
             val sellerToken = snapShot.value.toString()
 

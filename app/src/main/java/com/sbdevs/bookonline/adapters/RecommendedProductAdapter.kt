@@ -41,6 +41,7 @@ class RecommendedProductAdapter(var list: ArrayList<SearchModel>) :
 //            itemView.findViewById(R.id.mini_totalNumberOf_ratings)
 //        private val outOfStockIcon: ImageView = itemView.findViewById(R.id.outofstock_icon)
         private val bookTypeText: TextView = itemView.findViewById(R.id.book_type)
+        private val bookPrintYear: TextView = itemView.findViewById(R.id.book_print_year)
         private val bookConditionText: TextView = itemView.findViewById(R.id.product_condition)
 
         fun bind(model: SearchModel) {
@@ -55,7 +56,22 @@ class RecommendedProductAdapter(var list: ArrayList<SearchModel>) :
 
             val priceOriginal: Long = model.price_original
             val priceSelling: Long = model.price_selling
-            bookConditionText.text = model.book_condition
+
+            when(model.book_condition){
+                "new_condition"->{
+                    bookConditionText.text = "Condition: New"
+                }
+                "almost_new"->{
+                    bookConditionText.text = "Condition: Almost New"
+                }
+                "slightly_damaged"->{
+                    bookConditionText.text = "Condition: Slightly Damaged"
+                }
+                "fully_damaged"->{
+                    bookConditionText.text = "Condition: Fully Damaged"
+                }
+            }
+
 
             Picasso.get()
                 .load(url)
@@ -82,11 +98,24 @@ class RecommendedProductAdapter(var list: ArrayList<SearchModel>) :
 
             }
 
+            when(model.book_type){
+                "new_printed"->{
+                    bookTypeText.text = "Type: New Book"
+                }
+                "used"->{
+                    bookTypeText.text = "Type: Used Book"
+                }
+                "refurbished"->{
+                    bookTypeText.text = "Type: Refurbished"
+                }
+            }
+
 
             if (model.book_printed_ON == 0L) {
-                bookTypeText.text = "Type: ${model.book_type}"
+
+                bookPrintYear.visibility = View.INVISIBLE
             } else {
-                bookTypeText.text = "Type: ${model.book_type} (${model.book_printed_ON})"
+                bookPrintYear.text = "(${model.book_printed_ON})"
             }
         }
 

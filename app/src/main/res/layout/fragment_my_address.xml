@@ -64,14 +64,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         tools:listitem="@layout/item_mini_address_view"
-        app:layout_constraintBottom_toTopOf="@+id/continue_to_order_btn"
+        app:layout_constraintBottom_toTopOf="@+id/continue_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout1"
         />
 
     <Button
-        android:id="@+id/continue_to_order_btn"
+        android:id="@+id/continue_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

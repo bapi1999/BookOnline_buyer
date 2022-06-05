@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.ortiz.touchview.TouchImageView
+import com.github.chrisbanes.photoview.PhotoView
 import com.sbdevs.bookonline.R
 
 class ProductZoomImageAdapter(var productImgList: ArrayList<String>) :
@@ -29,7 +29,7 @@ class ProductZoomImageAdapter(var productImgList: ArrayList<String>) :
 
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val productImg:TouchImageView = itemView.findViewById(R.id.touch_image_view)
+        private val productImg:PhotoView = itemView.findViewById(R.id.touch_image_view)
 
         fun bind(url:String) {
 

@@ -1,0 +1,28 @@
+package com.sbdevs.bookonline.seller.models
+
+import com.google.firebase.Timestamp
+import java.util.*
+import kotlin.collections.HashMap
+
+data class SellerOrderModel (
+    //val orderTime:Date = Date(),
+    val documentId:String  = "",
+    val productThumbnail:String = "",
+    val productTitle:String = "",
+    var status:String = "",
+    val buyerId:String = "",
+    val ordered_Qty:Long = 0L,
+    val price:Long = 0L,
+    val onlinePayment:Boolean = false,
+
+    val address:MutableMap<String,Any> = HashMap(),
+
+    val Time_ordered:Date = Date(),
+    var Time_accepted:Date? = Date(),
+    val Time_packed:Date? = Date(),
+    val Time_shipped:Date? = Date(),
+    val Time_delivered:Date? = Date(),
+    val Time_returned:Date? = Date(),
+    val Time_canceled:Date? = Date()
+
+        )

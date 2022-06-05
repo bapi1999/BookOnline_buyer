@@ -8,14 +8,38 @@
     tools:context=".activities.user.OrderDetailsActivity">
 
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.BookOnline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/Theme.BookOnline"
+            app:titleTextColor="@color/white">
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
     <ScrollView
         android:id="@+id/order_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,8 +68,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
-                    android:text="New"
                     android:layout_weight="1"
+                    android:text="New"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textSize="17sp"
@@ -134,7 +158,7 @@
                     android:layout_width="13dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_outline_info_24"
-                    app:tint="@color/grey_700"/>
+                    app:tint="@color/grey_700" />
 
 
                 <TextView
@@ -145,6 +169,7 @@
                     android:textColor="@color/grey_700"
                     android:textSize="11sp" />
             </LinearLayout>
+
             <View
                 android:id="@+id/divider10"
                 android:layout_width="0dp"
@@ -152,6 +177,7 @@
                 android:layout_marginTop="8dp"
 
                 android:background="@color/grey_600" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -164,9 +190,9 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <include android:id="@+id/lay_0"
-                        layout="@layout/ar_order_details_lay_0"
-                        />
+                    <include
+                        android:id="@+id/lay_0"
+                        layout="@layout/ar_order_details_lay_0" />
                 </LinearLayout>
 
                 <include
@@ -184,9 +210,9 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <include android:id="@+id/lay_3"
-                        layout="@layout/ar_order_tracking_lay"
-                        />
+                    <include
+                        android:id="@+id/lay_3"
+                        layout="@layout/ar_order_tracking_lay" />
                 </LinearLayout>
 
                 <LinearLayout

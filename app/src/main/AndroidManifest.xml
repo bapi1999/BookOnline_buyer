@@ -6,20 +6,63 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher_2"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher_2_round"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookOnline"
         tools:ignore="LockedOrientationActivity">
+
+        <activity
+            android:name=".seller.activities.SlSplashActivity"
+            android:exported="false"
+            android:theme="@style/SellerSplashTheme"/>
+
+        <activity
+            android:name=".seller.activities.SlAddBankDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SellerNotificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.EditProductActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SlOrderDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SlEarningActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SlBusinessDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SlAddProductActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SellerMainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
+        <activity
+            android:name=".seller.activities.SellerRegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BookOnline.Seller" />
         <activity
             android:name=".activities.HelpActivity"
             android:exported="false" />
@@ -92,9 +135,6 @@
             android:exported="true" />
         <activity
             android:name=".activities.SearchFilterActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activities.SearchActivity"
             android:exported="true" />
         <activity
             android:name=".activities.user.EditAddressActivity"

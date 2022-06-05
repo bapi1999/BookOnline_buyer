@@ -1,0 +1,751 @@
+package com.sbdevs.bookonline.seller.activities
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.icu.text.SimpleDateFormat
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.os.Environment
+import android.util.Log
+import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.lifecycleScope
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.itextpdf.io.image.ImageData
+import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.colors.DeviceRgb
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.borders.Border
+import com.itextpdf.layout.element.*
+import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.ProductActivity
+import com.sbdevs.bookonline.databinding.ActivitySlOrderDetailsBinding
+import com.sbdevs.bookonline.databinding.SlArOrderDetailsLay4Binding
+import com.sbdevs.bookonline.fragments.LoadingDialog
+import com.sbdevs.bookonline.othercalss.Constants
+import com.sbdevs.bookonline.othercalss.TimeDateAgo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.util.*
+import kotlin.collections.HashMap
+
+class SlOrderDetailsActivity : AppCompatActivity() {
+    private lateinit var binding:ActivitySlOrderDetailsBinding
+
+    private val firebaseFirestore = Firebase.firestore
+    private val user = Firebase.auth.currentUser
+    private val database = Firebase.database
+    private var buyerToken = ""
+    private lateinit var viewProductBtn: Button
+
+    val visible= View.VISIBLE
+    val gone = View.GONE
+
+    private val STORAGE_CODE = 1001
+
+    private val loadingDialog = LoadingDialog()
+
+    private lateinit var buyerId:String
+    private lateinit var imageUrl:String
+    private lateinit var productName: String
+    private var onlinePayment = false
+
+    private lateinit var documentId: String
+    lateinit var lay4: SlArOrderDetailsLay4Binding
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySlOrderDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val actionBar = binding.toolbar
+        setSupportActionBar(actionBar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        documentId = intent.getStringExtra("documentId").toString().trim()
+        viewProductBtn = binding.lay1.viewProductBtn
+        loadingDialog.show(supportFragmentManager,"show")
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.IO){
+                getOrderDetails(documentId)
+            }
+
+        }
+        lay4 = binding.lay4
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+
+    override fun onStart() {
+        super.onStart()
+
+        binding.acceptOrderBtn.setOnClickListener {
+
+            loadingDialog.show(supportFragmentManager,"Show")
+
+            lay4.acceptImageButton.backgroundTintList = AppCompatResources
+                .getColorStateList(this@SlOrderDetailsActivity,R.color.successGreen)
+            lay4.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+
+            updateOrder(documentId,"accepted")
+            binding.statusTxt.text = "accepted"
+
+            binding.acceptOrderBtn.visibility = gone
+            binding.packedBtn.visibility = visible
+            binding.shippedBtn.visibility =gone
+
+            val title = "Order Accepted By seller"
+
+//            sendNotificationStep1()
+
+        }
+
+
+        binding.packedBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+
+            lay4.packedImageButton.backgroundTintList = AppCompatResources
+                .getColorStateList(this@SlOrderDetailsActivity,R.color.blueLink)
+            lay4.packedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+
+            updateOrder(documentId,"packed")
+
+            binding.statusTxt.text = "packed"
+            binding.acceptOrderBtn.visibility = gone
+            binding.packedBtn.visibility = gone
+            binding.shippedBtn.visibility =visible
+
+
+        }
+
+
+        binding.shippedBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+
+            lay4.shippedImageButton.backgroundTintList = AppCompatResources
+                .getColorStateList(this@SlOrderDetailsActivity,R.color.indigo_500)
+            lay4.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+
+            //send notification may produce runtime exception
+            binding.buttonContainer.visibility = gone
+            binding.statusTxt.text = "shipped"
+
+            updateOrder(documentId,"shipped")
+            sendNotification(buyerId,productName,imageUrl,"Shipped")
+        }
+
+        binding.cancelOrderBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+            cancelOrder(documentId)
+
+            binding.statusTxt.text = "canceled"
+
+            binding.buttonContainer.visibility = gone
+            binding.orderCancelText.visibility = visible
+        }
+
+        binding.lay3.billingInvoiceBtn.setOnClickListener {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                val permissions = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                requestPermissions(permissions,STORAGE_CODE)
+            }else{
+                billingInvoiceTable()
+            }
+
+        }
+
+    }
+
+
+
+    private fun getOrderDetails(orderId:String)  = CoroutineScope(Dispatchers.IO).launch{
+
+        firebaseFirestore.collection("ORDERS")
+            .document(orderId)
+            .get().addOnSuccessListener {
+
+                val orderTime: Date = it.getTimestamp("Time_ordered")!!.toDate()
+                imageUrl =  it.getString("productThumbnail").toString()
+                productName =  it.getString("productTitle").toString()
+                val status =  it.getString("status").toString()
+                val orderedQty =  it.getLong("ordered_Qty")
+
+                val unitSellingPrice =  it.getLong("PRICE_SELLING_UNIT")
+                val totalSellingPrice =  it.getLong("PRICE_SELLING_TOTAL")
+                val deliveryCharge =  it.getLong("PRICE_SHIPPING_CHARGE")
+                val totalPrice =  it.getLong("PRICE_TOTAL")
+
+                buyerId =  it.getString("ID_Of_BUYER").toString()
+                val tracKingId =  it.getString("ID_Of_Tracking")
+                val orderId =  it.getString("ID_Of_ORDER")
+                val sellerId =  it.getString("ID_Of_SELLER")
+                val productId =  it.getString("productId")
+
+                onlinePayment = it.getBoolean("Online_payment")!!
+                val isOrderCanceled = it.getBoolean("is_order_canceled")!!
+                val orderCanceledBy = it.get("order_canceled_by").toString()
+                val cancelletionReason = it.get("cancellation_reason").toString()
+
+                val acceptedTime= it.getTimestamp("Time_accepted")
+                val packedTime= it.getTimestamp("Time_packed")
+                val shippedTime= it.getTimestamp("Time_shipped")
+                val deliveredTime= it.getTimestamp("Time_delivered")
+                val returnedTime= it.getTimestamp("Time_returned")
+                val canceledTime= it.getTimestamp("Time_canceled")
+                //val acceptTime: Date = it.getTimestamp("Time_accepted")!!.toDate()
+
+                binding.orderIdTxt.text = orderId
+                binding.trackingIdTxt.text = tracKingId
+
+
+                binding.lay1.titleTxt.text = productName
+                binding.lay1.priceTxt.text = totalPrice.toString()
+                binding.lay1.productQuantity.text = orderedQty.toString()
+                Glide.with(this@SlOrderDetailsActivity)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.as_square_placeholder)
+                    .into(binding.lay1.productImage)
+
+                val timeAgo:String = TimeDateAgo().msToTimeAgo(this@SlOrderDetailsActivity,orderTime)
+                binding.orderedTimeText.text = timeAgo
+
+
+
+
+
+
+
+                val address:MutableMap<String,Any> = it.get("address") as MutableMap<String,Any>
+                //val address:MutableMap<String,Any> = it.get("address") as MutableMap<String,Any>
+
+                if (address.isEmpty()){
+
+                    binding.orderWrongText.visibility = visible
+                    binding.orderAddressContainer.visibility = gone
+
+
+                }
+
+                when(status){
+                    "new" ->{
+                        binding.acceptOrderBtn.visibility = visible
+                        binding.packedBtn.visibility = gone
+                        binding.shippedBtn.visibility =gone
+
+                        orderNew(orderTime)
+                        getSellerToken(buyerId)
+                    }
+                    "accepted" ->{
+
+
+                        binding.acceptOrderBtn.visibility = gone
+                        binding.packedBtn.visibility = visible
+                        binding.shippedBtn.visibility =gone
+                        binding.downloadsLabelContainer.visibility = visible
+                        //
+                        val acceptedT= acceptedTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptedT)
+
+
+
+                    }
+                    "packed" ->{
+
+                        binding.acceptOrderBtn.visibility = gone
+                        binding.packedBtn.visibility = gone
+                        binding.shippedBtn.visibility =visible
+
+                        val acceptedT= acceptedTime!!.toDate()
+                        val packT = packedTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptedT)
+                        orderPacked(packT)
+
+
+
+                    }
+
+                    "shipped"->{
+                        binding.buttonContainer.visibility = gone
+
+                        val acceptedT= acceptedTime!!.toDate()
+                        val packT = packedTime!!.toDate()
+                        val shippedT = shippedTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptedT)
+                        orderPacked(packT)
+                        orderShipped(shippedT)
+
+                    }
+                    "delivered"->{
+
+                        binding.buttonContainer.visibility = gone
+
+                        val acceptT= acceptedTime!!.toDate()
+                        val packT = packedTime!!.toDate()
+                        val shipT = shippedTime!!.toDate()
+                        val deliverT = deliveredTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptT)
+                        orderPacked(packT)
+                        orderShipped(shipT)
+                        orderDelivered(deliverT)
+
+
+                    }
+                    "returned"->{
+                        val returnTime: Date = it.getTimestamp("Time_returned")!!.toDate()
+                        binding.buttonContainer.visibility = gone
+                    }
+//                    "canceled"->{
+//                        val returnTime: Date = it.getTimestamp("Time_canceled")!!.toDate()
+//                        binding.buttonContainer.visibility = gone
+//                        binding.orderCancelText.visibility = visible
+//
+//                    }
+                    else ->{
+                        binding.buttonContainer.visibility = gone
+                    }
+                }
+
+                if (isOrderCanceled){
+                    val cancelT= canceledTime!!.toDate()
+
+                    binding.buttonContainer.visibility = gone
+                    binding.orderTrackContainer.visibility = gone
+                    binding.cancelContainer.visibility = visible
+                    orderCanceled(cancelT,orderCanceledBy,cancelletionReason)
+
+                    binding.statusTxt.text = "Canceled"
+
+                }else{
+                    binding.statusTxt.text = status
+                }
+
+
+
+
+                binding.lay1.viewProductBtn.setOnClickListener {
+                    val productIntent = Intent(this@SlOrderDetailsActivity, ProductActivity::class.java)
+                    productIntent.putExtra("productId",productId)
+                    productIntent.putExtra("is_Seller",true)
+                    startActivity(productIntent)
+                }
+
+                loadingDialog.dismiss()
+
+            }
+            .addOnFailureListener {
+                loadingDialog.dismiss()
+                Log.e("Load Order details","${it.message}")
+            }.await()
+    }
+
+    private fun orderNew(orderTime: Date){
+
+        lay4.orderDate.text = getDateTime(orderTime)
+
+        lay4.orderImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@SlOrderDetailsActivity,R.color.amber_600)
+        lay4.orderImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+
+    private fun orderAccepted(acceptTime:Date){
+        lay4.acceptDate.text = getDateTime(acceptTime)
+
+        lay4.acceptImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@SlOrderDetailsActivity,R.color.successGreen)
+        lay4.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderPacked(packedTime:Date){
+        binding.lay4.packedDate.text = getDateTime(packedTime)
+        binding.lay4.packedImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@SlOrderDetailsActivity,R.color.blueLink)
+        binding.lay4.packedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderShipped(shippedTime:Date){
+        lay4.shippedDate.text = getDateTime(shippedTime)
+        lay4.shippedImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@SlOrderDetailsActivity,R.color.indigo_500)
+        lay4.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderDelivered(deliveredTime:Date){
+
+        lay4.deliveredDate.text = getDateTime(deliveredTime)
+        lay4.deliveredImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@SlOrderDetailsActivity,R.color.ratingGreen)
+        lay4.deliveredImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderReturned(){
+
+    }
+
+    private fun orderCanceled(deliveredTime:Date,orderCanceledBy:String,reason:String){
+
+        binding.lay0.cancellationTime.text = getDateTime(deliveredTime)
+        binding.lay0.cancellationText.text = "Order is canceled by $orderCanceledBy"
+        binding.lay0.cancellationReason.text = "Reason: $reason"
+    }
+
+
+
+    private fun updateOrder(orderId: String, status:String){
+
+        val orderMap:MutableMap<String,Any> = HashMap()
+        orderMap["status"] = status
+
+        orderMap["Time_$status"] = FieldValue.serverTimestamp()
+        firebaseFirestore.collection("ORDERS")
+            .document(orderId).update(orderMap)
+            .addOnSuccessListener {
+                Log.i("$status order","successful")
+                loadingDialog.dismiss()
+            }
+            .addOnFailureListener {
+                loadingDialog.dismiss()
+                Log.e("$status order","${it.message}")
+            }
+
+    }
+
+    private fun cancelOrder(orderId: String){
+
+        val orderMap:MutableMap<String,Any> = HashMap()
+        orderMap["status"] = "canceled"
+        orderMap["is_order_canceled"] = true
+        orderMap["order_canceled_by"] = "seller"
+        orderMap["cancellation_reason"] = "reason"
+        orderMap["Time_canceled"] = FieldValue.serverTimestamp()
+
+        orderMap["Time_canceled"] = FieldValue.serverTimestamp()
+        firebaseFirestore.collection("ORDERS")
+            .document(orderId).update(orderMap)
+            .addOnSuccessListener {
+                if (onlinePayment){
+                    sendRefundRequest()
+                }
+
+                Log.i("canceled order","successful")
+                loadingDialog.dismiss()
+            }
+            .addOnFailureListener {
+                loadingDialog.dismiss()
+                Log.e("canceled order","${it.message}")
+            }
+
+
+        val cancelT= Date()
+        binding.cancelOrderBtn.visibility = gone
+        binding.orderTrackContainer.visibility = gone
+        binding.statusTxt.text = "Canceled"
+
+        binding.lay0.cancellationTime.text = TimeDateAgo().msToTimeAgo(this,cancelT)
+        binding.lay0.cancellationText.text = "Order is canceled by seller"
+
+
+    }
+
+
+
+    private fun sendNotification(buyerId:String,productName:String,url:String,status: String){
+        val ref = firebaseFirestore.collection("USERS").document(buyerId).collection("USER_DATA")
+            .document("MY_NOTIFICATION").collection("NOTIFICATION")
+
+        val notificationMap: MutableMap<String, Any> = HashMap()
+        notificationMap["date"] = FieldValue.serverTimestamp()
+        notificationMap["description"] = "$status:$productName"
+        notificationMap["image"] = url
+        notificationMap["order_doc_id"] = documentId
+        notificationMap["seller_id"] = user!!.uid
+        notificationMap["seen"] = false
+//
+
+        ref.add(notificationMap)
+            .addOnSuccessListener {
+
+            }.addOnFailureListener {
+                Log.e("get buyer notification","${it.message}")
+            }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun getDateTime(date: Date): String? {
+        return try {
+            val sdf = SimpleDateFormat("dd MMMM yyyy hh:mm a")
+            //val netDate = Date(s.toLong() * 1000)
+            sdf.format(date)
+        } catch (e: Exception) {
+            e.toString()
+        }
+    }
+
+
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            STORAGE_CODE->{
+                if(grantResults.size>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    billingInvoiceTable()
+                }else{
+                    Toast.makeText(this,"Permission denied",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+
+
+    private fun sendRefundRequest(){
+        val refundMap: MutableMap<String, Any> = java.util.HashMap()
+        refundMap["Buyer_Id"] = buyerId
+        refundMap["Time"] = FieldValue.serverTimestamp()
+        refundMap["Money_refunded"]=false
+        refundMap["Order_doc_id"] = documentId
+
+        firebaseFirestore.collection("REFUND_REQUEST").add(refundMap)
+            .addOnSuccessListener {  }
+    }
+
+
+    //TODO-<<<<<<<<<<<<<=================  SEND NOTIFICATION start ==============================================
+
+    private fun getSellerToken( buyerId1: String) {
+        database.getReference("Tokens").child(buyerId1).get().addOnSuccessListener { snapShot ->
+            buyerToken = snapShot.value.toString()
+
+        }.addOnFailureListener {
+            Log.e(" getSellerToken error1", it.message.toString())
+        }
+
+    }
+
+    private fun sendNotificationStep1(title:String,message:String){
+        val topic = "/topics/Enter_your_topic_name" //topic has to match what the receiver subscribed to
+
+        val notification = JSONObject()
+        val notifcationBody = JSONObject()
+
+        try {
+            notifcationBody.put("title", "Enter_title")
+            notifcationBody.put("message", message)   //Enter your notification message
+            notification.put("to", buyerToken)
+            notification.put("data", notifcationBody)
+            Log.e("TAG", "try")
+        } catch (e: JSONException) {
+            Log.e("TAG", "onCreate: " + e.message)
+        }
+
+        sendNotificationStep2(notification)
+
+    }
+
+    private fun sendNotificationStep2(notification: JSONObject) {
+        Log.e("TAG", "sendNotification")
+        val jsonObjectRequest = object : JsonObjectRequest(
+            Request.Method.POST, Constants.BASE_URL, notification,
+            Response.Listener<JSONObject> { response ->
+                Log.i("TAG", "onResponse: $response")
+
+            },
+            Response.ErrorListener {
+                Toast.makeText(this, "Request error", Toast.LENGTH_LONG).show()
+                Log.i("TAG", "onErrorResponse: Didn't work")
+            }) {
+
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = Constants.SERVER_KEY
+                params["Content-Type"] = Constants.CONTENT_TYPE_FCM
+                return params
+            }
+        }
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(this.applicationContext)
+    }
+
+    //==============================  SEND NOTIFICATION end ==========================>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+//todo ================================BILLING INVOICE ==================================================
+
+
+
+    private fun billingInvoiceTable(){
+        val pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+        val file: File = File(pdfPath,"invoice.pdf")
+        //val outPutStream:OutputStream = FileOutputStream(file)
+        val writer = PdfWriter(file)
+        val pdfDocument: PdfDocument = PdfDocument(writer)
+        val document = Document(pdfDocument)
+
+        val logo = AppCompatResources.getDrawable(this,R.drawable.books_online_seller_logo)
+        val bitmap  = logo?.toBitmap()
+        val stream2 = ByteArrayOutputStream()
+        if (bitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.PNG,100,stream2)
+        }
+
+        val bitmapByteArr:ByteArray = stream2.toByteArray()
+        val imagedata:ImageData = ImageDataFactory.create(bitmapByteArr)
+        val image = Image(imagedata)
+        image.setHeight(40F)
+
+
+        val columnWidth1 = floatArrayOf(200F, 180F, 180F)
+        val table1 = Table(columnWidth1)
+
+        //TABLE 1 -- 1
+        table1.addCell(Cell().add(Paragraph("INVOICE").setFontSize(15F).setBold()))
+        table1.addCell(Cell().add(Paragraph("ORDERED THROUGH: \n BOOKS ONLINE").setFontSize(10F)))
+        table1.addCell(Cell().add(image))
+        //TABLE 1 -- 2
+        table1.addCell(Cell().add(Paragraph("Invoice No \n FF3993H3490").setFontSize(6F)))
+        table1.addCell(Cell().add(Paragraph("SERIAL NO \n 1323003993SL").setFontSize(6F)))
+        table1.addCell(Cell().add(Paragraph("")))
+        //TABLE 1 -- 2
+        val textSoldBy:Text = Text("SOLD BY: ")
+        textSoldBy.apply {
+            setBold()
+            setFontSize(10F)
+            //setFontColor(DeviceRgb(18,192,33))
+        }
+        val paragraphSoldBy = Paragraph()
+        paragraphSoldBy.apply {
+            setFontSize(10F)
+            add(textSoldBy)
+            add("name,\n"+"address_1, "+"address2, \n"+"pincode, "+"state")
+        }
+        table1.addCell(Cell(1,2).add(paragraphSoldBy))
+        //table1.addCell(Cell().add(Paragraph("")))
+        table1.addCell(Cell().add(Paragraph("")))
+
+
+        val paragraphBlank= Paragraph()
+        paragraphBlank.add("")
+
+
+        val columnWidth2 = floatArrayOf(280F, 280F)
+        val table2 = Table(columnWidth2)
+        val textBilledTo:Text = Text("SHIPPING ADDRESS\n")
+
+        textBilledTo.apply {
+            setBold()
+            setFontSize(12F)
+            //setFontColor(DeviceRgb(18,192,33))
+        }
+
+        val textBilledName:Text = Text("JHONE DOE\n")
+        textBilledName.setBold().setFontSize(10F)
+
+        val paragraphBilledTo = Paragraph()
+        paragraphBilledTo.apply {
+            add(textBilledTo)
+            add(textBilledName)
+            add("address_1, "+"address2, \n"+"pincode,"+"state")
+            setFontSize(10F)
+        }
+        table2.addCell(Cell(1,2).add(paragraphBilledTo))
+
+        val columnWidth3 = floatArrayOf(360F, 40F,80F,80F)
+        val table3 = Table(columnWidth3)
+
+        //Table 3 -- 1
+        table3.addCell(Cell().add(Paragraph("PRODUCTS").setBold().setFontSize(10F)))
+        table3.addCell(Cell().add(Paragraph("QTY").setFontSize(10F).setBold()))
+        table3.addCell(Cell().add(Paragraph("UNIT PRICE").setFontSize(10F).setBold()))
+        table3.addCell(Cell().add(Paragraph("PRICE").setFontSize(10F).setBold()))
+
+        //Table 3 -- 2 font size 8
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+
+        //Table 3 -- 3 font size 8
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        //Table 3 -- 4 font size 8
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        //Table 3 -- 5 font size 8
+        table3.addCell(Cell().add(Paragraph("Discount").setFontSize(8F).setBold()))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("-100").setFontSize(8F)))
+        //Table 3 -- 6 font size 8
+        table3.addCell(Cell().add(Paragraph("Shipping charge").setFontSize(8F).setBold()))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("70").setFontSize(8F)))
+
+        //Table 3 -- 7 font size 8
+        table3.addCell(Cell().add(Paragraph("Total").setFontSize(10F).setBold()))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+        table3.addCell(Cell().add(Paragraph("")))
+
+
+        document.add(table1)
+        document.add(paragraphBlank)
+        document.add(table2)
+        document.add(paragraphBlank)
+        document.add(table3)
+        document.add(paragraphBlank)
+        document.close()
+        Toast.makeText(this,"pdf crated",Toast.LENGTH_SHORT).show()
+
+    }
+
+}

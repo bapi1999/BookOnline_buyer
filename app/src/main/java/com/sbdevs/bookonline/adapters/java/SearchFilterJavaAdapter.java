@@ -93,7 +93,9 @@ public class SearchFilterJavaAdapter extends RecyclerView.Adapter<SearchFilterJa
             Long ratingTotal = model.getRating_total();
             avgRatingText.setText(model.getRating_avg());
             totalRatingsText.setText("(" + ratingTotal + " ratings )");
-            bookConditionText.setText(model.getBook_condition());
+
+
+
 
             Picasso.get().load(url).placeholder(R.drawable.as_square_placeholder)
                     .resize(200, 200).centerCrop()
@@ -123,14 +125,60 @@ public class SearchFilterJavaAdapter extends RecyclerView.Adapter<SearchFilterJa
                 outOfStockIcon.setVisibility(View.GONE);
             }
 
-            String st;
-            if (model.getBook_printed_ON() == 0L) {
-                st = model.getBook_type().toString();
-            } else {
-                st = model.getBook_type() + "(" + model.getBook_printed_ON() + ")";
+            String conditionString  = "";
+            switch (model.getBook_condition()){
+                case "new_condition":{
+                    conditionString = "Good";
+                    break;
+                }
+                case "almost_new":{
+                    conditionString = "Almost new";
+                    break;
+                }
+                case "slightly_damaged":{
+                    conditionString = "Slightly damaged";
+                    break;
+                }
+                case "fully_damaged":{
+                    conditionString = "Fully damaged";
+                    break;
+                }
+                default:
+                    conditionString = "";
+            }
+
+            bookConditionText.setText(conditionString);
+
+            String typeString = "" ;
+            switch (model.getBook_type()){
+
+                case "new_printed":
+                case "old_printed": {
+                    typeString = "New";
+                    break;
+                }
+                case "used":{
+                    typeString = "Used";
+                    break;
+                }
+                case "refurbished":{
+                    typeString = "Refurbished";
+                    break;
+                }
 
             }
-            bookTypeText.setText(st);
+
+
+
+            if (model.getBook_printed_ON() != 0L) {
+                String st = typeString+ "(" + model.getBook_printed_ON() + ")";
+                bookTypeText.setText(st);
+            }else {
+                bookTypeText.setText(typeString);
+            }
+
+
+
         }
     }
 }

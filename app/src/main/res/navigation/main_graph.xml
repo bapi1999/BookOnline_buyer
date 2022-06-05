@@ -79,13 +79,9 @@
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/categoryFragment"
-        android:name="com.sbdevs.bookonline.fragments.user.CategoryFragment"
-        android:label="fragment_category"
-        tools:layout="@layout/fragment_category" />
-    <fragment
         android:id="@+id/updatePasswordFragment"
         android:name="com.sbdevs.bookonline.fragments.UpdatePasswordFragment"
         android:label="Update Password"
         tools:layout="@layout/fragment_update_password" />
+
 </navigation>

@@ -48,6 +48,7 @@ class LoginDialogFragment : DialogFragment() {
             val registerIntent = Intent(requireContext(), RegisterActivity::class.java)
             registerIntent.putExtra("from",2)// 1 = from splash/ 2 = from other class
             startActivity(registerIntent)
+            SharedDataClass.newLogin1 = true
             dismiss()
         }
 

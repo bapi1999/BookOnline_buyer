@@ -52,7 +52,7 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
                     delay(1000)
                 }else{
                     binding.emptyContainer.visibility = View.VISIBLE
-                    binding.wishlistRecycler.visibility = View.GONE
+                    binding.wishlistContainer.visibility = View.GONE
                 }
 
             }
@@ -115,16 +115,16 @@ class MyWishlistFragment : Fragment(), WishlistAdapter.MyonItemClickListener {
                     val x = it.get("wish_list")
                     if (x == null){
                         binding.emptyContainer.visibility = View.VISIBLE
-                        binding.wishlistRecycler.visibility = View.GONE
+                        binding.wishlistContainer.visibility = View.GONE
                     }else{
                         list = x as ArrayList<String>
                         if (list.size == 0){
 
                             binding.emptyContainer.visibility = View.VISIBLE
-                            binding.wishlistRecycler.visibility = View.GONE
+                            binding.wishlistContainer.visibility = View.GONE
                         }else{
                             binding.emptyContainer.visibility = View.GONE
-                            binding.wishlistRecycler.visibility = View.VISIBLE
+                            binding.wishlistContainer.visibility = View.VISIBLE
                             wishlistAdapter.list = list
                             wishlistAdapter.notifyDataSetChanged()
                         }

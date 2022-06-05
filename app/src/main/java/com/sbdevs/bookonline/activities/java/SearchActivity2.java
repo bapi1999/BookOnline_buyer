@@ -101,6 +101,7 @@ public class SearchActivity2 extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 Intent intent = new Intent(SearchActivity2.this, SearchFilterJavaActivity.class);
                 intent.putExtra("query",query);
+                intent.putExtra("from","Search");
                 startActivity(intent);
                 finish();
 
@@ -118,7 +119,7 @@ public class SearchActivity2 extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("for_test")
+                .child("SearchProductName")
                 .limitToLast(50);
 
         FirebaseRecyclerOptions<QueryModel2> options =
@@ -137,6 +138,7 @@ public class SearchActivity2 extends AppCompatActivity {
             public void OnQueryClick(int position, String s) {
                 Intent intent = new Intent(SearchActivity2.this,SearchFilterJavaActivity.class);
                 intent.putExtra("query",s);
+                intent.putExtra("from","Search");
                 startActivity(intent);
                 finish();
             }
@@ -175,7 +177,7 @@ public class SearchActivity2 extends AppCompatActivity {
     private void searchNewData(String s){
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("for_test")
+                .child("SearchProductName")
                 .orderByChild("name")
                 .startAt(s)
                 .endAt(s+"\uf8ff")

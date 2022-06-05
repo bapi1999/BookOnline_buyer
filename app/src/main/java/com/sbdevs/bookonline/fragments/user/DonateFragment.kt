@@ -81,11 +81,13 @@ class DonateFragment : Fragment(), DonateItemAdapter.MyOnItemClickListener {
 
         itemList.add(DonateItemModel("Books", 8))
         itemList.add(DonateItemModel("School Bags", 5))
-        itemList.add(DonateItemModel("Pencil Box", 3))
-        itemList.add(DonateItemModel("Clip Board", 5))
+        itemList.add(DonateItemModel("School supplies", 2))
         itemList.add(DonateItemModel("Board Game", 2))
         itemList.add(DonateItemModel("Toy", 2))
         itemList.add(DonateItemModel("Clothes", 5))
+        itemList.add(DonateItemModel("Shoes", 3))
+        itemList.add(DonateItemModel("Sports Accessories", 5))
+        itemList.add(DonateItemModel("others", 2))
 
 
         recyclerView.adapter = itemAdapter

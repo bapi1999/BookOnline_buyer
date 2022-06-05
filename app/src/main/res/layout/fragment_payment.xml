@@ -150,7 +150,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        app:srcCompat="@drawable/ic_baseline_currency_rupee_24"
+                        app:srcCompat="@drawable/ic_rupee_24"
                         app:tint="@color/black"/>
                     <TextView
                         android:id="@+id/coinDisCountPrice"
@@ -212,7 +212,7 @@
                         android:id="@+id/imageView19"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        app:srcCompat="@drawable/ic_baseline_currency_rupee_24"
+                        app:srcCompat="@drawable/ic_rupee_24"
                         app:tint="@color/black"/>
 
                     <TextView

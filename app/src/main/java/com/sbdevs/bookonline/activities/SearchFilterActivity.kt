@@ -25,6 +25,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.bookonline.R
+import com.sbdevs.bookonline.activities.java.SearchActivity2
 import com.sbdevs.bookonline.adapters.SearchFilterAdapter
 import com.sbdevs.bookonline.databinding.ActivitySearchFilterBinding
 import com.sbdevs.bookonline.fragments.LoadingDialog
@@ -98,7 +99,7 @@ class SearchFilterActivity : AppCompatActivity() {
 
 
         binding.queryText.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
+            val intent = Intent(this, SearchActivity2::class.java)
             startActivity(intent)
         }
 

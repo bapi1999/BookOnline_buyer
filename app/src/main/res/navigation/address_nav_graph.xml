@@ -20,5 +20,8 @@
         android:label="fragment_add_address"
         tools:layout="@layout/fragment_add_address" >
 
+        <action
+            android:id="@+id/action_addAddressFragment_to_myAddressFragment"
+            app:destination="@id/myAddressFragment" />
     </fragment>
 </navigation>

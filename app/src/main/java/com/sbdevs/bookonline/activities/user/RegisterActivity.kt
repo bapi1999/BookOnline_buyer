@@ -2,10 +2,12 @@ package com.sbdevs.bookonline.activities.user
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.navigation.NavController
@@ -35,6 +37,9 @@ class RegisterActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences(myPreference, MODE_PRIVATE)
 //        val name = sharedPreferences.getString("signature", "")
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         fromIntent = intent.getIntExtra("from",0)
 

@@ -7,6 +7,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.sbdevs.bookonline.R
 import com.sbdevs.bookonline.databinding.ActivityMyAddressBinding
+import com.sbdevs.bookonline.fragments.ProductFragment
+import com.sbdevs.bookonline.fragments.user.MyAddressFragment
 
 class MyAddressActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMyAddressBinding
@@ -17,7 +19,11 @@ class MyAddressActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment4) as NavHostFragment
-        navController = navHostFragment.findNavController()
+//        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment4) as NavHostFragment
+//        navController = navHostFragment.findNavController()
+
+        val myAddressFragment= MyAddressFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,myAddressFragment).commit()
+
     }
 }

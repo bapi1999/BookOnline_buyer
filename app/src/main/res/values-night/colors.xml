@@ -7,7 +7,7 @@
     <color name="white">#FFFFFFFF</color>
 
 <!--    <color name="primaryColor">#455a64</color>  -->
-    <color name="primaryColor">#718792</color>
+    <color name="primaryColor">#455a64</color>
     <color name="primaryLightColor">#718792</color>
     <color name="primaryDarkColor">#1c313a</color>
     <color name="secondaryColor">#ffb300</color>
@@ -54,8 +54,19 @@
     <color name="indigo_700">#303F9F</color>
     <color name="indigo_900">#1A237E</color>
 
-
     <color name="splash">#FF0000</color>
 
-    <color name="light_black">#272727</color>
+<!--    <color name="light_black">#272727</color>-->
+
+<!--    <color name="mainBgColor">#1D1D1D</color>-->
+<!--    <color name="statusBarColor">#718792</color>-->
+<!--    <color name="textNormalDeep">#E0E0E0</color>-->
+<!--    <color name="textNormalSlight">#9E9E9E</color>-->
+<!--    <color name="reverseColor">#212121</color>-->
+<!--    <color name="adBgColor">#FFB300</color>-->
+<!--    <color name="buyNowBtnBg">#3F51B5</color>-->
+<!--    <color name="addToCartBtnBg">#1A237E</color>-->
+<!--    <color name="textInputNorm">#718792</color>-->
+<!--    <color name="textInputSelected">#BDBDBD</color>-->
+
 </resources>

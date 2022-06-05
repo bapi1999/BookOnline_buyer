@@ -1,6 +1,7 @@
 package com.sbdevs.bookonline.activities.donation
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,7 +63,8 @@ class AllDonationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAllDonationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         recyclerView = binding.allDonationRecycler
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = donationAdapter
@@ -75,15 +78,15 @@ class AllDonationActivity : AppCompatActivity() {
         AudienceNetworkAds.initialize(this);
         val adId = resources.getString(R.string.fb_native_ad)
         nativeAd =  NativeAd(this, adId)
-        loadingDialog.show(supportFragmentManager,"show")
+//        loadingDialog.show(supportFragmentManager,"show")
         lifecycleScope.launch(Dispatchers.IO) {
-            loadNativeAd()
+//            loadNativeAd()
             getAllDonation()
-            getDonationData()
+//            getDonationData()
         }
 
 
-            binding.donateFabBtn.setOnClickListener {
+            binding.newDonateBtn.setOnClickListener {
                 val currentUser= Firebase.auth.currentUser
                 if (currentUser != null) {
                 val donateIntent = Intent(this, AddContributionActivity::class.java)
@@ -92,6 +95,18 @@ class AllDonationActivity : AppCompatActivity() {
                     loginDialog.show(supportFragmentManager, "custom login dialog")
                 }
             }
+
+        binding.myDonationsBtn.setOnClickListener {
+            val currentUser= Firebase.auth.currentUser
+            if (currentUser != null) {
+                val donateIntent = Intent(this, MyDonationActivity::class.java)
+                startActivity(donateIntent)
+            }else{
+                loginDialog.show(supportFragmentManager, "custom login dialog")
+            }
+        }
+
+
 
 
     }
@@ -103,8 +118,8 @@ class AllDonationActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun loadNativeAd() {
 
+    private fun loadNativeAd() {
 
         val nativeAdListener =object : NativeAdListener {
             override fun onError(p0: Ad?, p1: AdError?) {
@@ -143,6 +158,8 @@ class AllDonationActivity : AppCompatActivity() {
                 .withAdListener(nativeAdListener)
                 .build());
     }
+
+
 
     private fun inflateAd(nativeAd: NativeAd) {
         nativeAd.unregisterView()
@@ -211,11 +228,9 @@ class AllDonationActivity : AppCompatActivity() {
                     donationAdapter.notifyDataSetChanged()
 
                 }
-//                loadingDialog.dismiss()
             }
             .addOnFailureListener {
                 Log.e("get all donation", "${it.message}")
-//                loadingDialog.dismiss()
             }.await()
     }
 

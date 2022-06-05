@@ -5,8 +5,23 @@
     <color name="purple_100">#D1C4E9</color>
     <color name="purple_500">#FF6200EE</color>
 
+
+    <color name="transparent">#00000000</color>
+
+    <color name="teal_100">#B2DFDB</color>
     <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <color name="teal_500">#009688</color>
+    <color name="teal_600">#00897B</color>
+    <color name="teal_700">#00796B</color>
+    <color name="teal_900">#004D40</color>
+
+    <color name="pink_100">#F8BBD0</color>
+    <color name="pink_500">#E91E63</color>
+
+    <color name="green_100">#C8E6C9</color>
+    <color name="green_600">#43A047</color>
+
+    <color name="brown">#C89B14</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -58,6 +73,7 @@
 
 
     <color name="red_50">#FFEBEE</color>
+    <color name="red_100">#FFCDD2</color>
     <color name="red_500">#F44336</color>
     <color name="red_600">#E53935</color>
     <color name="red_700">#D32F2F</color>
@@ -70,11 +86,24 @@
     <color name="indigo_600">#3949AB</color>
     <color name="indigo_700">#303F9F</color>
     <color name="indigo_900">#1A237E</color>
-
-
     <color name="splash">#FF0000</color>
     <color name="notificationBg">#D7EBFB</color>
 
-
     <color name="light_black">#272727</color>
+    <color name="mainBgColor">#FFFFFFFF</color>
+    <color name="statusBarColor">#1c313a</color>
+    <color name="textNormalDeep">#212121</color>
+    <color name="textNormalSlight">#616161</color>
+    <color name="reverseColor">#FFFFFFFF</color>
+    <color name="adBgColor">#FFB300</color>
+    <color name="buyNowBtnBg">#FFB300</color>
+    <color name="addToCartBtnBg">#FF6F00</color>
+    <color name="textInputNorm">#616161</color>
+    <color name="textInputSelected">#1c313a</color>
+
+
+
+
+
+
 </resources>

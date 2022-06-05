@@ -40,6 +40,7 @@ import com.sbdevs.bookonline.models.uidataclass.TopCategoryModel
 import com.sbdevs.bookonline.othercalss.HomeCacheClass
 import com.sbdevs.bookonline.othercalss.MiddleDividerItemDecoration
 import com.sbdevs.bookonline.othercalss.SharedDataClass
+import com.sbdevs.bookonline.seller.activities.SlSplashActivity
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.util.*
@@ -174,7 +175,7 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
 
         private fun getSliderUi(uiId:String )  {
             val resultList = ArrayList<SliderModel>()
-
+            Log.e("SLIDER take of", " now")
             firebaseDatabase.child("Sliders").child(uiId).get()
                 .addOnSuccessListener {
 
@@ -224,6 +225,10 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
                         }
                         111L->{
                             val newIntent = Intent(itemView.context,AllDonationActivity::class.java)
+                            itemView.context.startActivity(newIntent)
+                        }
+                        122L->{
+                            val newIntent = Intent(itemView.context,SlSplashActivity::class.java)
                             itemView.context.startActivity(newIntent)
                         }
 
@@ -533,15 +538,22 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
     class StripViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         private val firebaseDatabase = SharedDataClass.database
         private var stripImage:ImageView = itemView.findViewById(R.id.strip_image)
-        private val firebaseFirestore = Firebase.firestore
+
         fun bind(homeModel: HomeModel){
             val uiId:String = homeModel.ui_VIEW_ID.trim()
+
+            var actionString =""
+            var name =""
+            var actionType =0L
+
 
             Log.e("STRIP take of", " now")
             firebaseDatabase.child("UI_STRIP_NORMAL").child(uiId).get()
                 .addOnSuccessListener {
-                    val background:String = it.child("Bg_color").value.toString()
+                    actionType = it.child("action_type").value as Long
                     val image:String = it.child("image").value.toString()
+                     name = it.child("name").value.toString()
+                    actionString = it.child("action_string").value.toString()
                     Glide.with(itemView.context).load(image)
                         .placeholder(R.drawable.as_banner_placeholder)
                         .into(stripImage)
@@ -549,6 +561,24 @@ class HomeAdapter(var homeModelList: MutableList<HomeModel>  ) : RecyclerView.Ad
                 }.addOnFailureListener {
                     Log.e("Get Strip Normal error :","${it.message}")
                 }
+
+            itemView.setOnClickListener {
+                if (actionType == 109L){
+                    val splitList= Arrays.asList<String>(
+                        *actionString.lowercase(Locale.getDefault()).split(",").toTypedArray()
+                    )
+                    val queryList:ArrayList<String> = ArrayList()
+                    queryList.addAll(splitList)
+                    val newIntent = Intent(itemView.context, SearchFilterJavaActivity::class.java)
+                    newIntent.putStringArrayListExtra("queryList",queryList)
+                    newIntent.putExtra("from","ActionString")
+                    newIntent.putExtra("queryTitle",name)
+                    itemView.context.startActivity(newIntent)
+                }
+
+            }
+
+
 
 
 

@@ -1,11 +1,14 @@
 package com.sbdevs.bookonline.activities.donation
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,7 +69,8 @@ class MyDonationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMyDonationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         AudienceNetworkAds.initialize(this);
         val adId = resources.getString(R.string.fb_native_ad)
         nativeBannerAd =  NativeBannerAd(this, adId)
@@ -83,6 +87,12 @@ class MyDonationActivity : AppCompatActivity() {
         levelProgress = binding.levelProgress
 
 
+        val actionBar = binding.toolbar
+        setSupportActionBar(actionBar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
 
         loadingDialog.show(supportFragmentManager,"show")
 
@@ -94,6 +104,13 @@ class MyDonationActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

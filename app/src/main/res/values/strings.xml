@@ -53,10 +53,9 @@
     <string name="welcome_notification_for_seller">Welcome to Book Online seller. Thank you for joining the seller community.</string>
     <string name="address_verification_notification">Your proof of address will be verified within 2 days. In some cases, our agents may go to the shop(publishers,company) to verify the address. Be patient until your address is verified</string>
     <string name="account_balance">Account Balance:</string>
-    <string name="minimum_account_balance_to_withdraw">minimum account balance</string>
+    <string name="minimum_account_balance_to_withdraw">Minimum account balance</string>
     <string name="sales_report">Sales Report</string>
-    <string name="you_are_not_a_verified_seller">you are not a verified, seller. Add the business address to get verified</string>
-    <string name="no_bank_account_linked">no bank account is linked to this account. Add bank account to receive payment</string>
+    <string name="no_bank_account_linked">No bank account is linked to this account. Add bank account to receive payment</string>
     <string name="product_is_visible_to_user">this product is visible to user</string>
     <string name="read_instruction">Read instruction</string>
     <string name="updated_successfully">Updated successfully</string>
@@ -67,6 +66,11 @@
     <string name="order_request_1">Order is Canceled by seller</string>
     <string name="no_address_error">No saved address found, Add a nw address before continue</string>
     <string name="no_coin_found">You don\'t have any Gold Coin.Get gold coins by donating to child education</string>
+    <string name="support_message">We\'ll usually get back to you within 2 business days (Monday-Friday, 9am-9pm), but we might get delayed if there is a high number of requests. If you don\'t receive a response within 3 days, please resend the request.</string>
+    <string name="donation_message">Our agent will collect the donation from your address in 4 to 5. working days. if possible pack all items in a single bag or sack.</string>
+    <string name="you_are_not_a_verified_seller">You are not a verified, seller. we did not find any business details in your account. Add the business details for the verification process.</string>
+    <string name="seller_address_not_verified">Your address is currently under review process. It may take time. You will be notified when the process is complete.</string>
+    <string name="welcome_seller_message">Sell your used, refurbished, or new books here without any complexity. Receive orders from every part of India and follow the simple steps to fulfill the orders. No need for a GST number to sell.</string>
 
     <string name="app_test_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="app_live_id">ca-app-pub-8969863088779640~7858246679</string>
@@ -84,10 +88,27 @@
         <item>work(10am to 6pm)</item>
     </string-array>
 
+    <string-array name="order_cancel_reasons">
+        <item>Out of Stock</item>
+        <item>Incomplete customer details</item>
+        <item>Unable to accept order</item>
+        <item>Not for sale anymore</item>
+    </string-array>
+
     <string-array name="business_type">
         <item>Self</item>
         <item>Shop</item>
         <item>Publisher</item>
+    </string-array>
+
+    <string-array name="support_topics">
+        <item>My orders</item>
+        <item>Cart</item>
+        <item>Refund</item>
+        <item>Product return</item>
+        <item>Terms of service</item>
+        <item>Privacy Policy</item>
+        <item>General Query</item>
     </string-array>
 
     <string-array name="india_states">

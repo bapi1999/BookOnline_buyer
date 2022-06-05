@@ -48,12 +48,12 @@ class AddAddressFragment : Fragment() {
 
         autoCompleteType = binding.lay1.autoCompleteType
         val addressTypelist = resources.getStringArray(R.array.address_type)
-        val typeAdapter = ArrayAdapter(context!!,R.layout.item_dropdown,addressTypelist)
+        val typeAdapter = ArrayAdapter(requireContext(),R.layout.item_dropdown,addressTypelist)
         autoCompleteType.setAdapter(typeAdapter)
 
         autoCompleteState = binding.lay1.autoCompleteState
         val stateList = resources.getStringArray(R.array.india_states)
-        val sateAdapter = ArrayAdapter(context!!,R.layout.item_dropdown,stateList)
+        val sateAdapter = ArrayAdapter(requireContext(),R.layout.item_dropdown,stateList)
         autoCompleteState.setAdapter(sateAdapter)
     }
 
@@ -65,11 +65,11 @@ class AddAddressFragment : Fragment() {
         _binding = FragmentAddAddressBinding.inflate(inflater,container,false)
 
 
-        loadingDialog = Dialog(activity!!)
+        loadingDialog = Dialog(requireActivity())
         loadingDialog.setContentView(R.layout.le_loading_progress_dialog)
         loadingDialog.setCancelable(false)
         loadingDialog.window!!.setBackgroundDrawable(
-            AppCompatResources.getDrawable(context!!,R.drawable.s_shape_bg_2)
+            AppCompatResources.getDrawable(requireContext(),R.drawable.s_shape_bg_2)
         )
         loadingDialog.window!!.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
@@ -92,8 +92,10 @@ class AddAddressFragment : Fragment() {
 
 
         binding.addNewAddress.setOnClickListener {
-            loadingDialog.show()
             checkAllDetails()
+
+//            requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
+
         }
 
 
@@ -227,7 +229,7 @@ class AddAddressFragment : Fragment() {
     }
 
 
-    fun getAddressList()  = CoroutineScope(Dispatchers.IO).launch{
+    private fun getAddressList()  = CoroutineScope(Dispatchers.IO).launch{
         firebaseFirestore.collection("USERS").document(firebaseAuth.currentUser!!.uid).collection("USER_DATA")
             .document("MY_ADDRESSES").get().addOnCompleteListener {
                 if (it.isSuccessful){
@@ -245,6 +247,7 @@ class AddAddressFragment : Fragment() {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         } else {
+            loadingDialog.show()
             lifecycleScope.launch(Dispatchers.IO){
                 try {
                     val valueMap:MutableMap<String,Any> = HashMap()
@@ -265,11 +268,12 @@ class AddAddressFragment : Fragment() {
                         .collection("USER_DATA").document("MY_ADDRESSES")
                         .update(addressMap).addOnCompleteListener {
                             loadingDialog.dismiss()
+                            requireActivity().supportFragmentManager.popBackStack()
                         }
 
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
-
+                        loadingDialog.show()
                         Toast.makeText(context,e.message, Toast.LENGTH_LONG).show()
                     }
                 }

@@ -31,7 +31,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.sbdevs.bookonline.R;
-import com.sbdevs.bookonline.activities.SearchActivity;
 import com.sbdevs.bookonline.adapters.java.SearchFilterJavaAdapter;
 import com.sbdevs.bookonline.databinding.ActivitySearchFilterJavaBinding;
 import com.sbdevs.bookonline.fragments.LoadingDialog;
@@ -43,25 +42,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class SearchFilterJavaActivity extends AppCompatActivity {
 
     private ActivitySearchFilterJavaBinding binding;
     private BottomSheetDialog bottomSheetDialog;
 
-    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     private RecyclerView searchRecycler;
-    private ArrayList<SearchJavaModel> allSearchList  = new ArrayList();
+    private ArrayList<SearchJavaModel> allSearchList  = new ArrayList<SearchJavaModel>();
     private SearchFilterJavaAdapter searchFilterAdapter ;
 
-    private ArrayList<String> yearList = new ArrayList();
-    private ArrayList<String> tags = new ArrayList();
-    private ArrayList<String> subTagList = new ArrayList();
+    private final ArrayList<String> yearList = new ArrayList<String>();
+    private final ArrayList<String> tags = new ArrayList<String>();
+    private ArrayList<String> subTagList = new ArrayList<String>();
     private Query.Direction  priceDirection = Query.Direction.ASCENDING;
 
-    private HashMap<String,String> mainFilterMap = new HashMap();
-    private HashMap<String ,String> subFilterMap = new HashMap();
+    private HashMap<String,String> mainFilterMap = new HashMap<>();
+    private HashMap<String ,String> subFilterMap = new HashMap<>();
 
     private DocumentSnapshot lastResult;
     private Boolean isReachLast = false;
@@ -95,10 +96,29 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         searchRecycler.setLayoutManager(layoutManager);
 
-        String query = getIntent().getStringExtra("query");
-        binding.queryText.setText(query);
-        List<String> queryList  = Arrays.asList(query.toLowerCase().split(" "));
-        tags.addAll(queryList);
+        String from = getIntent().getStringExtra("from");
+        if (Objects.equals(from, "ActionString")){
+
+            String name = getIntent().getStringExtra("queryTitle");
+            binding.queryText.setText(name);
+            ArrayList<String> queryList = getIntent().getStringArrayListExtra("queryList");
+            tags.addAll(queryList);
+            Log.e("list",tags.toString());
+
+        }else {
+            String query = getIntent().getStringExtra("query");
+            binding.queryText.setText(query);
+            List<String> queryList  = Arrays.asList(query.toLowerCase().split(" "));
+
+            if (queryList.size()>10){
+                List<String> first9Item = queryList.stream().limit(9).map(String::trim).collect(Collectors.toList());
+                tags.addAll(first9Item);
+            }else {
+                tags.addAll(queryList);
+            }
+        }
+
+
 
         searchFilterAdapter = new SearchFilterJavaAdapter(allSearchList);
         searchRecycler.setAdapter(searchFilterAdapter);
@@ -112,7 +132,7 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
         binding.queryText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SearchFilterJavaActivity.this, SearchActivity.class);
+                Intent intent = new Intent(SearchFilterJavaActivity.this, SearchActivity2.class);
                 startActivity(intent);
             }
         });
@@ -209,14 +229,10 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
         relevanceRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.relevance_chip2:{
-                        priceDirection = Query.Direction.DESCENDING;
-                        break;
-                    }
-                    default:
-                        priceDirection = Query.Direction.ASCENDING;
-
+                if (checkedId == R.id.relevance_chip2) {
+                    priceDirection = Query.Direction.DESCENDING;
+                } else {
+                    priceDirection = Query.Direction.ASCENDING;
                 }
             }
         });
@@ -286,29 +302,6 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                 lastResult = null;
 
                 subFilterMap.putAll(mainFilterMap);
-
-//                String st = "map size"+ mainFilterMap.size() +" \n";
-//                st += "_______________________\n";
-//
-//                Set<String > keys= subFilterMap.keySet();
-//                List<String> listKeys = new ArrayList<String>(keys);
-//                Collection<String> values = subFilterMap.values();
-//                List<String> listValues = new ArrayList<String>(values);
-//
-//                for (int i= 0 ;i< subFilterMap.size();i++){
-//                    st += listValues.get(i)+"=" + listKeys.get(i)+"\n";
-//                }
-//                if (priceRageIsApplied){
-//                    st +=" Price Range Applied \n lower: "+lowerLimit+" / upper: "+upperLimit+"\n";
-//                }else{
-//                    st +=" No Price Range Applied\n";
-//                }
-//                st += "\n tags "+tags+" \n";
-//                st+=yearList.toString();
-//                st += "_______________________\n";
-//                binding.noResultFoundText.setText(st);
-
-
 
                 switch (subFilterMap.size()){
                     case 0:{
@@ -456,15 +449,20 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
 
                     Log.e("QuerySnapshot ","size "+allDocumentSnapshot.size()+"");
 
-
                     if (allDocumentSnapshot.isEmpty()){
 
                         isReachLast = true;
+                        if (allSearchList.isEmpty()){
+                            searchRecycler.setVisibility(gone);
+                            binding.progressBar2.setVisibility(gone);
+                            binding.noResultFoundText.setVisibility(visible);
+                        }
+
                     }else{
                         for (DocumentSnapshot documentSnapshot : allDocumentSnapshot) {
                             String productId = documentSnapshot.getId();
                             String productName = documentSnapshot.getString("book_title");
-                            ArrayList<String> productImgList = (ArrayList<String>) documentSnapshot.get("productImage_List");
+                            ArrayList<String> productImgList =  (ArrayList<String>) documentSnapshot.get("productImage_List");
                             Long stockQty  = documentSnapshot.getLong("in_stock_quantity");
                             String avgRating = documentSnapshot.getString("rating_avg");
                             Long totalRatings = documentSnapshot.getLong("rating_total");
@@ -478,24 +476,10 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                                     stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear));
                         }
 
-                        if (allDocumentSnapshot.size()<10){
-                            isReachLast =true;
-                        }else {
-                            isReachLast = false;
-                        }
-                    }
-
-                    allSearchList.addAll(searchList);
-                    if (allSearchList.isEmpty()){
-                        searchRecycler.setVisibility(gone);
-                        binding.progressBar2.setVisibility(gone);
-                        binding.noResultFoundText.setVisibility(visible);
-                    }
-                    else{
+                        allSearchList.addAll(searchList);
                         searchRecycler.setVisibility(visible);
                         binding.progressBar2.setVisibility(visible);
                         binding.noResultFoundText.setVisibility(gone);
-
 
                         if (lastResult == null ){
                             searchFilterAdapter.notifyItemRangeInserted(0,searchList.size());
@@ -503,21 +487,19 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                             searchFilterAdapter.notifyItemRangeInserted((allSearchList.size()-1),searchList.size());
                         }
 
-
-//Todo- new approach =================================================================
                         if (!allDocumentSnapshot.isEmpty()){
                             DocumentSnapshot lastR = allDocumentSnapshot.get(allDocumentSnapshot.size() - 1);
                             lastResult = lastR;
-//                            times = lastR.getTimestamp("PRODUCT_UPDATE_ON");
                         }
-//Todo- new approach =================================================================
-
                         binding.progressBar2.setVisibility(gone);
+
+                        isReachLast = allDocumentSnapshot.size() < 10;
                     }
+
+
 
                     subTagList.clear();
                     loadingDialog.dismiss();
-
 
                 }else {
                     Log.e("get search query 0", "${it.message}");
@@ -584,8 +566,12 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
 
 
                     if (allDocumentSnapshot.isEmpty()){
-
                         isReachLast = true;
+                        if (allSearchList.isEmpty()){
+                            searchRecycler.setVisibility(gone);
+                            binding.progressBar2.setVisibility(gone);
+                            binding.noResultFoundText.setVisibility(visible);
+                        }
                     }else{
                         for (DocumentSnapshot documentSnapshot : allDocumentSnapshot) {
                             String productId = documentSnapshot.getId();
@@ -604,20 +590,7 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                                     stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear));
                         }
 
-                        if (allDocumentSnapshot.size()<10){
-                            isReachLast =true;
-                        }else {
-                            isReachLast = false;
-                        }
-                    }
-
-                    allSearchList.addAll(searchList);
-                    if (allSearchList.isEmpty()){
-                        searchRecycler.setVisibility(gone);
-                        binding.progressBar2.setVisibility(gone);
-                        binding.noResultFoundText.setVisibility(visible);
-                    }
-                    else{
+                        allSearchList.addAll(searchList);
                         searchRecycler.setVisibility(visible);
                         binding.progressBar2.setVisibility(visible);
                         binding.noResultFoundText.setVisibility(gone);
@@ -628,14 +601,14 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                             searchFilterAdapter.notifyItemRangeInserted((allSearchList.size()-1),searchList.size());
                         }
 
-//Todo- new approach =================================================================
                         if (!allDocumentSnapshot.isEmpty()){
                             DocumentSnapshot lastR = allDocumentSnapshot.get(allDocumentSnapshot.size() - 1);
                             lastResult = lastR;
                         }
-//Todo- new approach =================================================================
 
                         binding.progressBar2.setVisibility(gone);
+
+                        isReachLast = allDocumentSnapshot.size() < 10;
                     }
 
                     subTagList.clear();
@@ -656,7 +629,6 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
     private void queryEqualCount2(HashMap<String ,String> subMap){
 
         ArrayList<SearchJavaModel>  searchList = new ArrayList<SearchJavaModel> ();
-        searchList.clear();
         Set<String> keys = subMap.keySet();
         List<String> listKeys = new ArrayList<String>(keys);
         Collection<String> values = subMap.values();
@@ -712,7 +684,13 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                     if (allDocumentSnapshot.isEmpty()){
 
                         isReachLast = true;
-                    }else{
+                        if (allSearchList.isEmpty()){
+                            searchRecycler.setVisibility(gone);
+                            binding.progressBar2.setVisibility(gone);
+                            binding.noResultFoundText.setVisibility(visible);
+                        }
+                    }
+                    else{
                         for (DocumentSnapshot documentSnapshot : allDocumentSnapshot) {
                             String productId = documentSnapshot.getId();
                             String productName = documentSnapshot.getString("book_title");
@@ -730,20 +708,7 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                                     stockQty, avgRating, totalRatings, bookCondition, bookType, printedYear));
                         }
 
-                        if (allDocumentSnapshot.size()<10){
-                            isReachLast =true;
-                        }else {
-                            isReachLast = false;
-                        }
-                    }
-
-                    allSearchList.addAll(searchList);
-                    if (allSearchList.isEmpty()){
-                        searchRecycler.setVisibility(gone);
-                        binding.progressBar2.setVisibility(gone);
-                        binding.noResultFoundText.setVisibility(visible);
-                    }
-                    else{
+                        allSearchList.addAll(searchList);
                         searchRecycler.setVisibility(visible);
                         binding.progressBar2.setVisibility(visible);
                         binding.noResultFoundText.setVisibility(gone);
@@ -754,15 +719,16 @@ public class SearchFilterJavaActivity extends AppCompatActivity {
                             searchFilterAdapter.notifyItemRangeInserted((allSearchList.size()-1),searchList.size());
                         }
 
-//Todo- new approach =================================================================
                         if (!allDocumentSnapshot.isEmpty()){
                             DocumentSnapshot lastR = allDocumentSnapshot.get(allDocumentSnapshot.size() - 1);
                             lastResult = lastR;
                         }
-//Todo- new approach =================================================================
 
                         binding.progressBar2.setVisibility(gone);
+
+                        isReachLast = allDocumentSnapshot.size() < 10;
                     }
+
 
                     subTagList.clear();
                     loadingDialog.dismiss();

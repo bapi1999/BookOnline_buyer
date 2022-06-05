@@ -1,7 +1,9 @@
 package com.sbdevs.bookonline.activities.user
 
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -15,6 +17,8 @@ class PaymentMethodActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentMethodBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment5) as NavHostFragment
         navController = navHostFragment.navController

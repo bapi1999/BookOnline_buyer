@@ -54,7 +54,7 @@ class DonateItemAdapter(
 
 
             itemNameText.text = "$itemName "
-            xPointText.text = "(${xPoint} point / item) size:${pointList.size}"
+            xPointText.text = "(${xPoint} point / item)"
 
             plusBtn.setOnClickListener {
 

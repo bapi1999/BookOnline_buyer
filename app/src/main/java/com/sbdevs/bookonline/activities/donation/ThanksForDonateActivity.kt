@@ -1,5 +1,6 @@
 package com.sbdevs.bookonline.activities.donation
 
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.nativead.MediaView
@@ -34,7 +36,8 @@ class ThanksForDonateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityThanksForDonateBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         val newlyAddedPoint:Int = intent.getIntExtra("totalPoint",0)
 
         binding.newlyAddedPoint.text = "$newlyAddedPoint Points"

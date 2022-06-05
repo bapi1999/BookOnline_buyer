@@ -86,7 +86,7 @@
         <ImageView
             android:layout_width="17dp"
             android:layout_height="17sp"
-            android:src="@drawable/ic_baseline_currency_rupee_24"
+            android:src="@drawable/ic_rupee_24"
             app:tint="@color/grey_900" />
 
         <TextView
@@ -149,7 +149,7 @@
             android:paddingBottom="4dp"
             android:text="New"
             android:textColor="@color/black"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/product_condition"
@@ -165,7 +165,7 @@
             android:paddingBottom="4dp"
             android:text="Good and new"
             android:textColor="@color/black"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/adult_contain"
